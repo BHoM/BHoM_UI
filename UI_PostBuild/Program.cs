@@ -26,7 +26,7 @@ namespace BHoM_UI
             Directory.CreateDirectory(targetFolder);
 
             // Create the list of files to move starting with the BHoM.dll 
-            Dictionary<string, string> filesToMove = new Dictionary<string,string> { { "BHoM.dll", Path.Combine(sourceFolder, @"BHoM\Build\BHoM.dll") } };
+            Dictionary<string, List<string>> filesToMove = new Dictionary<string, List<string>> { { "BHoM.dll", new List<string> { Path.Combine(sourceFolder, @"BHoM\Build\BHoM.dll") } } };
             Console.WriteLine("Adding BHoM.dll");
 
             // Add all the Engine dlls to the list
@@ -57,22 +57,25 @@ namespace BHoM_UI
 
             // Copy al the files accross
             Console.WriteLine("\nCopying " + filesToMove.Count.ToString() + " files to " + targetFolder);
-            foreach (KeyValuePair<string,string> file in filesToMove)
+            foreach (KeyValuePair<string, List<string>> kvp in filesToMove)
             {
-                File.Copy(file.Value, Path.Combine(targetFolder, file.Key), true);
+                string file = kvp.Value.OrderBy(x => File.GetLastWriteTime(x)).Last();
+                File.Copy(file, Path.Combine(targetFolder, kvp.Key), true);
             }
 
             Directory.GetDirectories(sourceFolder);
         }
 
 
-        static void AddFilesToList(Dictionary<string, string> targetList, IEnumerable<string> filesToAdd)
+        static void AddFilesToList(Dictionary<string, List<string>> targetList, IEnumerable<string> filesToAdd)
         {
             foreach(string file in filesToAdd)
             {
                 string fileName = file.Substring(file.LastIndexOf('\\') + 1);
                 if (!targetList.ContainsKey(fileName))
-                    targetList.Add(fileName, file);
+                    targetList.Add(fileName, new List<string> { file });
+                else
+                    targetList[fileName].Add(file);
             }
         }
     }
