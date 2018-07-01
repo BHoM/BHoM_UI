@@ -46,8 +46,13 @@ namespace BHoM_UI
             Console.WriteLine("Adding files from BHoM_UI");
 
             // Add all the test dlls to the list
-            AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_Test\Build"), "*.dll"));
-            Console.WriteLine("Adding files from BHoM_Test");
+            string testPath = Path.Combine(sourceFolder, @"BHoM_Test\Build");
+            if (Directory.Exists(testPath))
+            {
+                AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_Test\Build"), "*.dll"));
+                Console.WriteLine("Adding files from BHoM_Test");
+            }
+            
 
             // Add all the Toolkit dlls to the list
             foreach (string path in Directory.GetDirectories(sourceFolder).Where(x => x.EndsWith(@"_Toolkit")))
