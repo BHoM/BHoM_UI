@@ -23,7 +23,11 @@ namespace BHoM_UI
             //Make sure the source and target folders exists
             if (!Directory.Exists(sourceFolder))
                 throw new DirectoryNotFoundException("The source folder does not exists: " + sourceFolder);
-            Directory.CreateDirectory(targetFolder);
+            if (!Directory.Exists(targetFolder))
+                Directory.CreateDirectory(targetFolder);
+            else
+                CleanDirectory(targetFolder);
+                
 
             // Create the list of files to move starting with the BHoM.dll 
             Dictionary<string, List<string>> filesToMove = new Dictionary<string, List<string>> { { "BHoM.dll", new List<string> { Path.Combine(sourceFolder, @"BHoM\Build\BHoM.dll") } } };
@@ -40,6 +44,15 @@ namespace BHoM_UI
             // Add all the UI dlls to the list
             AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_UI\Build"), "*.dll"));
             Console.WriteLine("Adding files from BHoM_UI");
+
+            // Add all the test dlls to the list
+            string testPath = Path.Combine(sourceFolder, @"BHoM_Test\Build");
+            if (Directory.Exists(testPath))
+            {
+                AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_Test\Build"), "*.dll"));
+                Console.WriteLine("Adding files from BHoM_Test");
+            }
+            
 
             // Add all the Toolkit dlls to the list
             foreach (string path in Directory.GetDirectories(sourceFolder).Where(x => x.EndsWith(@"_Toolkit")))
@@ -67,7 +80,23 @@ namespace BHoM_UI
         }
 
 
-        static void AddFilesToList(Dictionary<string, List<string>> targetList, IEnumerable<string> filesToAdd)
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        private static void CleanDirectory(string folder)
+        {
+            DirectoryInfo di = new DirectoryInfo(folder);
+
+            foreach (FileInfo file in di.GetFiles())
+                file.Delete();
+            foreach (DirectoryInfo dir in di.GetDirectories())
+                dir.Delete(true);
+        }
+
+        /*************************************/
+
+        private static void AddFilesToList(Dictionary<string, List<string>> targetList, IEnumerable<string> filesToAdd)
         {
             foreach(string file in filesToAdd)
             {
@@ -78,5 +107,7 @@ namespace BHoM_UI
                     targetList[fileName].Add(file);
             }
         }
+
+        /*************************************/
     }
 }
