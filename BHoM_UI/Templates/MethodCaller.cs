@@ -11,42 +11,39 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using BH.Engine.Serialiser;
 
 namespace BH.UI.Templates
 {
-    public class MethodCaller
+    public class MethodCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
-        public virtual System.Drawing.Bitmap Icon_24x24 { get; protected set; }
-
-        public virtual Guid Id { get; protected set; }
-
-        public virtual int GroupIndex { get; } = 1;
-
-        public MethodInfo Method { get { return m_Method; } }
-
-        public DataAccessor DataAccessor { get { return m_DataAccessor; } }
+        public MethodBase Method { get; protected set; } = null;
 
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public MethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes)
+        public MethodCaller() : base()
         {
-            MethodInfo method = BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes);
-            CompileFunction();
         }
+        
+        /*************************************/
 
+        public MethodCaller(MethodBase method) : base()
+        {
+            SetItem(method);
+        }
 
         /*************************************/
 
-        public MethodCaller(MethodInfo method)
+        public MethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
         {
-            m_Method = method;
+            SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
             CompileFunction();
         }
 
@@ -55,68 +52,27 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public void SetDataAccessor(DataAccessor accessor)
+        public override bool SetItem(object method)
         {
-            m_DataAccessor = accessor;
+            Method = method as MethodBase;
+
+            SetName();
+            SetCategory();
+            SetDescription();
+
+            SetInputParams();
+            SetOutputParams();
+
+            CompileFunction();
             CompileInputGetters();
             CompileOutputSetters();
-        }
-
-
-        /*************************************/
-
-        public virtual bool Run()
-        {
-            BH.Engine.Reflection.Compute.ClearCurrentEvents();
-
-            // Get all the inputs
-            object[] inputs = new object[] { };
-            try
-            {
-                inputs = m_CompiledGetters.Select(x => x(m_DataAccessor)).ToArray();
-            }
-            catch (Exception e)
-            {
-                RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
-                return false;
-            }
-
-            // Execute the method
-            dynamic result = null;
-            try
-            {
-                result = Run(inputs);
-            }
-            catch (Exception e)
-            {
-                RecordError(e, "This component failed to run properly. Are you sure you have the correct type of inputs?\n" +
-                                 "Check their description for more details. Here is the error provided by the method:\n");
-                return false;
-            }
-
-            // Set the output
-            try
-            {
-                if (m_CompiledSetters.Count == 1)
-                    m_CompiledSetters.First()(m_DataAccessor, result);
-                else if (m_CompiledSetters.Count > 0)
-                {
-                    for (int i = 0; i < m_CompiledSetters.Count; i++)
-                        m_CompiledSetters[i](m_DataAccessor, BH.Engine.Reflection.Query.Item(result as dynamic, i));
-                }
-            }
-            catch (Exception e)
-            {
-                RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
-                return false;
-            }
 
             return true;
         }
 
         /*************************************/
 
-        public virtual object Run(object[] inputs)
+        public override object Run(object[] inputs)
         {
             if (m_CompiledFunc != null)
                 return m_CompiledFunc(inputs);
@@ -127,52 +83,78 @@ namespace BH.UI.Templates
             }    
         }
 
-        /*************************************/
-
-        public virtual string Name()
-        {
-            if (m_Method == null)
-                return "Undefined";
-            else
-                return m_Method.Name;
-        }
 
         /*************************************/
-
-        public virtual string Description()
-        {
-            if (m_Method == null)
-                return "";
-            else
-                return m_Method.Description();
-        }
-
+        /**** Private Methods             ****/
         /*************************************/
 
-        public virtual string Category()
+        protected virtual void CompileFunction()
         {
-            if (m_Method == null)
-                return "Undefined";
-            else
+            if (Method == null)
+                return;
+
+            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
+            Expression[] inputs = Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
+
+            if (Method is MethodInfo)
             {
-                string[] nameSpace = m_Method.DeclaringType.Namespace.Split('.');
+                MethodCallExpression methodExpression = Expression.Call(Method as MethodInfo, inputs);
+                m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
+            }
+            else if (Method is ConstructorInfo)
+            {
+                NewExpression constructorExpression = Expression.New(Method as ConstructorInfo, inputs);
+                m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
+            }
+            
+        }
+
+        /*************************************/
+        protected virtual void SetName()
+        {
+            if (Method == null)
+                return;
+
+            if (Method is MethodInfo)
+                Name = Method.Name;
+            else if (Method is ConstructorInfo)
+                Name = Method.DeclaringType.Name;
+            else
+                Name = "UnknownMethod";
+        }
+
+        /*************************************/
+
+        protected virtual void SetDescription()
+        {
+            if (Method != null)
+                Description = Method.Description();
+        }
+
+        /*************************************/
+
+        protected virtual void SetCategory()
+        {
+            if (Method != null)
+            {
+                string[] nameSpace = Method.DeclaringType.Namespace.Split('.');
                 if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
-                    return nameSpace[1];
+                    Description = nameSpace[1];
                 else
-                    return "Other";
+                    Description = "Other";
             }
         }
 
         /*************************************/
 
-        public virtual List<ParamInfo> InputParams()
+        public virtual void SetInputParams()
         {
-            if (m_Method == null)
-                return new List<ParamInfo>();
+            if (Method == null)
+                InputParams = new List<ParamInfo>();
             else
             {
-                Dictionary<string, string> descriptions = m_Method.InputDescriptions();
-                return m_Method.GetParameters().Select(x => new ParamInfo
+                Dictionary<string, string> descriptions = Method.InputDescriptions();
+                InputParams = Method.GetParameters().Select(x => new ParamInfo
                 {
                     Name = x.Name,
                     DataType = x.ParameterType,
@@ -186,19 +168,19 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        public virtual List<ParamInfo> OutputParams()
+        public virtual void SetOutputParams()
         {
-            if (m_Method == null)
-                return null;
+            if (Method == null)
+                OutputParams = new List<ParamInfo>();
             else
             {
-                if (m_Method.IsMultipleOutputs())
+                if (Method.IsMultipleOutputs())
                 {
-                    Type[] subTypes = m_Method.ReturnType.GenericTypeArguments;
-                    List<OutputAttribute> attributes = m_Method.OutputAttributes();
+                    Type[] subTypes = Method.OutputType().GenericTypeArguments;
+                    List<OutputAttribute> attributes = Method.OutputAttributes();
                     if (subTypes.Length == attributes.Count)
                     {
-                        return m_Method.OutputAttributes().Select((x, i) => new ParamInfo
+                        OutputParams = Method.OutputAttributes().Select((x, i) => new ParamInfo
                         {
                             Name = x.Name,
                             DataType = subTypes[i],
@@ -208,7 +190,7 @@ namespace BH.UI.Templates
                     }
                     else
                     {
-                        return subTypes.Select(x => new ParamInfo
+                        OutputParams = subTypes.Select(x => new ParamInfo
                         {
                             Name = x.UnderlyingType().Type.Name.Substring(0, 1),
                             DataType = x,
@@ -219,98 +201,19 @@ namespace BH.UI.Templates
                 }
                 else
                 {
-                    Type nameType = m_Method.ReturnType.UnderlyingType().Type;
-                    string name = m_Method.OutputName();
-                    return new List<ParamInfo> {
+                    Type nameType = Method.OutputType().UnderlyingType().Type;
+                    string name = Method.OutputName();
+                    OutputParams = new List<ParamInfo> {
                         new ParamInfo
                         {
                             Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
-                            DataType = m_Method.ReturnType,
-                            Description = m_Method.OutputDescription(),
+                            DataType = Method.OutputType(),
+                            Description = Method.OutputDescription(),
                             Kind = ParamKind.Output
                         }
                     };
                 }
-            }  
-        }
-
-        
-        /*************************************/
-        /**** Private Methods             ****/
-        /*************************************/
-
-        protected virtual void CompileFunction()
-        {
-            if (m_Method == null)
-                return;
-
-            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = m_Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
-            MethodCallExpression methodExpression = Expression.Call(m_Method, inputs);
-
-            m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
-        }
-
-        /*************************************/
-
-        private void CompileInputGetters()
-        {
-            List<ParamInfo> inputParams = InputParams();
-            m_CompiledGetters = new List<Func<DataAccessor, object>>();
-
-            for (int index = 0; index < inputParams.Count; index++)
-            {
-                ParamInfo param = inputParams[index];
-                UnderlyingType subType = param.DataType.UnderlyingType();
-                string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
-                MethodInfo method = m_DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
-
-                ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
-                ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1 };
-
-                Expression[] methodInputs = new Expression[] { Expression.Constant(index) };
-                MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, m_DataAccessor.GetType()), method, methodInputs);
-
-                Func<DataAccessor, object> func = Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
-                m_CompiledGetters.Add(func);
             }
-        }
-
-        /*************************************/
-
-        private void CompileOutputSetters()
-        {
-            List<ParamInfo> outputParams = OutputParams();
-            m_CompiledSetters = new List<Func<DataAccessor, object, bool>>();
-
-            for (int index = 0; index < outputParams.Count; index++)
-            {
-                ParamInfo param = outputParams[index];
-                UnderlyingType subType = param.DataType.UnderlyingType();
-                string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
-                MethodInfo method = m_DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
-
-                ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
-                ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
-                ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2 };
-
-                Expression[] methodInputs = new Expression[] { Expression.Constant(index), Expression.Convert(lambdaInput2, method.GetParameters()[1].ParameterType) };
-                MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, m_DataAccessor.GetType()), method, methodInputs);
-
-                Func<DataAccessor, object, bool> function = Expression.Lambda<Func<DataAccessor, object, bool>>(methodExpression, lambdaInputs).Compile();
-                m_CompiledSetters.Add(function);
-            }
-        }
-
-        /*******************************************/
-
-        private static void RecordError(Exception e, string message = "")
-        {
-            if (e.InnerException != null)
-                message += e.InnerException.Message;
-            else
-                message += e.Message;
-            BH.Engine.Reflection.Compute.RecordError(message);
         }
 
 
@@ -318,13 +221,7 @@ namespace BH.UI.Templates
         /**** Private Fields              ****/
         /*************************************/
 
-        protected MethodInfo m_Method = null;
         protected Func<object[], object> m_CompiledFunc = null;
-
-        private DataAccessor m_DataAccessor = null;
-
-        protected List<Func<DataAccessor, object>> m_CompiledGetters = new List<Func<DataAccessor, object>>();
-        protected List<Func<DataAccessor, object, bool>> m_CompiledSetters = new List<Func<DataAccessor, object, bool>>();
 
         /*************************************/
     }

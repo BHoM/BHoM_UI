@@ -20,9 +20,11 @@ namespace BH.UI.Components
 
 
         /*************************************/
-        /**** Constructors                ****/
+        /**** Override Methods            ****/
         /*************************************/
 
         public FromJsonCaller() : base(typeof(BH.Engine.Serialiser.Convert).GetMethod("FromJson")) {}
+
+        /*************************************/
     }
 }

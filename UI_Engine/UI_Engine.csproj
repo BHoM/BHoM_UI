@@ -36,6 +36,10 @@
     <Reference Include="BHoM_Engine">
       <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="DataStructure_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\DataStructure_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Reflection_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
@@ -53,14 +57,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\LoadAssemblies.cs" />
+    <Compile Include="Compute\Organise.cs" />
     <Compile Include="Create\MethodInfo.cs" />
+    <Compile Include="Modify\GroupMethodsByName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\IsToKeepInMenu.cs" />
     <Compile Include="Query\SubType.cs" />
     <Compile Include="Query\Depth.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Convert\" />
-    <Folder Include="Modify\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

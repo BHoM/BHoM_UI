@@ -22,6 +22,8 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("F27E94AD-6939-41AA-B680-094BA245F5C1");
 
+        public override string Category { get; protected set; } = "Adapter";
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -32,13 +34,6 @@ namespace BH.UI.Components
 
         /*************************************/
         /**** Public Method               ****/
-        /*************************************/
-
-        public override string Category()
-        {
-            return "Adapter";
-        }
-
         /*************************************/
 
         [Description("Push objects to the external software")]

@@ -15,8 +15,6 @@ namespace BH.Engine.UI
 
         public static MethodInfo MethodInfo(this Type declaringType, string methodName, List<Type> paramTypes)
         {
-            Compute.LoadAssemblies();
-
             MethodInfo foundMethod = null;
             List<MethodInfo> methods = declaringType.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly).ToList();
 

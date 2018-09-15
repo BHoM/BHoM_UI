@@ -18,6 +18,8 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("C0BCB684-80E5-4A67-BF0E-6B8C2C917312");
 
+        public override string Name { get; protected set; } = "GetProperty";
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -27,12 +29,5 @@ namespace BH.UI.Components
 
 
         /*************************************/
-        /**** Methods Override            ****/
-        /*************************************/
-
-        public override string Name()
-        {
-            return "GetProperty";
-        }
     }
 }

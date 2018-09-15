@@ -24,5 +24,8 @@ namespace BH.UI.Components
         /*************************************/
 
         public ToJsonCaller() : base(typeof(BH.Engine.Serialiser.Convert).GetMethod("ToJson")) {}
+
+
+        /*************************************/
     }
 }
