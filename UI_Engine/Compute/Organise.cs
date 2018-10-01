@@ -1,5 +1,5 @@
 ﻿using BH.Engine.DataStructure;
-using BH.Engine.Reflection;
+using BH.Engine.Reflection.Convert;
 using BH.oM.DataStructure;
 using BH.oM.Reflection;
 using System;
@@ -24,7 +24,7 @@ namespace BH.Engine.UI
             if (typeof(T) == typeof(Type))
                 return OrganiseTypes(items.Cast<Type>()) as Output<List<Tuple<string, T>>, Tree<T>>;
             else
-                return OrganiseOthers(items.Cast<object>()) as Output<List<Tuple<string, T>>, Tree<T>>;
+                return OrganiseOthers(items) as Output<List<Tuple<string, T>>, Tree<T>>;
         }
 
         public static Output<List<Tuple<string, MethodBase>>, Tree<MethodBase>> OrganiseMethods(this IEnumerable<MethodBase> methods)

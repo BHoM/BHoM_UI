@@ -50,13 +50,18 @@ namespace BH.UI.Templates
 
 
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Constructors                ****/
         /*************************************/
 
         public Caller()
         {
             Engine.UI.Compute.LoadAssemblies();
         }
+
+
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
 
         public virtual bool Run()
         {
@@ -113,8 +118,10 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        public abstract bool SetItem(object item);
-
+        public virtual bool SetItem(object item)
+        {
+            return true;
+        }
 
         /*************************************/
 

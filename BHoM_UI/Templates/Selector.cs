@@ -102,12 +102,12 @@ namespace BH.UI.Templates
         {
             try
             {
-                T item = (T)BH.Engine.Serialiser.Convert.FromJson(json);
+                SelectedItem = (T)BH.Engine.Serialiser.Convert.FromJson(json);
 
-                if (item != null)
+                if (SelectedItem != null)
                 {
                     if (ItemSelected != null)
-                        ItemSelected(this, item);
+                        ItemSelected(this, SelectedItem);
                     return true;
                 }
                 else

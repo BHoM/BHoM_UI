@@ -25,6 +25,8 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates an instance of a selected type of adapter query";
 
+        public override int GroupIndex { get; protected set; } = 2;
+
 
         /*************************************/
         /**** Constructors                ****/

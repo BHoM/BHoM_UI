@@ -21,6 +21,8 @@ namespace BH.UI.Components
 
         public override string Name { get; protected set; } = "SetProperty";
 
+        public override int GroupIndex { get; protected set; } = 2;
+
 
         /*************************************/
         /**** Constructors                ****/

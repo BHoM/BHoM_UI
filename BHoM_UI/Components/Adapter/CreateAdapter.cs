@@ -25,6 +25,8 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates an instance of a selected type of Adapter";
 
+        public override int GroupIndex { get; protected set; } = 2;
+
 
         /*************************************/
         /**** Constructors                ****/

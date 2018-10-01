@@ -46,6 +46,9 @@
     <Reference Include="Geometry_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Library_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="Reflection_Engine">
@@ -58,6 +61,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -75,6 +79,8 @@
     <Compile Include="Components\Adapter\Delete.cs" />
     <Compile Include="Components\Adapter\UpdateProperty.cs" />
     <Compile Include="Components\Adapter\Push.cs" />
+    <Compile Include="Components\Engine\Explode.cs" />
+    <Compile Include="Components\Engine\GetInfo.cs" />
     <Compile Include="Components\Engine\Query.cs" />
     <Compile Include="Components\Engine\Modify.cs" />
     <Compile Include="Components\Engine\Convert.cs" />
@@ -84,13 +90,19 @@
     <Compile Include="Components\Engine\FromJson.cs" />
     <Compile Include="Components\Engine\ToJson.cs" />
     <Compile Include="Components\oM\CreateCustom.cs" />
+    <Compile Include="Components\oM\CreateData.cs" />
+    <Compile Include="Components\oM\CreateEnum.cs" />
     <Compile Include="Components\oM\CreateType.cs" />
     <Compile Include="Components\oM\CreateObject.cs" />
+    <Compile Include="Components\oM\CreateDictionary.cs" />
+    <Compile Include="Global\GlobalSearch.cs" />
+    <Compile Include="Global\ISearchMenu.cs" />
+    <Compile Include="Global\SearchMenu_WinForm.cs" />
+    <Compile Include="Global\SearchMenu_Wpf.cs" />
     <Compile Include="Templates\DataAccessor.cs" />
-    <Compile Include="Templates\DynamicMethodCaller.cs" />
     <Compile Include="Templates\ISelector.cs" />
+    <Compile Include="Templates\MultiChoiceCaller.cs" />
     <Compile Include="Templates\Selector.cs" />
-    <Compile Include="Templates\DynamicMethodCaller_old.cs" />
     <Compile Include="Templates\Caller.cs" />
     <Compile Include="Templates\MethodCaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,6 +139,7 @@
     <Content Include="Properties\Resources\Explode.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
+    <Content Include="Properties\Resources\GetInfo.png" />
     <Content Include="Properties\Resources\Modify.png" />
     <Content Include="Properties\Resources\Move.png" />
     <Content Include="Properties\Resources\Pull.png" />

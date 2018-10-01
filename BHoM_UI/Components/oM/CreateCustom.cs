@@ -83,7 +83,12 @@ namespace BH.UI.Components
             m_ForcedType = item as Type;
 
             if (m_ForcedType != null)
+            {
+                Name = m_ForcedType.Name;
+                Description = m_ForcedType.Description();
                 InputParams = m_ForcedType.GetProperties().Select(x => GetParam(x)).ToList();
+            }
+                
 
             return true;
         }

@@ -30,6 +30,8 @@ namespace BH.UI.Templates
 
         public MethodCaller() : base()
         {
+            if (Method != null)
+                SetItem(Method);
         }
         
         /*************************************/
@@ -55,6 +57,8 @@ namespace BH.UI.Templates
         public override bool SetItem(object method)
         {
             Method = method as MethodBase;
+            if (Method == null)
+                return false;
 
             SetName();
             SetCategory();
@@ -135,13 +139,13 @@ namespace BH.UI.Templates
 
         protected virtual void SetCategory()
         {
-            if (Method != null)
+            if (Method != null && Category == "Undefined")
             {
                 string[] nameSpace = Method.DeclaringType.Namespace.Split('.');
                 if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
-                    Description = nameSpace[1];
+                    Category = nameSpace[1];
                 else
-                    Description = "Other";
+                    Category = "Other";
             }
         }
 

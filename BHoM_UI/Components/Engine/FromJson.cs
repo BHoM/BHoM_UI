@@ -18,6 +18,8 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("D5D0EC6D-394B-4781-AC33-C278E1A77009");
 
+        public override int GroupIndex { get; protected set; } = 3;
+
 
         /*************************************/
         /**** Override Methods            ****/
