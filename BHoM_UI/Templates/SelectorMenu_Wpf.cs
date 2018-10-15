@@ -37,7 +37,7 @@ namespace BH.UI.Templates
         protected override void AddSearchBox(ContextMenu menu, List<Tuple<string, T>> itemList)
         {
             m_ItemList = itemList;
-
+            menu.SizeChanged += Menu_SizeChanged;
             menu.Items.Add(new Separator());
 
             MenuItem label = CreateMenuItem("Search");
@@ -45,13 +45,12 @@ namespace BH.UI.Templates
             menu.Items.Add(label);
 
             m_Menu = menu;
-            m_SearchBox = new TextBox { Text = "" };
+            m_SearchBox = new TextBox { Text = "", HorizontalAlignment = HorizontalAlignment.Stretch };
             m_SearchBox.TextChanged += Search_TextChanged;
             menu.Items.Add(m_SearchBox);
 
             menu.Items.Add(new Separator());
         }
-
 
         /*************************************/
         /**** Protected Methods           ****/
@@ -117,6 +116,15 @@ namespace BH.UI.Templates
                 m_SearchResultItems.Add(methodItem);
                 m_ItemLinks[methodItem] = tree.Item2;
             }
+        }
+
+        /*************************************/
+
+        private void Menu_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // This is needed to force the TextBox to fill the menu (streatch property doesn't seem to do anything and I don't want to spend time finding out why)
+            if (Double.IsNaN(m_SearchBox.Width) || m_SearchBox.Width == 0)
+                m_SearchBox.Width = m_Menu.Items.OfType<FrameworkElement>().Where(x => x != null).Select(x => x.ActualWidth).Aggregate((a, b) => Math.Max(a, b));
         }
 
 
