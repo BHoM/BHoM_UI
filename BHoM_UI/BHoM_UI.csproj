@@ -96,7 +96,7 @@
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
-    <Compile Include="Global\ISearchMenu.cs" />
+    <Compile Include="Global\SearchMenu.cs" />
     <Compile Include="Global\SearchMenu_WinForm.cs" />
     <Compile Include="Global\SearchMenu_Wpf.cs" />
     <Compile Include="Templates\DataAccessor.cs" />
@@ -134,6 +134,7 @@
     <Content Include="Properties\Resources\Data.png" />
     <Content Include="Properties\Resources\Delete.png" />
     <Content Include="Properties\Resources\Dictionary.png" />
+    <Content Include="Properties\Resources\Empty.png" />
     <Content Include="Properties\Resources\Enum.png" />
     <Content Include="Properties\Resources\Execute.png" />
     <Content Include="Properties\Resources\Explode.png" />

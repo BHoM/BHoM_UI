@@ -151,7 +151,7 @@ namespace BH.UI.Global
         /**** Private Fields              ****/
         /*************************************/
 
-        private static ISearchMenu m_SearchMenu = null;
+        private static SearchMenu m_SearchMenu = null;
         private static bool m_Activated = false;
         private static Dictionary<string, MethodInfo> m_MethodList = new Dictionary<string, MethodInfo>();
 

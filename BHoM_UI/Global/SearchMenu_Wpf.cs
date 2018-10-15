@@ -1,37 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace BH.UI.Global
 {
-    public class SearchMenu_Wpf : ISearchMenu
+    public class SearchMenu_Wpf : SearchMenu
     {
-        /*************************************/
-        /**** Events                      ****/
-        /*************************************/
-
-        public event EventHandler<MethodInfo> ItemSelected;
-
-
-        /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
-
-        public Dictionary<string, MethodInfo> PossibleItems { get; set; }
-
-
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        public bool SetParent(object parent)
+        public override bool SetParent(object parent)
         {
             Panel container = parent as Panel;
             if (container == null)
@@ -52,7 +43,7 @@ namespace BH.UI.Global
                 grid.RowDefinitions.Add(new RowDefinition());
                 m_Popup.Child = grid;
 
-                m_SearchTextBox = new TextBox { MinWidth = 200, MinHeight = 24, MaxLines = 1 };
+                m_SearchTextBox = new TextBox { MinWidth = m_MinWidth, MinHeight = 24, MaxLines = 1 };
                 m_SearchTextBox.TextChanged += TextBox_TextChanged;
                 m_SearchTextBox.LostFocus += M_SearchTextBox_LostFocus;
                 m_SearchTextBox.Loaded += M_SearchTextBox_Loaded;
@@ -60,7 +51,7 @@ namespace BH.UI.Global
                 Grid.SetRow(m_SearchTextBox, 0);
                 grid.Children.Add(m_SearchTextBox);
 
-                m_SearchResultGrid = new Grid();
+                m_SearchResultGrid = new Grid { Background = System.Windows.Media.Brushes.White };
                 m_SearchResultGrid.ColumnDefinitions.Add(new ColumnDefinition());
                 Grid.SetRow(m_SearchResultGrid, 1);
                 grid.Children.Add(m_SearchResultGrid);
@@ -77,9 +68,8 @@ namespace BH.UI.Global
         }
 
         
-
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Private Methods             ****/
         /*************************************/
 
         private void M_SearchTextBox_Loaded(object sender, RoutedEventArgs e)
@@ -105,22 +95,37 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string text = m_SearchTextBox.Text.Trim().ToLower();
-            string[] parts = text.Split(' ');
-
-            List<KeyValuePair<string, MethodInfo>> hits = PossibleItems.Where(x => parts.All(y => x.Key.Substring(0, x.Key.IndexOf('(') + 1).ToLower().Contains(y))).Take(20).OrderBy(x => x.Key).ToList();
+            List<KeyValuePair<string, MethodInfo>> hits = GetHits(m_SearchTextBox.Text);
 
             m_SearchResultGrid.Children.Clear();
             m_SearchResultGrid.RowDefinitions.Clear();
+
+            if (hits.Count == 0)
+            {
+                Label label = new Label { Content = "No result found...", Background = System.Windows.Media.Brushes.White, Width = m_MinWidth, HorizontalContentAlignment = HorizontalAlignment.Center };
+                Grid.SetRow(label, 0);
+                m_SearchResultGrid.Children.Add(label);
+            }
+            else
+            {
+                m_SearchResultGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                m_SearchResultGrid.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
             for (int i = 0; i < hits.Count; i++)
             {
                 m_SearchResultGrid.RowDefinitions.Add(new RowDefinition());
+
+                System.Windows.Controls.Image icon = new System.Windows.Controls.Image { Source = GetImage(GetIcon(hits[i].Value)) };
+                Grid.SetRow(icon, i);
+                m_SearchResultGrid.Children.Add(icon);
+
                 Label label = new Label { Content = hits[i].Key, Background = System.Windows.Media.Brushes.White };
                 label.MouseUp += Label_MouseUp;
                 Grid.SetRow(label, i);
+                Grid.SetColumn(label, 1);
                 m_SearchResultGrid.Children.Add(label);
             }
-
         }
 
         /*************************************/
@@ -130,7 +135,33 @@ namespace BH.UI.Global
             string methodName = ((Label)sender).Content as string;
             m_Popup.IsOpen = false;
 
-            ItemSelected?.Invoke(this, PossibleItems[methodName]);
+            NotifySelection(methodName);
+        }
+
+        /*************************************/
+
+        [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool DeleteObject([In] IntPtr hObject);
+
+        public static ImageSource GetImage(Bitmap bmp)
+        {
+            if (m_ImageSources.ContainsKey(bmp))
+                return m_ImageSources[bmp];
+
+            var handle = bmp.GetHbitmap();
+            try
+            {
+                ImageSource newSource = Imaging.CreateBitmapSourceFromHBitmap(handle, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                m_ImageSources[bmp] = newSource;
+                DeleteObject(handle);
+                return newSource;
+            }
+            catch
+            {
+                DeleteObject(handle);
+                return null;
+            }
         }
 
 
@@ -138,9 +169,12 @@ namespace BH.UI.Global
         /**** Private Fields              ****/
         /*************************************/
 
+        private static int m_MinWidth = 200;
         private static Popup m_Popup = null;
         private static TextBox m_SearchTextBox = null;
         private static Grid m_SearchResultGrid = null;
+
+        private static Dictionary<Bitmap, ImageSource> m_ImageSources = new Dictionary<Bitmap, ImageSource>();
 
         /*************************************/
     }

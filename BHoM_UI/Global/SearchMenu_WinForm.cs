@@ -11,27 +11,13 @@ using System.Windows.Forms;
 
 namespace BH.UI.Global
 {
-    public class SearchMenu_WinForm : ISearchMenu
+    public class SearchMenu_WinForm : SearchMenu
     {
-        /*************************************/
-        /**** Events                      ****/
-        /*************************************/
-
-        public event EventHandler<MethodInfo> ItemSelected;
-
-
-        /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
-
-        public Dictionary<string, MethodInfo> PossibleItems { get; set; }
-
-
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        public bool SetParent(object parent)
+        public override bool SetParent(object parent)
         {
             ContainerControl container = parent as ContainerControl;
             if (container == null)
@@ -52,8 +38,6 @@ namespace BH.UI.Global
                     StartPosition = FormStartPosition.Manual,
                     ClientSize = new System.Drawing.Size(m_MinWidth, 22),
                     ControlBox = false,
-                    //AutoScaleDimensions = new SizeF(6f, 13f),
-                    //AutoScaleMode = AutoScaleMode.Font,
                     BackColor = Color.White
                 };
                 m_Popup.SuspendLayout();
@@ -103,12 +87,14 @@ namespace BH.UI.Global
             m_Popup.Show(container);
             m_SearchTextBox.Focus();
 
+            TextBox_TextChanged(null, null);
+
             return true;
         }
 
 
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Private Methods             ****/
         /*************************************/
 
         private void M_SearchTextBox_LostFocus(object sender, EventArgs e)
@@ -120,27 +106,45 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            string text = m_SearchTextBox.Text.Trim().ToLower();
-            string[] parts = text.Split(' ');
-
-            List<KeyValuePair<string, MethodInfo>> hits = PossibleItems.Where(x => parts.All(y => x.Key.Substring(0, x.Key.IndexOf('(') + 1).ToLower().Contains(y))).Take(20).OrderBy(x => x.Key).ToList();
+            List<KeyValuePair<string, MethodInfo>> hits = GetHits(m_SearchTextBox.Text);
 
             int yPos = 0;
             int maxWidth = m_MinWidth;
             m_SearchResultPanel.Controls.Clear();
             for (int i = 0; i < hits.Count; i++)
             {
-                Label label = new Label { Text = hits[i].Key, BackColor = Color.White, Location = new System.Drawing.Point(0, yPos) };
+                Label label = new Label
+                {
+                    Text = hits[i].Key,
+                    BackColor = Color.White,
+                    Cursor = Cursors.Hand,
+                    TextAlign = ContentAlignment.MiddleLeft,
+                };
                 label.Width = (int)Math.Ceiling(label.CreateGraphics().MeasureString(label.Text, label.Font).Width);
-                maxWidth = Math.Max(maxWidth, label.Width);
                 label.MouseUp += Label_MouseUp;
+
+                PictureBox icon = new PictureBox { Image = GetIcon(hits[i].Value), Height = label.Height, Width = label.Height };
+                label.Location = new System.Drawing.Point(icon.Width + 5, 0);
+
+                Panel row = new Panel { Width = label.Width + icon.Width, Height = label.Height, Location = new System.Drawing.Point(0, yPos) };
+                row.Controls.Add(icon);
+                row.Controls.Add(label);
+                maxWidth = Math.Max(maxWidth, row.Width);
+
+                m_SearchResultPanel.Controls.Add(row);
+                yPos += row.Height;
+            }
+
+            if (hits.Count == 0)
+            {
+                Label label = new Label { Text = "No result found...", BackColor = Color.White, Location = new System.Drawing.Point(0, yPos), Width = m_MinWidth, TextAlign = ContentAlignment.TopCenter };
                 m_SearchResultPanel.Controls.Add(label);
                 yPos += label.Height;
             }
             
             m_Popup.Width = maxWidth;
             m_SearchResultPanel.Size = new System.Drawing.Size(maxWidth, yPos);
-            m_Popup.Height = m_SearchTextBox.Height + m_SearchResultPanel.Height;
+            m_Popup.Height = m_SearchResultPanel.Bottom + 10;
         }
 
         /*************************************/
@@ -150,7 +154,7 @@ namespace BH.UI.Global
             string methodName = ((Label)sender).Text;
             m_Popup.Hide();
 
-            ItemSelected?.Invoke(this, PossibleItems[methodName]);
+            NotifySelection(methodName);
         }
 
 
