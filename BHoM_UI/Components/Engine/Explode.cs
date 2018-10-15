@@ -65,7 +65,8 @@ namespace BH.UI.Components
         {
             // Collect the properties types and names
             Dictionary<string, Type> properties = new Dictionary<string, Type>();
-            foreach (var group in objects.GroupBy(x => x.GetType()))
+            var groups = objects.GroupBy(x => x.GetType());
+            foreach (var group in groups)
             {
                 foreach(PropertyInfo prop in group.Key.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
                 {
@@ -76,6 +77,16 @@ namespace BH.UI.Components
                     }  
                     else
                         properties[prop.Name] = prop.PropertyType;
+                }
+            }
+
+            //Collect the custom data
+            foreach (var group in groups.Where(x => x.Key == typeof(CustomObject))) // Just remove the Where condition if you want all the object to expose directly their custom data
+            {
+                foreach (string propName in group.OfType<BHoMObject>().SelectMany(x => x.CustomData.Keys).Distinct())
+                {
+                    if (!properties.ContainsKey(propName))
+                        properties[propName] = typeof(object);
                 }
             }
 

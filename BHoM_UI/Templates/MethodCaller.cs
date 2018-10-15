@@ -114,6 +114,7 @@ namespace BH.UI.Templates
         }
 
         /*************************************/
+
         protected virtual void SetName()
         {
             if (Method == null)

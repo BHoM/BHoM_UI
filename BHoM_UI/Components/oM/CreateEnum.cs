@@ -53,6 +53,7 @@ namespace BH.UI.Components
         {
             Type enumType = item as Type;
             Choices = Enum.GetValues(enumType).Cast<object>().ToList();
+            Name = enumType.Name;
             return true;
         }
 
@@ -61,7 +62,10 @@ namespace BH.UI.Components
         public override List<string> GetChoiceNames()
         {
             Type enumType = Selector.GetSelectedItem() as Type;
-            return Enum.GetNames(enumType).ToList();
+            if (enumType != null)
+                return Enum.GetNames(enumType).ToList();
+            else
+                return new List<string>();
         }
 
         /*************************************/

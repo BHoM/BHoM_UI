@@ -24,6 +24,8 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Get information about the BHoM, a specific dll or method";
 
+        public override string Category { get; protected set; } = "Engine";
+
 
         /*************************************/
         /**** Constructors                ****/

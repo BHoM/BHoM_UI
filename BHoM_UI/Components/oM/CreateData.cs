@@ -57,7 +57,8 @@ namespace BH.UI.Components
             if (fileName == null)
                 return false;
 
-            Choices = BH.Engine.Library.Query.Library(fileName).ToList<object>(); ;
+            Choices = BH.Engine.Library.Query.Library(fileName).ToList<object>();
+            Name = fileName.Split(new char[] { '\\' }).Last();
             return true;
         }
 

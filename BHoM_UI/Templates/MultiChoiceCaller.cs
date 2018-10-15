@@ -44,12 +44,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        public override bool SetItem(object item)
-        {
-            Type enumType = item as Type;
-            Choices = Enum.GetValues(enumType).Cast<object>().ToList();
-            return true;
-        }
+        public override abstract bool SetItem(object item);
 
         /*************************************/
 

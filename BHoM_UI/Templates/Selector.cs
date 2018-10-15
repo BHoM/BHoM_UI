@@ -87,6 +87,8 @@ namespace BH.UI.Templates
             {
                 if (SelectedItem == null)
                     return "";
+                else if (typeof(T) == typeof(string))
+                    return SelectedItem.ToString();
                 else
                     return SelectedItem.ToJson();
             }
@@ -100,9 +102,15 @@ namespace BH.UI.Templates
 
         public virtual bool Read(string json)
         {
+            if (json == "")
+                return true;
+
             try
             {
-                SelectedItem = (T)BH.Engine.Serialiser.Convert.FromJson(json);
+                if (typeof(T) == typeof(string))
+                    SelectedItem = (T)(object)json;
+                else
+                    SelectedItem = (T)BH.Engine.Serialiser.Convert.FromJson(json);
 
                 if (SelectedItem != null)
                 {
