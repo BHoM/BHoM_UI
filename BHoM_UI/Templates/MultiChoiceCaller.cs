@@ -44,10 +44,6 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        public override abstract bool SetItem(object item);
-
-        /*************************************/
-
         public abstract List<string> GetChoiceNames();
 
         /*************************************/

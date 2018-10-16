@@ -32,6 +32,18 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates a BhoM object from the reference datasets";
 
+        public string FileName
+        {
+            get
+            {
+                return SelectedItem as string;
+            }
+            protected set
+            {
+                SelectedItem = value;
+            }
+        }
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -53,12 +65,14 @@ namespace BH.UI.Components
 
         public override bool SetItem(object item)
         {
-            string fileName = item as string;
-            if (fileName == null)
+            if (!base.SetItem(item))
                 return false;
 
-            Choices = BH.Engine.Library.Query.Library(fileName).ToList<object>();
-            Name = fileName.Split(new char[] { '\\' }).Last();
+            if (FileName == null)
+                return false;
+
+            Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
+            Name = FileName.Split(new char[] { '\\' }).Last();
             return true;
         }
 

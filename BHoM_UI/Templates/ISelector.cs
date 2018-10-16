@@ -14,11 +14,5 @@ namespace BH.UI.Templates
         void AddToMenu(ToolStripDropDown menu);
 
         void AddToMenu(System.Windows.Controls.ContextMenu menu);
-
-        string Write();
-
-        bool Read(string json);
-
-        object GetSelectedItem();
     }
 }

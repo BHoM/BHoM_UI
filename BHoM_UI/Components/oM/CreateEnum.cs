@@ -31,6 +31,18 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates a selected enum value";
 
+        public Type EnumType
+        {
+            get
+            {
+                return SelectedItem as Type;
+            }
+            protected set
+            {
+                SelectedItem = value;
+            }
+        }
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -51,9 +63,11 @@ namespace BH.UI.Components
 
         public override bool SetItem(object item)
         {
-            Type enumType = item as Type;
-            Choices = Enum.GetValues(enumType).Cast<object>().ToList();
-            Name = enumType.Name;
+            if (!base.SetItem(item))
+                return false;
+
+            Choices = Enum.GetValues(EnumType).Cast<object>().ToList();
+            Name = EnumType.Name;
             return true;
         }
 
@@ -61,9 +75,8 @@ namespace BH.UI.Components
 
         public override List<string> GetChoiceNames()
         {
-            Type enumType = Selector.GetSelectedItem() as Type;
-            if (enumType != null)
-                return Enum.GetNames(enumType).ToList();
+            if (EnumType != null)
+                return Enum.GetNames(EnumType).ToList();
             else
                 return new List<string>();
         }

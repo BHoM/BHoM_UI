@@ -40,6 +40,7 @@ namespace BH.UI.Global
             ItemSelected?.Invoke(this, PossibleItems[methodName]);
         }
 
+        /*************************************/
 
         protected List<KeyValuePair<string, MethodInfo>> GetHits(string search)
         {

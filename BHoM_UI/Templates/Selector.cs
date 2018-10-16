@@ -27,13 +27,6 @@ namespace BH.UI.Templates
 
 
         /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
-
-        public T SelectedItem { get; set; } = default(T);
-
-
-        /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
@@ -61,8 +54,7 @@ namespace BH.UI.Templates
                 m_Menu_WinForm.ItemSelected += M_Menu_ItemSelected;
             }
 
-            if (SelectedItem == null)
-                m_Menu_WinForm.FillMenu(menu);
+            m_Menu_WinForm.FillMenu(menu);
         }
 
         /*************************************/
@@ -75,64 +67,7 @@ namespace BH.UI.Templates
                 m_Menu_Wpf.ItemSelected += M_Menu_ItemSelected;
             }
 
-            if (SelectedItem == null)
-                m_Menu_Wpf.FillMenu(menu);
-        }
-
-        /*************************************/
-
-        public virtual string Write()
-        {
-            try
-            {
-                if (SelectedItem == null)
-                    return "";
-                else if (typeof(T) == typeof(string))
-                    return SelectedItem.ToString();
-                else
-                    return SelectedItem.ToJson();
-            }
-            catch
-            {
-                return "";
-            }
-        }
-
-        /*************************************/
-
-        public virtual bool Read(string json)
-        {
-            if (json == "")
-                return true;
-
-            try
-            {
-                if (typeof(T) == typeof(string))
-                    SelectedItem = (T)(object)json;
-                else
-                    SelectedItem = (T)BH.Engine.Serialiser.Convert.FromJson(json);
-
-                if (SelectedItem != null)
-                {
-                    if (ItemSelected != null)
-                        ItemSelected(this, SelectedItem);
-                    return true;
-                }
-                else
-                    return false;
-            }
-            catch
-            {
-                return false;
-            }
-                
-        }
-
-        /*************************************/
-
-        public object GetSelectedItem()
-        {
-            return SelectedItem;
+            m_Menu_Wpf.FillMenu(menu);
         }
 
 
@@ -142,9 +77,7 @@ namespace BH.UI.Templates
 
         private void M_Menu_ItemSelected(object sender, T e)
         {
-            SelectedItem = e;
-            if (ItemSelected != null)
-                ItemSelected(this, e);
+            ItemSelected?.Invoke(this, e);
         }
 
 

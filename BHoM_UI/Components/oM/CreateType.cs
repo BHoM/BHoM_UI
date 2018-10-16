@@ -18,13 +18,6 @@ namespace BH.UI.Components
     public class CreateTypeCaller : Templates.Caller
     {
         /*************************************/
-        /**** Events                      ****/
-        /*************************************/
-
-        //public event EventHandler<Type> TypeSelected;
-
-
-        /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
@@ -37,6 +30,18 @@ namespace BH.UI.Components
         public override string Name { get; protected set; } = "CreateType";
 
         public override string Description { get; protected set; } = "Creates a selected type definition";
+
+        public Type SelectedType
+        {
+            get
+            {
+                return SelectedItem as Type;
+            }
+            protected set
+            {
+                SelectedItem = value;
+            }
+        }
 
 
         /*************************************/
@@ -60,14 +65,7 @@ namespace BH.UI.Components
 
         public override object Run(object[] inputs)
         {
-            return Selector.GetSelectedItem() as Type;
-        }
-
-        /*************************************/
-
-        public override bool SetItem(object item)
-        {
-            return true;
+            return SelectedType;
         }
 
         /*************************************/

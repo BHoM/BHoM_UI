@@ -28,6 +28,17 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates an instance of a selected type of BHoM object by manually defining its properties (default type is CustomObject)";
 
+        public Type ForcedType
+        {
+            get
+            {
+                return SelectedItem as Type;
+            }
+            protected set
+            {
+                SelectedItem = value;
+            }
+        }
 
         /*************************************/
         /**** Constructors                ****/
@@ -62,8 +73,8 @@ namespace BH.UI.Components
         public override object Run(object[] inputs)
         {
             IObject obj = new CustomObject();
-            if (m_ForcedType != null)
-                obj = Activator.CreateInstance(m_ForcedType) as IObject;
+            if (ForcedType != null)
+                obj = Activator.CreateInstance(ForcedType) as IObject;
             if (obj == null)
                 obj = new CustomObject();
 
@@ -80,13 +91,14 @@ namespace BH.UI.Components
 
         public override bool SetItem(object item)
         {
-            m_ForcedType = item as Type;
+            if (!base.SetItem(item))
+                return false;
 
-            if (m_ForcedType != null)
+            if (ForcedType != null)
             {
-                Name = m_ForcedType.Name;
-                Description = m_ForcedType.Description();
-                InputParams = m_ForcedType.GetProperties().Select(x => GetParam(x)).ToList();
+                Name = ForcedType.Name;
+                Description = ForcedType.Description();
+                InputParams = ForcedType.GetProperties().Select(x => GetParam(x)).ToList();
             }
                 
 
@@ -101,9 +113,9 @@ namespace BH.UI.Components
         public oM.UI.ParamInfo GetParam(string name)
         {
             Type type = typeof(object);
-            if (m_ForcedType != null)
+            if (ForcedType != null)
             {
-                PropertyInfo info = m_ForcedType.GetProperty(name);
+                PropertyInfo info = ForcedType.GetProperty(name);
                 if (info != null)
                     type = info.PropertyType;
             }
@@ -129,12 +141,6 @@ namespace BH.UI.Components
             };
         }
 
-
-        /*************************************/
-        /**** Private Fields              ****/
-        /*************************************/
-
-        Type m_ForcedType = null;
 
         /*************************************/
     }

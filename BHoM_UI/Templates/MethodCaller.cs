@@ -21,7 +21,17 @@ namespace BH.UI.Templates
         /**** Properties                  ****/
         /*************************************/
 
-        public MethodBase Method { get; protected set; } = null;
+        public MethodBase Method
+        {
+            get
+            {
+                return SelectedItem as MethodBase;
+            }
+            protected set
+            {
+                SelectedItem = value;
+            }
+        }
 
 
         /*************************************/
@@ -56,7 +66,9 @@ namespace BH.UI.Templates
 
         public override bool SetItem(object method)
         {
-            Method = method as MethodBase;
+            if (!base.SetItem(method))
+                return false;
+
             if (Method == null)
                 return false;
 

@@ -8,6 +8,9 @@ using System.Reflection;
 using BH.oM.UI;
 using BH.oM.Base;
 using BH.Engine.Reflection;
+using System.Collections;
+using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace BH.UI.Components
 {
@@ -36,7 +39,7 @@ namespace BH.UI.Components
 
         public ExplodeCaller() : base()
         {
-            InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Input, Name = "object", Description = "Object to explode" } };
+            InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(object), Kind = ParamKind.Input, Name = "object", Description = "Object to explode" } };
             OutputParams = new List<ParamInfo>() { };
         }
 
@@ -59,6 +62,9 @@ namespace BH.UI.Components
             }
         }
 
+
+        /*************************************/
+        /**** Public Methods              ****/
         /*************************************/
 
         public bool CollectOutputTypes(List<object> objects)
@@ -68,26 +74,50 @@ namespace BH.UI.Components
             var groups = objects.GroupBy(x => x.GetType());
             foreach (var group in groups)
             {
-                foreach(PropertyInfo prop in group.Key.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
+                if (typeof(IDictionary).IsAssignableFrom(group.Key))
                 {
-                    if (properties.ContainsKey(prop.Name) && properties[prop.Name] != prop.PropertyType)
+                    foreach (IDictionary dic in group)
                     {
-                        BH.Engine.Reflection.Compute.RecordError("Some object have properties with the same name but with different property types.");
-                        return false;
-                    }  
-                    else
-                        properties[prop.Name] = prop.PropertyType;
-                }
-            }
+                        Type[] types = dic.GetType().GetGenericArguments();
+                        if (types.Length != 2)
+                            continue;
 
-            //Collect the custom data
-            foreach (var group in groups.Where(x => x.Key == typeof(CustomObject))) // Just remove the Where condition if you want all the object to expose directly their custom data
-            {
-                foreach (string propName in group.OfType<BHoMObject>().SelectMany(x => x.CustomData.Keys).Distinct())
-                {
-                    if (!properties.ContainsKey(propName))
-                        properties[propName] = typeof(object);
+                        if (types[0] == typeof(string))
+                        {
+                            foreach (string key in dic.Keys.OfType<string>())
+                            {
+                                if (!properties.ContainsKey(key))
+                                    properties[key] = dic[key].GetType();
+                            }
+                        }
+                        else
+                        {
+                            properties["Keys"] = typeof(List<>).MakeGenericType(new Type[] { types[0] });
+                            properties["Values"] = typeof(List<>).MakeGenericType(new Type[] { types[1] });
+                        }
+                    }
                 }
+                else if (group.Key == typeof(CustomObject))
+                {
+                    foreach (string propName in group.Cast<BHoMObject>().SelectMany(x => x.CustomData.Keys).Distinct())
+                    {
+                        if (!properties.ContainsKey(propName))
+                            properties[propName] = typeof(object);
+                    }
+                }
+                else
+                {
+                    foreach (PropertyInfo prop in group.Key.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
+                    {
+                        if (properties.ContainsKey(prop.Name) && properties[prop.Name] != prop.PropertyType)
+                        {
+                            BH.Engine.Reflection.Compute.RecordError("Some object have properties with the same name but with different property types.");
+                            return false;
+                        }
+                        else
+                            properties[prop.Name] = prop.PropertyType;
+                    }
+                }  
             }
 
             // Create the new output parameters

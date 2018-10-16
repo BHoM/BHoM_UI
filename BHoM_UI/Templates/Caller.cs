@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using BH.Engine.Serialiser;
+using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
@@ -47,6 +48,8 @@ namespace BH.UI.Templates
         public List<ParamInfo> InputParams { get; protected set; } = new List<ParamInfo>();
 
         public List<ParamInfo> OutputParams { get; protected set; } = new List<ParamInfo>();
+
+        public object SelectedItem { get; set; } = null;
 
 
         /*************************************/
@@ -120,6 +123,7 @@ namespace BH.UI.Templates
 
         public virtual bool SetItem(object item)
         {
+            SelectedItem = item;
             return true;
         }
 
@@ -130,6 +134,66 @@ namespace BH.UI.Templates
             DataAccessor = accessor;
             CompileInputGetters();
             CompileOutputSetters();
+        }
+
+        /*************************************/
+
+        public virtual void AddToMenu(ToolStripDropDown menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public virtual void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public virtual string Write()
+        {
+            try
+            {
+                if (SelectedItem == null)
+                    return "";
+                else if (SelectedItem is string)
+                    return SelectedItem.ToString();
+                else
+                    return SelectedItem.ToJson();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        /*************************************/
+
+        public virtual bool Read(string json)
+        {
+            if (json == "")
+                return true;
+
+            try
+            {
+                if (SelectedItem is string)
+                    SetItem(json);
+                else
+                    SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
+
+                if (SelectedItem != null)
+                    ItemSelected?.Invoke(this, SelectedItem);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 
@@ -206,17 +270,12 @@ namespace BH.UI.Templates
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
             Selector = new Selector<T>(items, Name);
-            Selector.ItemSelected += Selector_ItemSelected;
-        }
-
-        /*******************************************/
-
-        protected void Selector_ItemSelected(object sender, object e)
-        {
-            SetItem(e);
-
-            if (ItemSelected != null)
-                ItemSelected(this, e);
+            Selector.ItemSelected += (sender, e) =>
+            {
+                SetItem(e);
+                if (SelectedItem != null)
+                    ItemSelected?.Invoke(this, SelectedItem);
+            };
         }
 
 

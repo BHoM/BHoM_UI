@@ -141,7 +141,6 @@ namespace BH.UI.Global
         /*************************************/
 
         [DllImport("gdi32.dll", EntryPoint = "DeleteObject")]
-        //[return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool DeleteObject([In] IntPtr hObject);
 
         public static ImageSource GetImage(Bitmap bmp)

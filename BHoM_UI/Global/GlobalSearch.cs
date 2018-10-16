@@ -43,8 +43,6 @@ namespace BH.UI.Global
                 }
             };
 
-            EventManager.RegisterClassHandler(typeof(Window), Keyboard.KeyDownEvent, new KeyEventHandler(OnKeyPressed), true);
-
             return Activate();
         }
 
@@ -80,39 +78,15 @@ namespace BH.UI.Global
                 m_MethodList = new Dictionary<string, MethodInfo>();
                 foreach (MethodInfo method in BH.Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated()))
                 {
-                    string key = method.DeclaringType.Name + '.' + method.ToText(true);
+                    string key =  method.ToText(true);
                     m_MethodList[key] = method;
                 }
 
-                //EventManager.RegisterClassHandler(typeof(Window), Keyboard.KeyDownEvent, new KeyEventHandler(OnKeyPressed), true);
                 m_Activated = true;
             }
 
             return true;
         }
-
-        /*************************************/
-
-        private static void OnKeyPressed(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-            {
-                Console.WriteLine("hey");
-            }
-        }
-
-        /*************************************/
-
-        //private static void CreateMenu(ContentControl parent)
-        //{
-        //    if (m_SearchMenu == null)
-        //    {
-        //        m_SearchMenu = new SearchMenu_Wpf { PossibleItems = m_MethodList };
-        //        m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
-        //    }
-
-        //    m_SearchMenu.SetParent(parent.Content);
-        //}
 
         /*************************************/
 
