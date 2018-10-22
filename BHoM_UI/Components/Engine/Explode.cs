@@ -62,6 +62,31 @@ namespace BH.UI.Components
             }
         }
 
+        /*************************************/
+
+        protected override bool PushOutputs(object result)
+        {
+            try
+            {
+                List<object> data = result as List<object>;
+                if (m_CompiledSetters.Count != data.Count)
+                {
+                    RecordError(new Exception(""), "The number of outputs doesn't correspond to the data to push out.");
+                    return false;
+                }
+
+                for (int i = 0; i < m_CompiledSetters.Count; i++)
+                    m_CompiledSetters[i](DataAccessor, data[i]);
+            }
+            catch (Exception e)
+            {
+                RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
+                return false;
+            }
+
+            return true;
+        }
+
 
         /*************************************/
         /**** Public Methods              ****/

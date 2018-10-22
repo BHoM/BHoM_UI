@@ -56,7 +56,6 @@ namespace BH.UI.Templates
         public MethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
         {
             SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
-            CompileFunction();
         }
 
 
@@ -71,6 +70,15 @@ namespace BH.UI.Templates
 
             if (Method == null)
                 return false;
+
+            if (Method.ContainsGenericParameters)
+            {
+                if (Method is MethodInfo)
+                {
+                    Type[] types = Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
+                    Method = ((MethodInfo)Method).MakeGenericMethod(types);
+                }
+            }
 
             SetName();
             SetCategory();
@@ -123,6 +131,27 @@ namespace BH.UI.Templates
                 m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
             }
             
+        }
+
+        /*************************************/
+
+        protected Type GetConstructedType(Type type)
+        {
+            if (type.IsGenericParameter)
+            {
+                Type[] constrains = type.GetGenericParameterConstraints();
+                if (constrains.Length == 0)
+                    return typeof(object);
+                else
+                    return constrains[0];
+            }
+            else if (type.ContainsGenericParameters)
+            {
+                Type[] constrains = type.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
+                return type.GetGenericTypeDefinition().MakeGenericType(constrains);
+            }
+            else
+                return type;
         }
 
         /*************************************/

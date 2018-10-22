@@ -71,19 +71,12 @@ namespace BH.UI.Templates
             BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
             // Get all the inputs
-            object[] inputs = new object[] { };
-            try
-            {
-                inputs = m_CompiledGetters.Select(x => x(DataAccessor)).ToArray();
-            }
-            catch (Exception e)
-            {
-                RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+            object[] inputs = CollectInputs();
+            if (inputs == null)
                 return false;
-            }
 
             // Execute the method
-            dynamic result = null;
+            object result = null;
             try
             {
                 result = Run(inputs);
@@ -96,23 +89,7 @@ namespace BH.UI.Templates
             }
 
             // Set the output
-            try
-            {
-                if (m_CompiledSetters.Count == 1)
-                    m_CompiledSetters.First()(DataAccessor, result);
-                else if (m_CompiledSetters.Count > 0)
-                {
-                    for (int i = 0; i < m_CompiledSetters.Count; i++)
-                        m_CompiledSetters[i](DataAccessor, BH.Engine.Reflection.Query.Item(result as dynamic, i));
-                }
-            }
-            catch (Exception e)
-            {
-                RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
-                return false;
-            }
-
-            return true;
+            return PushOutputs(result);
         }
 
         /*************************************/
@@ -201,6 +178,47 @@ namespace BH.UI.Templates
         /**** Private Methods             ****/
         /*************************************/
 
+        protected virtual object[] CollectInputs()
+        {
+            object[] inputs = new object[] { };
+            try
+            {
+                inputs = m_CompiledGetters.Select(x => x(DataAccessor)).ToArray();
+            }
+            catch (Exception e)
+            {
+                RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                inputs = null;
+            }
+
+            return inputs;
+        }
+
+        /*************************************/
+
+        protected virtual bool PushOutputs(object result)
+        {
+            try
+            {
+                if (m_CompiledSetters.Count == 1)   // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
+                    m_CompiledSetters.First()(DataAccessor, result);
+                else if (m_CompiledSetters.Count > 0)
+                {
+                    for (int i = 0; i < m_CompiledSetters.Count; i++)
+                        m_CompiledSetters[i](DataAccessor, BH.Engine.Reflection.Query.Item(result as dynamic, i));
+                }
+            }
+            catch (Exception e)
+            {
+                RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
+                return false;
+            }
+
+            return true;
+        }
+
+        /*************************************/
+
         protected virtual void CompileInputGetters()
         {
             if (DataAccessor == null)
@@ -211,17 +229,7 @@ namespace BH.UI.Templates
             for (int index = 0; index < InputParams.Count; index++)
             {
                 ParamInfo param = InputParams[index];
-                UnderlyingType subType = param.DataType.UnderlyingType();
-                string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
-                MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
-
-                ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
-                ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1 };
-
-                Expression[] methodInputs = new Expression[] { Expression.Constant(index) };
-                MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
-
-                Func<DataAccessor, object> func = Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
+                Func<DataAccessor, object> func = CreateInputAccessor(param.DataType, index);
                 m_CompiledGetters.Add(func);
             }
         }
@@ -252,6 +260,23 @@ namespace BH.UI.Templates
                 Func<DataAccessor, object, bool> function = Expression.Lambda<Func<DataAccessor, object, bool>>(methodExpression, lambdaInputs).Compile();
                 m_CompiledSetters.Add(function);
             }
+        }
+
+        /*******************************************/
+
+        protected virtual Func<DataAccessor, object> CreateInputAccessor(Type dataType, int index)
+        {
+            UnderlyingType subType = dataType.UnderlyingType();
+            string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
+            MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
+
+            ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
+            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1 };
+
+            Expression[] methodInputs = new Expression[] { Expression.Constant(index) };
+            MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
+
+            return Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
         }
 
         /*******************************************/
