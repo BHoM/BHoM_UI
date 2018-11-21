@@ -57,10 +57,29 @@ namespace BHoM_UI
             // Add all the Toolkit dlls to the list
             foreach (string path in Directory.GetDirectories(sourceFolder).Where(x => x.EndsWith(@"_Toolkit")))
             {
-                if (Directory.Exists(Path.Combine(path, "Build")))
+                string buildPath = Path.Combine(path, "Build");
+                if (Directory.Exists(buildPath))
                 {
-                    AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(path, "Build"), "*.dll"));
+                    AddFilesToList(filesToMove, Directory.GetFiles(buildPath, "*.dll"));
                     Console.WriteLine("Adding files from " + path);
+
+                    try
+                    {
+                        foreach (string folderPath in Directory.GetDirectories(buildPath))
+                        {
+                            foreach (string file in Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories))
+                            {
+                                string target = file.Replace(buildPath, targetFolder);
+                                Directory.CreateDirectory(Path.GetDirectoryName(target));
+                                File.Copy(file, target, true);
+                            }
+                                
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Failed to copy sub-folders from " + path);
+                    }
                 }
                 else
                 {
@@ -76,7 +95,6 @@ namespace BHoM_UI
                 File.Copy(file, Path.Combine(targetFolder, kvp.Key), true);
             }
 
-            Directory.GetDirectories(sourceFolder);
         }
 
 

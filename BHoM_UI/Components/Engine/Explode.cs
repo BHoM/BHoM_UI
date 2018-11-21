@@ -58,6 +58,9 @@ namespace BH.UI.Components
             else
             {
                 object obj = inputs[0];
+                if (obj == null)
+                    return Enumerable.Repeat<object>(null, m_CompiledSetters.Count).ToList();
+
                 return OutputParams.Select(x => obj.PropertyValue(x.Name)).ToList();
             }
         }
