@@ -30,8 +30,11 @@ namespace BHoM_UI
                 
 
             // Create the list of files to move starting with the BHoM.dll 
-            Dictionary<string, List<string>> filesToMove = new Dictionary<string, List<string>> { { "BHoM.dll", new List<string> { Path.Combine(sourceFolder, @"BHoM\Build\BHoM.dll") } } };
-            Console.WriteLine("Adding BHoM.dll");
+            Dictionary<string, List<string>> filesToMove = new Dictionary<string, List<string>>();
+
+            // Add all the oM dlls to the list
+            AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM\Build"), "*.dll"));
+            Console.WriteLine("Adding files from BHoM");
 
             // Add all the Engine dlls to the list
             AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_Engine\Build"), "*.dll"));
