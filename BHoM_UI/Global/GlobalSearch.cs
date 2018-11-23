@@ -67,6 +67,16 @@ namespace BH.UI.Global
         }
 
 
+        public static bool Attach(SearchMenu menu)
+        {
+            if (Activate()) {
+                menu.PossibleItems = m_MethodList;
+                menu.ItemSelected += M_SearchMenu_ItemSelected;
+                return true;
+            }
+            return false;
+        }
+
         /*************************************/
         /**** Private Methods             ****/
         /*************************************/
