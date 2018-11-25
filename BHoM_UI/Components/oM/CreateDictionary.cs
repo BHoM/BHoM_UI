@@ -1,0 +1,68 @@
+﻿using BH.Adapter;
+using BH.oM.Base;
+using BH.oM.DataManipulation.Queries;
+using BH.oM.Reflection.Attributes;
+using BH.UI.Templates;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BH.UI.Components
+{
+    public class CreateDictionaryCaller : MethodCaller
+    {
+        /*************************************/
+        /**** Properties                  ****/
+        /*************************************/
+
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.Dictionary;
+
+        public override Guid Id { get; protected set; } = new Guid("2DF2A7FA-55D5-4BA6-8A1C-19BF2C555B04");
+
+        public override string Category { get; protected set; } = "oM";
+
+
+        /*************************************/
+        /**** Constructors                ****/
+        /*************************************/
+
+        public CreateDictionaryCaller() : base(typeof(CreateDictionaryCaller).GetMethod("CreateDictionary")) { }
+
+
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
+
+        [Description("Create a dictionary")]
+        [Input("keys", "List of keys for the dictionary")]
+        [Input("values", "List of values for the dictionary")]
+        [Input("keyType", "Type of the keys (default: auto detect)")]
+        [Input("valueType", "Type of the values (default: auto detect)")]
+        [Output("Resulting dictionary")]
+        public static IDictionary CreateDictionary(List<object> keys, List<object> values, Type keyType = null, Type valueType = null)
+        {
+            if (keys.Count > 0 && values.Count == keys.Count)
+            {
+                if (keyType == null)
+                    keyType = keys.First().GetType();
+                if (valueType == null)
+                    valueType = values.First().GetType();
+
+                Type dicType = typeof(Dictionary<,>).MakeGenericType(new Type[] { keyType, valueType });
+                IDictionary dic = (IDictionary)Activator.CreateInstance(dicType);
+                for (int i = 0; i < keys.Count; i++)
+                    dic.Add(keys[i], values[i]);
+
+                return dic;
+            }
+            else
+                return new Dictionary<string, object>();
+        }
+
+        /*************************************/
+    }
+}
