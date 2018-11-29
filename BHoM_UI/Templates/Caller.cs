@@ -24,6 +24,8 @@ namespace BH.UI.Templates
 
         public event EventHandler<object> ItemSelected;
 
+        public event EventHandler SolutionExpired;
+
 
         /*************************************/
         /**** Properties                  ****/
@@ -301,6 +303,14 @@ namespace BH.UI.Templates
                 if (SelectedItem != null)
                     ItemSelected?.Invoke(this, SelectedItem);
             };
+        }
+
+        /*************************************/
+
+        protected void OnDataUpdated()
+        {
+            if (SolutionExpired != null)
+                SolutionExpired?.Invoke(this, new EventArgs());
         }
 
 
