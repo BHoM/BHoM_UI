@@ -33,6 +33,27 @@ namespace BH.UI.Components
 
 
         /*************************************/
+        /**** Override Method             ****/
+        /*************************************/
+
+        public override object Run(object[] inputs)
+        {
+            if (inputs.Length > 0)
+            {
+                BHoMAdapter adapter = inputs[0] as BHoMAdapter;
+                Guid id = adapter.BHoM_Guid;
+                if (id != m_AdapterId)
+                {
+                    m_AdapterId = id;
+                    adapter.DataUpdated += (sender, e) => OnDataUpdated();
+                }
+            }
+
+            return base.Run(inputs);
+        }
+
+
+        /*************************************/
         /**** Public Method               ****/
         /*************************************/
 
@@ -52,6 +73,12 @@ namespace BH.UI.Components
             else
                 return new List<object>();
         }
+
+        /*************************************/
+        /**** Public Method               ****/
+        /*************************************/
+
+        private Guid m_AdapterId;
 
         /*************************************/
     }
