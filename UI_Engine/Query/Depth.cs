@@ -10,9 +10,15 @@ namespace BH.Engine.UI
 {
     public static partial class Query
     {
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
+
         public static int Depth(this ParamInfo info)
         {
             return info.DataType.UnderlyingType().Depth;
         }
+
+        /*************************************/
     }
 }
