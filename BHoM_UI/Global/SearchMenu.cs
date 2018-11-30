@@ -66,7 +66,7 @@ namespace BH.UI.Global
             if (text.Length > 0)
                 hits = PossibleItems.Select(x => new Tuple<SearchItem, double>(x, GetWeight(x, parts)))
                                     .Where(x => x.Item2 > 0)
-                                    .OrderBy(x => x.Item2)
+                                    .OrderByDescending(x => x.Item2)
                                     .Take(20)
                                     .Select(x => x.Item1)
                                     .ToList();
@@ -93,7 +93,7 @@ namespace BH.UI.Global
                 new SearchItem { Item = null, CallerType = typeof(GetPropertyCaller), Icon = Properties.Resources.BHoM_GetProperty, Text = "BH.UI.Components.GetPropertyCaller.GetProperty" },
                 new SearchItem { Item = null, CallerType = typeof(SetPropertyCaller), Icon = Properties.Resources.BHoM_SetProperty, Text = "BH.UI.Components.SetPropertyCaller.SetProperty" },
                 new SearchItem { Item = null, CallerType = typeof(CreateCustomCaller), Icon = Properties.Resources.CustomObject, Text = "BH.UI.Components.CreateCustomCaller.CreateCustom" },
-                new SearchItem { Item = typeof(CreateDictionaryCaller).GetMethod("CreateDictionary"), CallerType = typeof(CreateDictionaryCaller), Icon = Properties.Resources.Dictionary },
+                new SearchItem { Item = typeof(CreateDictionaryCaller).GetMethod("CreateDictionary"), CallerType = typeof(CreateDictionaryCaller), Icon = Properties.Resources.Dictionary }
             };
             foreach (SearchItem item in items)
             {
@@ -101,7 +101,6 @@ namespace BH.UI.Global
                     item.Text = ((MethodInfo)item.Item).ToText(true);
             }
                 
-
             // All methods for the BHoM Engine
             items.AddRange(Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated())
                                     .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
@@ -135,16 +134,58 @@ namespace BH.UI.Global
 
         protected double GetWeight(SearchItem item, string[] search)
         {
+            // Get the key for initial filtering
             string key = item.Text.ToLower();
+            if (item.Item is MethodInfo && ((MethodInfo)item.Item).DeclaringType.Name == "Create")
+                key = "create." + key;
 
-            int i = key.IndexOf('(');
-            if (i > 0)
-                key = key.Substring(0, i + 1);
-
-            if (search.All(p => key.Contains(p)))
-                return 1.0;
-            else
+            // if the search doesn't match the key, just return 0.
+            if (!search.All(p => key.Contains(p)))
                 return 0;
+
+            // else start with a weight of 1.0
+            double weight = 1.0;
+
+            // Collect the name of the item
+            string name = "";
+            if (item.Item is MethodBase)
+            {
+                MethodBase method = item.Item as MethodBase;
+                string declaringName = method.DeclaringType.Name.ToLower();
+
+                if (method is MethodInfo)
+                {
+                    name = method.Name;
+
+                    if (search.Any(p => p == declaringName))
+                        weight += 8;
+                    else if (search.Any(p => declaringName.Contains(p)))
+                        weight += 4;
+                }
+                else 
+                    name = declaringName;
+                
+                foreach( string part in search.Where(p => method.DeclaringType.Namespace.ToLower().Contains(p)))
+                    weight += 2;
+            }
+            else if (item.Item is Type)
+            {
+                Type type = item.Item as Type;
+                name = type.Name;
+            }
+            else if (item.Item == null || item.Item is string)
+            {
+                name = item.Text.Split(new char[] { '.', '\\', '/' }).First();
+            }
+
+            // Increase weight if name is matching
+            name = name.ToLower();
+            if (search.Any(p => p == name))
+                weight += 20;
+            else if (search.Any(p => name.Contains(p)))
+                weight += 10;
+
+            return weight;
         }
 
         /*************************************/
