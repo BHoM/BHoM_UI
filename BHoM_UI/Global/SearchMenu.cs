@@ -1,6 +1,7 @@
 ﻿using BH.Adapter;
 using BH.Engine.Reflection;
 using BH.Engine.Reflection.Convert;
+using BH.Engine.UI;
 using BH.oM.UI;
 using BH.UI.Components;
 using BH.UI.Templates;
@@ -64,7 +65,7 @@ namespace BH.UI.Global
 
             List<SearchItem> hits = new List<SearchItem>();
             if (text.Length > 0)
-                hits = PossibleItems.Select(x => new Tuple<SearchItem, double>(x, GetWeight(x, parts)))
+                hits = PossibleItems.Select(x => new Tuple<SearchItem, double>(x, x.Weight(parts)))
                                     .Where(x => x.Item2 > 0)
                                     .OrderByDescending(x => x.Item2)
                                     .Take(20)
@@ -102,24 +103,24 @@ namespace BH.UI.Global
             }
                 
             // All methods for the BHoM Engine
-            items.AddRange(Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated())
+            items.AddRange(Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated())
                                     .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
 
             // All adapter constructors
-            items.AddRange(Query.AdapterTypeList().Where(x => x.IsSubclassOf(typeof(BHoMAdapter))).SelectMany(x => x.GetConstructors())
+            items.AddRange(Engine.Reflection.Query.AdapterTypeList().Where(x => x.IsSubclassOf(typeof(BHoMAdapter))).SelectMany(x => x.GetConstructors())
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateAdapterCaller), Icon = Properties.Resources.Adapter, Text = x.ToText(true) }));
 
             // All query constructors
             Type queryType = typeof(BH.oM.DataManipulation.Queries.IQuery);
-            items.AddRange(Query.BHoMMethodList().Where(x => queryType.IsAssignableFrom(x.ReturnType))
+            items.AddRange(Engine.Reflection.Query.BHoMMethodList().Where(x => queryType.IsAssignableFrom(x.ReturnType))
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateQueryCaller), Icon = Properties.Resources.QueryAdapter, Text = x.ToText(true) }));
 
             // All Types
-            items.AddRange(Query.BHoMTypeList()
+            items.AddRange(Engine.Reflection.Query.BHoMTypeList()
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
 
             // All Enums
-            items.AddRange(Query.BHoMEnumList()
+            items.AddRange(Engine.Reflection.Query.BHoMEnumList()
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateEnumCaller), Icon = Properties.Resources.BHoM_Enum, Text = x.ToText(true) }));
 
             // All data libraries
@@ -128,64 +129,6 @@ namespace BH.UI.Global
 
             // Return the list
             return items;
-        }
-
-        /*************************************/
-
-        protected double GetWeight(SearchItem item, string[] search)
-        {
-            // Get the key for initial filtering
-            string key = item.Text.ToLower();
-            if (item.Item is MethodInfo && ((MethodInfo)item.Item).DeclaringType.Name == "Create")
-                key = "create." + key;
-
-            // if the search doesn't match the key, just return 0.
-            if (!search.All(p => key.Contains(p)))
-                return 0;
-
-            // else start with a weight of 1.0
-            double weight = 1.0;
-
-            // Collect the name of the item
-            string name = "";
-            if (item.Item is MethodBase)
-            {
-                MethodBase method = item.Item as MethodBase;
-                string declaringName = method.DeclaringType.Name.ToLower();
-
-                if (method is MethodInfo)
-                {
-                    name = method.Name;
-
-                    if (search.Any(p => p == declaringName))
-                        weight += 8;
-                    else if (search.Any(p => declaringName.Contains(p)))
-                        weight += 4;
-                }
-                else 
-                    name = declaringName;
-                
-                foreach( string part in search.Where(p => method.DeclaringType.Namespace.ToLower().Contains(p)))
-                    weight += 2;
-            }
-            else if (item.Item is Type)
-            {
-                Type type = item.Item as Type;
-                name = type.Name;
-            }
-            else if (item.Item == null || item.Item is string)
-            {
-                name = item.Text.Split(new char[] { '.', '\\', '/' }).First();
-            }
-
-            // Increase weight if name is matching
-            name = name.ToLower();
-            if (search.Any(p => p == name))
-                weight += 20;
-            else if (search.Any(p => name.Contains(p)))
-                weight += 10;
-
-            return weight;
         }
 
         /*************************************/
