@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BH.oM.UI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -106,24 +107,29 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            List<KeyValuePair<string, MethodInfo>> hits = GetHits(m_SearchTextBox.Text);
+            List<SearchItem> hits = GetHits(m_SearchTextBox.Text);
 
             int yPos = 0;
             int maxWidth = m_MinWidth;
             m_SearchResultPanel.Controls.Clear();
             for (int i = 0; i < hits.Count; i++)
             {
+                SearchItem hit = hits[i];
                 Label label = new Label
                 {
-                    Text = hits[i].Key,
+                    Text = hit.Text,
                     BackColor = Color.White,
                     Cursor = Cursors.Hand,
                     TextAlign = ContentAlignment.MiddleLeft,
                 };
                 label.Width = (int)Math.Ceiling(label.CreateGraphics().MeasureString(label.Text, label.Font).Width);
-                label.MouseUp += Label_MouseUp;
+                label.MouseUp += (a, b) =>
+                {
+                    m_Popup.Hide();
+                    NotifySelection(hit);
+                };
 
-                PictureBox icon = new PictureBox { Image = GetIcon(hits[i].Value), Height = label.Height, Width = label.Height };
+                PictureBox icon = new PictureBox { Image = hit.Icon, Height = label.Height, Width = label.Height };
                 label.Location = new System.Drawing.Point(icon.Width + 5, 0);
 
                 Panel row = new Panel { Width = label.Width + icon.Width, Height = label.Height, Location = new System.Drawing.Point(0, yPos) };
@@ -145,16 +151,6 @@ namespace BH.UI.Global
             m_Popup.Width = maxWidth;
             m_SearchResultPanel.Size = new System.Drawing.Size(maxWidth, yPos);
             m_Popup.Height = m_SearchResultPanel.Bottom + 10;
-        }
-
-        /*************************************/
-
-        private void Label_MouseUp(object sender, MouseEventArgs e)
-        {
-            string methodName = ((Label)sender).Text;
-            m_Popup.Hide();
-
-            NotifySelection(methodName);
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BH.oM.UI;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -95,7 +96,7 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            List<KeyValuePair<string, MethodInfo>> hits = GetHits(m_SearchTextBox.Text);
+            List<SearchItem> hits = GetHits(m_SearchTextBox.Text);
 
             m_SearchResultGrid.Children.Clear();
             m_SearchResultGrid.RowDefinitions.Clear();
@@ -114,28 +115,24 @@ namespace BH.UI.Global
 
             for (int i = 0; i < hits.Count; i++)
             {
+                SearchItem hit = hits[i];
                 m_SearchResultGrid.RowDefinitions.Add(new RowDefinition());
 
-                System.Windows.Controls.Image icon = new System.Windows.Controls.Image { Source = GetImage(GetIcon(hits[i].Value)) };
+                System.Windows.Controls.Image icon = new System.Windows.Controls.Image { Source = GetImage(hit.Icon) };
                 Grid.SetRow(icon, i);
                 m_SearchResultGrid.Children.Add(icon);
 
-                Label label = new Label { Content = hits[i].Key, Background = System.Windows.Media.Brushes.White };
-                label.MouseUp += Label_MouseUp;
+                Label label = new Label { Content = hit.Text, Background = System.Windows.Media.Brushes.White };
+                label.MouseUp += (a, b) =>
+                {
+                    m_Popup.IsOpen = false;
+                    NotifySelection(hit);
+                };
+
                 Grid.SetRow(label, i);
                 Grid.SetColumn(label, 1);
                 m_SearchResultGrid.Children.Add(label);
             }
-        }
-
-        /*************************************/
-
-        private void Label_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            string methodName = ((Label)sender).Content as string;
-            m_Popup.IsOpen = false;
-
-            NotifySelection(methodName);
         }
 
         /*************************************/
