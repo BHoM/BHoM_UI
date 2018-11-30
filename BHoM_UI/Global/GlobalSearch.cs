@@ -1,4 +1,5 @@
-﻿using BH.Engine.Reflection;
+﻿using BH.Adapter;
+using BH.Engine.Reflection;
 using BH.Engine.Reflection.Convert;
 using BH.oM.UI;
 using BH.UI.Components;
@@ -35,7 +36,7 @@ namespace BH.UI.Global
                 {
                     if (m_SearchMenu == null)
                     {
-                        m_SearchMenu = new SearchMenu_Wpf { PossibleItems = m_MethodList };
+                        m_SearchMenu = new SearchMenu_Wpf();
                         m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
                     }
 
@@ -43,7 +44,7 @@ namespace BH.UI.Global
                 }
             };
 
-            return Activate();
+            return true;
         }
 
         /*************************************/
@@ -56,14 +57,14 @@ namespace BH.UI.Global
                 {
                     if (m_SearchMenu == null)
                     {
-                        m_SearchMenu = new SearchMenu_WinForm { PossibleItems = m_MethodList };
+                        m_SearchMenu = new SearchMenu_WinForm();
                         m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
                     }
 
                     m_SearchMenu.SetParent(container);
                 }
             };
-            return Activate();
+            return true;
         }
 
 
@@ -71,53 +72,10 @@ namespace BH.UI.Global
         /**** Private Methods             ****/
         /*************************************/
 
-        private static bool Activate()
+        private static void M_SearchMenu_ItemSelected(object sender, ComponentRequest request)
         {
-            if (!m_Activated)
-            {
-                m_MethodList = new Dictionary<string, MethodInfo>();
-                foreach (MethodInfo method in BH.Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated()))
-                {
-                    string key =  method.ToText(true);
-                    m_MethodList[key] = method;
-                }
-
-                m_Activated = true;
-            }
-
-            return true;
-        }
-
-        /*************************************/
-
-        private static void M_SearchMenu_ItemSelected(object sender, MethodInfo method)
-        {
-            Type callerType = null;
-
-            if (method.DeclaringType.Namespace.StartsWith("BH.Engine"))
-            {
-                switch(method.DeclaringType.Name)
-                {
-                    case "Compute":
-                        callerType = typeof(ComputeCaller);
-                        break;
-                    case "Convert":
-                        callerType = typeof(ConvertCaller);
-                        break;
-                    case "Create":
-                        callerType = typeof(CreateObjectCaller);
-                        break;
-                    case "Modify":
-                        callerType = typeof(ModifyCaller);
-                        break;
-                    case "Query":
-                        callerType = typeof(QueryCaller);
-                        break;
-                }
-            }
-
-            if (callerType != null)
-                ItemSelected?.Invoke(sender, new ComponentRequest { CallerType = callerType, SelectedItem = method });
+            if (request != null)
+                ItemSelected?.Invoke(sender,request);
         }
 
 
@@ -126,8 +84,6 @@ namespace BH.UI.Global
         /*************************************/
 
         private static SearchMenu m_SearchMenu = null;
-        private static bool m_Activated = false;
-        private static Dictionary<string, MethodInfo> m_MethodList = new Dictionary<string, MethodInfo>();
 
         /*************************************/
     }
