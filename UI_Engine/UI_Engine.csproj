@@ -61,6 +61,7 @@
     <Compile Include="Create\MethodInfo.cs" />
     <Compile Include="Modify\GroupMethodsByName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Query\Weight.cs" />
     <Compile Include="Query\IsToKeepInMenu.cs" />
     <Compile Include="Query\SubType.cs" />
     <Compile Include="Query\Depth.cs" />
