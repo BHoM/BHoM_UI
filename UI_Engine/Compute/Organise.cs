@@ -27,6 +27,8 @@ namespace BH.Engine.UI
                 return OrganiseOthers(items) as Output<List<Tuple<string, T>>, Tree<T>>;
         }
 
+        /*************************************/
+
         public static Output<List<Tuple<string, MethodBase>>, Tree<MethodBase>> OrganiseMethods(this IEnumerable<MethodBase> methods)
         {
             // Create method list
