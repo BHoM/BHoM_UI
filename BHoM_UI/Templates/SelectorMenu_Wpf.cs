@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using BH.oM.DataStructure;
 using System.Windows;
+using BH.oM.UI;
+using BH.Engine.UI;
 
 namespace BH.UI.Templates
 {
@@ -15,7 +17,7 @@ namespace BH.UI.Templates
         /**** Constructors                ****/
         /*************************************/
 
-        public SelectorMenu_Wpf(List<Tuple<string, T>> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
+        public SelectorMenu_Wpf(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/
@@ -34,7 +36,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected override void AddSearchBox(ContextMenu menu, List<Tuple<string, T>> itemList)
+        protected override void AddSearchBox(ContextMenu menu, List<SearchItem> itemList)
         {
             m_ItemList = itemList;
             menu.SizeChanged += Menu_SizeChanged;
@@ -107,14 +109,12 @@ namespace BH.UI.Templates
             m_SearchResultItems.Clear();
 
             // Add the new ones
-            string text = box.Text.ToLower();
-            string[] parts = text.Split(' ');
-            foreach (Tuple<string, T> tree in m_ItemList.Where(x => parts.All(y => x.Item1.ToLower().Contains(y))).Take(12).OrderBy(x => x.Item1))
+            foreach (SearchItem item in m_ItemList.Hits(m_SearchBox.Text, 12))
             {
-                MenuItem methodItem = CreateMenuItem(tree.Item1, Item_Click);
+                MenuItem methodItem = CreateMenuItem(item.Text, Item_Click);
                 m_Menu.Items.Add(methodItem);
                 m_SearchResultItems.Add(methodItem);
-                m_ItemLinks[methodItem] = tree.Item2;
+                m_ItemLinks[methodItem] = (T)item.Item;
             }
         }
 

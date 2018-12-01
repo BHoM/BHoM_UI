@@ -1,4 +1,5 @@
-﻿using BH.oM.UI;
+﻿using BH.Engine.UI;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -96,7 +97,7 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            List<SearchItem> hits = GetHits(m_SearchTextBox.Text);
+            List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
 
             m_SearchResultGrid.Children.Clear();
             m_SearchResultGrid.RowDefinitions.Clear();

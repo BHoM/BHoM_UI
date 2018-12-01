@@ -1,5 +1,7 @@
 ﻿using BH.Engine.Reflection;
+using BH.Engine.UI;
 using BH.oM.DataStructure;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace BH.UI.Templates
         /**** Constructors                ****/
         /*************************************/
 
-        public SelectorMenu_WinForm(List<Tuple<string, T>> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
+        public SelectorMenu_WinForm(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/
@@ -29,7 +31,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected override void AddSearchBox(ToolStripDropDown menu, List<Tuple<string, T>> itemList)
+        protected override void AddSearchBox(ToolStripDropDown menu, List<SearchItem> itemList)
         {
             m_ItemList = itemList;
 
@@ -116,15 +118,13 @@ namespace BH.UI.Templates
             m_SearchResultItems.Clear();
 
             // Add the new ones
-            string text = m_SearchBox.Text.ToLower();
-            string[] parts = text.Split(' ');
             m_SearchResultItems.Add(AppendMenuSeparator(m_Menu));
-            foreach (Tuple<string, T> tree in m_ItemList.Where(x => parts.All(y => x.Item1.ToLower().Contains(y))).Take(12).OrderBy(x => x.Item1))
+            foreach (SearchItem item in m_ItemList.Hits(m_SearchBox.Text, 12))
             {
-                ToolStripMenuItem methodItem = AppendMenuItem(m_Menu, tree.Item1, Item_Click);
-                methodItem.ToolTipText = tree.Item2.IDescription();
+                ToolStripMenuItem methodItem = AppendMenuItem(m_Menu, item.Text, Item_Click);
+                methodItem.ToolTipText = item.Item.IDescription();
                 m_SearchResultItems.Add(methodItem);
-                m_ItemLinks[methodItem] = tree.Item2;
+                m_ItemLinks[methodItem] = (T)item.Item;
             }
         }
 

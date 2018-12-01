@@ -1,4 +1,5 @@
-﻿using BH.oM.UI;
+﻿using BH.Engine.UI;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -107,7 +108,7 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
-            List<SearchItem> hits = GetHits(m_SearchTextBox.Text);
+            List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
 
             int yPos = 0;
             int maxWidth = m_MinWidth;

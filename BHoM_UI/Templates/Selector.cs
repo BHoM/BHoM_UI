@@ -36,7 +36,7 @@ namespace BH.UI.Templates
 
             if (!m_ItemTreeStore.ContainsKey(key) || !m_ItemListStore.ContainsKey(key))
             {
-                Output<List<Tuple<string, T>>, Tree<T>> organisedMethod = Engine.UI.Compute.OrganiseItems(possibleItems.Where(x => x.IIsToKeepInMenu()));
+                Output<List<SearchItem>, Tree<T>> organisedMethod = Engine.UI.Compute.OrganiseItems(possibleItems.Where(x => x.IIsToKeepInMenu()));
                 m_ItemListStore[key] = organisedMethod.Item1;
                 m_ItemTreeStore[key] = organisedMethod.Item2;
             }
@@ -90,7 +90,7 @@ namespace BH.UI.Templates
 
         protected string m_Key = "";
         protected static Dictionary<string, Tree<T>> m_ItemTreeStore = new Dictionary<string, Tree<T>>();
-        protected static Dictionary<string, List<Tuple<string, T>>> m_ItemListStore = new Dictionary<string, List<Tuple<string, T>>>();
+        protected static Dictionary<string, List<SearchItem>> m_ItemListStore = new Dictionary<string, List<SearchItem>>();
 
 
         /*************************************/

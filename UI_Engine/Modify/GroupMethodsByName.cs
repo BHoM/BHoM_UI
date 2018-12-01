@@ -19,19 +19,34 @@ namespace BH.Engine.UI
 
             if (tree.Children.Count > 0)
             {
-                if (tree.Children.Values.First().Value != null)
+                if (tree.Children.Values.Any(x => x.Value != null))
                 {
-                    var groups = tree.Children.Where(x => x.Key.IndexOf('(') > 0).GroupBy(x => x.Key.Substring(0, x.Key.IndexOf('(')));
-
-                    Dictionary<string, Tree<MethodBase>> children = new Dictionary<string, Tree<MethodBase>>();
-                    foreach (var group in groups)
+                    var groups = tree.Children.GroupBy(x => 
                     {
-                        if (group.Count() == 1)
-                            children.Add(group.Key, new Tree<MethodBase> { Name = group.Key, Value = group.First().Value.Value });
+                        int index = x.Key.IndexOf('(');
+                        if (index > 0)
+                            return x.Key.Substring(0, index);
                         else
-                            children.Add(group.Key, new Tree<MethodBase> { Name = group.Key, Children = group.ToDictionary(x => x.Key, x => x.Value) });
+                            return x.Key;
+                    });
+
+                    if (groups.Count() > 1)
+                    {
+                        Dictionary<string, Tree<MethodBase>> children = new Dictionary<string, Tree<MethodBase>>();
+                        foreach (var group in groups)
+                        {
+                            if (group.Count() == 1)
+                            {
+                                if (group.First().Value.Value == null)
+                                    children.Add(group.Key, group.First().Value);
+                                else
+                                children.Add(group.Key, new Tree<MethodBase> { Name = group.Key, Value = group.First().Value.Value });
+                            }
+                            else
+                                children.Add(group.Key, new Tree<MethodBase> { Name = group.Key, Children = group.ToDictionary(x => x.Key, x => x.Value) });
+                        }
+                        tree.Children = children;
                     }
-                    tree.Children = children;
                 }
                 else
                 {
