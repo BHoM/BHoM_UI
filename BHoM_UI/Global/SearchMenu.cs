@@ -28,7 +28,7 @@ namespace BH.UI.Global
         /**** Properties                  ****/
         /*************************************/
 
-        public List<SearchItem> PossibleItems { get; set; }
+        public List<SearchItem> PossibleItems { get; set; } = new List<SearchItem>();
 
 
         /*************************************/
@@ -54,24 +54,6 @@ namespace BH.UI.Global
         protected void NotifySelection(SearchItem item)
         {
             ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item });
-        }
-
-        /*************************************/
-
-        protected List<SearchItem> GetHits(string search)
-        {
-            string text = search.Trim().ToLower();
-            string[] parts = text.Split(' ');
-
-            List<SearchItem> hits = new List<SearchItem>();
-            if (text.Length > 0)
-                hits = PossibleItems.Select(x => new Tuple<SearchItem, double>(x, x.Weight(parts)))
-                                    .Where(x => x.Item2 > 0)
-                                    .OrderByDescending(x => x.Item2)
-                                    .Take(20)
-                                    .Select(x => x.Item1)
-                                    .ToList();
-            return hits;
         }
 
         /*************************************/

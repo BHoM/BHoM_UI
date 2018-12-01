@@ -1,4 +1,5 @@
 ﻿using BH.oM.DataStructure;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace BH.UI.Templates
         /**** Constructors                ****/
         /*************************************/
 
-        public SelectorMenu(List<Tuple<string, T>> itemList, Tree<T> itemTree)
+        public SelectorMenu(List<SearchItem> itemList, Tree<T> itemTree)
         {
             m_ItemList = itemList;
             m_ItemTree = itemTree;
@@ -46,7 +47,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected abstract void AddSearchBox(M menu, List<Tuple<string, T>> itemList);
+        protected abstract void AddSearchBox(M menu, List<SearchItem> itemList);
 
         /*************************************/
 
@@ -61,7 +62,7 @@ namespace BH.UI.Templates
         /**** Private Fields              ****/
         /*************************************/
 
-        protected List<Tuple<string, T>> m_ItemList = new List<Tuple<string, T>>();
+        protected List<SearchItem> m_ItemList = new List<SearchItem>();
 
         protected Tree<T> m_ItemTree = new Tree<T>();
 
