@@ -139,8 +139,6 @@ namespace BH.UI.Templates
             {
                 if (SelectedItem == null)
                     return "";
-                else if (SelectedItem is string)
-                    return SelectedItem.ToString();
                 else
                     return SelectedItem.ToJson();
             }
@@ -159,10 +157,7 @@ namespace BH.UI.Templates
 
             try
             {
-                if (SelectedItem is string)
-                    SetItem(json);
-                else
-                    SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
+                SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
 
                 if (SelectedItem != null)
                     ItemSelected?.Invoke(this, SelectedItem);
