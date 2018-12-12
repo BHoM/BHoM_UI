@@ -99,7 +99,14 @@ namespace BH.UI.Templates
         public override object Run(object[] inputs)
         {
             if (m_CompiledFunc != null)
+            {
                 return m_CompiledFunc(inputs);
+            }
+            else if (inputs.Length <= 0)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
+                return null;
+            }
             else
             {
                 BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
