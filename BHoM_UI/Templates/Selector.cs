@@ -36,7 +36,8 @@ namespace BH.UI.Templates
 
             if (!m_ItemTreeStore.ContainsKey(key) || !m_ItemListStore.ContainsKey(key))
             {
-                Output<List<SearchItem>, Tree<T>> organisedMethod = Engine.UI.Compute.OrganiseItems(possibleItems.Where(x => x.IIsToKeepInMenu()));
+                List<T> toKeep = possibleItems.Where(x => x.IIsToKeepInMenu()).ToList();
+                Output<List<SearchItem>, Tree<T>> organisedMethod = Engine.UI.Compute.OrganiseItems(toKeep);
                 m_ItemListStore[key] = organisedMethod.Item1;
                 m_ItemTreeStore[key] = organisedMethod.Item2;
             }
