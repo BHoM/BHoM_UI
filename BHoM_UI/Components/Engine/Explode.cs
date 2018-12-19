@@ -11,6 +11,7 @@ using BH.Engine.Reflection;
 using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using BH.Engine.Serialiser;
 
 namespace BH.UI.Components
 {
@@ -90,6 +91,44 @@ namespace BH.UI.Components
             return true;
         }
 
+        /*************************************/
+
+        public override bool Read(string json)
+        {
+            if (json == "")
+                return true;
+
+            try
+            {
+                CustomObject info = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+
+                if (info != null && info.CustomData.ContainsKey("Outputs"))
+                {
+                    IEnumerable outputs = info.CustomData["Outputs"] as IEnumerable;
+                    if (outputs != null)
+                    {
+                        OutputParams = outputs.OfType<ParamInfo>().ToList();
+                        CompileOutputSetters();
+                    }     
+                }
+                    
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /*************************************/
+
+        public override string Write()
+        {
+            CustomObject info = new CustomObject();
+            info.CustomData["Outputs"] = OutputParams;
+            return info.ToJson();
+        }
+
 
         /*************************************/
         /**** Public Methods              ****/
@@ -99,7 +138,7 @@ namespace BH.UI.Components
         {
             // Collect the properties types and names
             Dictionary<string, Type> properties = new Dictionary<string, Type>();
-            var groups = objects.GroupBy(x => x.GetType());
+            var groups = objects.Where(x => x != null).GroupBy(x => x.GetType());
             foreach (var group in groups)
             {
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
