@@ -69,5 +69,13 @@ namespace BH.UI.Components
         }
 
         /*************************************/
+
+        public override void AddToMenu(ToolStripDropDown menu)
+        {
+            if (Selector != null)
+                Selector.AddToMenu(menu);
+        }
+
+        /*************************************/
     }
 }
