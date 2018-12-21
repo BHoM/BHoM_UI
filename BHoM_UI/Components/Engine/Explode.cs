@@ -158,9 +158,17 @@ namespace BH.UI.Components
 
         public bool CollectOutputTypes(List<object> objects)
         {
-            // Collect the properties types and names
+            // Do not update if the list of input is empty
+            if (objects.Count == 0)
+                return false;
+
+            // Group the objects by type
             Dictionary<string, Type> properties = new Dictionary<string, Type>();
             var groups = objects.Where(x => x != null).GroupBy(x => x.GetType());
+            if (groups.Count() == 0)
+                return false;
+
+            // Collect the properties types and names
             foreach (var group in groups)
             {
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
