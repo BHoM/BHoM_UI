@@ -155,6 +155,14 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public virtual void AddToMenu(object menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
+
+        /*************************************/
+
         public virtual string Write()
         {
             try

@@ -101,7 +101,7 @@ namespace BHoM_UI
                                 
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
                         Console.WriteLine("Failed to copy sub-folders from " + path);
                     }

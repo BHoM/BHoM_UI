@@ -29,14 +29,10 @@ using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
-    public interface ISelector
+    public interface ISelectorMenu<T>
     {
-        event EventHandler<object> ItemSelected;
+        event EventHandler<T> ItemSelected;
 
-        void AddToMenu(ToolStripDropDown menu);
-
-        void AddToMenu(System.Windows.Controls.ContextMenu menu);
-
-        void AddToMenu(object menu);
+        void FillMenu(object menu);
     }
 }
