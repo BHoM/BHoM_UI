@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Templates
 {
-    public abstract class SelectorMenu<T, M>
+    public abstract class SelectorMenu<T, M> : ISelectorMenu<T>
     {
         /*************************************/
         /**** Public Events               ****/
@@ -58,6 +58,14 @@ namespace BH.UI.Templates
         {
             AddTree(menu, m_ItemTree);
             AddSearchBox(menu, m_ItemList);
+        }
+
+        /*************************************/
+
+        public void FillMenu(object menu)
+        {
+            if (menu is M)
+                FillMenu((M)menu);
         }
 
 

@@ -71,26 +71,36 @@ namespace BH.UI.Templates
 
         public void AddToMenu(ToolStripDropDown menu)
         {
-            if (m_Menu_WinForm == null)
-            {
-                m_Menu_WinForm = new SelectorMenu_WinForm<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]);
-                m_Menu_WinForm.ItemSelected += M_Menu_ItemSelected;
-            }
+            if (m_SelectorMenu == null)
+                SetSelectorMenu(new SelectorMenu_WinForm<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
-            m_Menu_WinForm.FillMenu(menu);
+            m_SelectorMenu.FillMenu(menu);
         }
 
         /*************************************/
 
         public void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
-            if (m_Menu_Wpf == null)
-            {
-                m_Menu_Wpf = new SelectorMenu_Wpf<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]);
-                m_Menu_Wpf.ItemSelected += M_Menu_ItemSelected;
-            }
+            if (m_SelectorMenu == null)
+                SetSelectorMenu(new SelectorMenu_Wpf<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
-            m_Menu_Wpf.FillMenu(menu);
+            m_SelectorMenu.FillMenu(menu);
+        }
+
+        /*************************************/
+
+        public void AddToMenu(object menu)
+        {
+            if (m_SelectorMenu != null)
+                m_SelectorMenu.FillMenu(menu);
+        }
+
+        /*************************************/
+
+        public void SetSelectorMenu<M>(SelectorMenu<T, M> selectorMenu)
+        {
+            m_SelectorMenu = selectorMenu;
+            m_SelectorMenu.ItemSelected += M_Menu_ItemSelected;
         }
 
 
@@ -108,10 +118,9 @@ namespace BH.UI.Templates
         /**** Private Fields              ****/
         /*************************************/
 
-        protected SelectorMenu_WinForm<T> m_Menu_WinForm = null;
-        protected SelectorMenu_Wpf<T> m_Menu_Wpf = null;
-
         protected string m_Key = "";
+        protected ISelectorMenu<T> m_SelectorMenu = null;
+
         protected static Dictionary<string, Tree<T>> m_ItemTreeStore = new Dictionary<string, Tree<T>>();
         protected static Dictionary<string, List<SearchItem>> m_ItemListStore = new Dictionary<string, List<SearchItem>>();
 
