@@ -99,8 +99,10 @@ namespace BH.UI.Templates
 
         public void SetSelectorMenu<M>(SelectorMenu<T, M> selectorMenu)
         {
+            selectorMenu.SetItems(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]);
+            selectorMenu.ItemSelected += M_Menu_ItemSelected;
+
             m_SelectorMenu = selectorMenu;
-            m_SelectorMenu.ItemSelected += M_Menu_ItemSelected;
         }
 
 

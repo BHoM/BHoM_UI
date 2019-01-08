@@ -68,6 +68,14 @@ namespace BH.UI.Templates
                 FillMenu((M)menu);
         }
 
+        /*************************************/
+
+        public void SetItems(List<SearchItem> itemList, Tree<T> itemTree)
+        {
+            m_ItemList = itemList;
+            m_ItemTree = itemTree;
+        }
+
 
         /*************************************/
         /**** Protected Methods           ****/
