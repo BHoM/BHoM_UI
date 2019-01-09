@@ -23,9 +23,11 @@
 using BH.Engine.Reflection;
 using BH.oM.Base;
 using BH.oM.Reflection;
+using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -47,16 +49,30 @@ namespace BH.UI.Components
 
         public override int GroupIndex { get; protected set; } = 2;
 
+        public override string Category { get; protected set; } = "Engine";
+
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public SetPropertyCaller() : base(typeof(BH.Engine.Reflection.Modify).GetMethod("PropertyValue", new Type[] { typeof(BHoMObject), typeof(string), typeof(object) })) {}
+        public SetPropertyCaller() : base(typeof(SetPropertyCaller).GetMethod("SetProperty")) { }
 
 
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Public Method               ****/
+        /*************************************/
+
+        [Description("Set the value of a property with a given name for an object")]
+        [Output("New object with its property changed to the new value")]
+        public static BHoMObject SetProperty(BHoMObject obj, string propName, object value)
+        {
+            return Engine.Reflection.Modify.PropertyValue(obj, propName, value);
+        }
+
+
+        /*************************************/
+        /**** Protected Methods           ****/
         /*************************************/
 
         protected override object[] CollectInputs()

@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -44,13 +46,26 @@ namespace BH.UI.Components
 
         public override int GroupIndex { get; protected set; } = 2;
 
+        public override string Category { get; protected set; } = "Engine";
+
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public GetPropertyCaller() : base(typeof(BH.Engine.Reflection.Query).GetMethod("PropertyValue")) {}
+        public GetPropertyCaller() : base(typeof(GetPropertyCaller).GetMethod("GetProperty")) { }
 
+
+        /*************************************/
+        /**** Public Method               ****/
+        /*************************************/
+
+        [Description("Get the value of a property with a given name from an object")]
+        [Output("Value of the property")]
+        public static object GetProperty(object obj, string propName)
+        {
+            return Engine.Reflection.Query.PropertyValue(obj, propName);
+        }
 
         /*************************************/
     }
