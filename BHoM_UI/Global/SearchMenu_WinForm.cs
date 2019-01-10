@@ -100,10 +100,10 @@ namespace BH.UI.Global
             m_SearchResultPanel.Controls.Clear();
             m_SearchResultPanel.Size = new System.Drawing.Size(m_MinWidth, 1);
 
-            System.Drawing.Point position = System.Windows.Forms.Cursor.Position;
+            m_LastPosition = System.Windows.Forms.Cursor.Position;
             int h = m_SearchTextBox.Height;
-            int x = position.X - m_Popup.Width / 2;
-            int y = position.Y - m_SearchTextBox.Height / 2;
+            int x = m_LastPosition.X - m_Popup.Width / 2;
+            int y = m_LastPosition.Y - m_SearchTextBox.Height / 2;
             m_Popup.SetBounds(x, y, m_Popup.Width, h);
 
             m_Popup.ResumeLayout(false);
@@ -149,7 +149,7 @@ namespace BH.UI.Global
                 label.MouseUp += (a, b) =>
                 {
                     m_Popup.Hide();
-                    NotifySelection(hit);
+                    NotifySelection(hit, new BH.oM.Geometry.Point { X = m_LastPosition.X, Y = m_LastPosition.Y });
                 };
 
                 PictureBox icon = new PictureBox { Image = hit.Icon, Height = label.Height, Width = label.Height };
@@ -180,6 +180,8 @@ namespace BH.UI.Global
         /*************************************/
         /**** Private Fields              ****/
         /*************************************/
+
+        private System.Drawing.Point m_LastPosition = new System.Drawing.Point();
 
         private static int m_MinWidth = 200;
         private static Form m_Popup = null;

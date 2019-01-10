@@ -23,6 +23,7 @@
 using BH.oM.Base;
 using System;
 using System.Collections.Generic;
+using BH.oM.Geometry;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ namespace BH.oM.UI
         public Type CallerType { get; set; } = null;
 
         public object SelectedItem { get; set; } = null;
+
+        public Point Location { get; set; } = new Point();
 
         /***************************************************/
     }

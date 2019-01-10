@@ -149,7 +149,7 @@ namespace BH.UI.Global
                 label.MouseUp += (a, b) =>
                 {
                     m_Popup.IsOpen = false;
-                    NotifySelection(hit);
+                    NotifySelection(hit, new BH.oM.Geometry.Point { X = m_Popup.PlacementRectangle.X, Y = m_Popup.PlacementRectangle.Y });
                 };
 
                 Grid.SetRow(label, i);
