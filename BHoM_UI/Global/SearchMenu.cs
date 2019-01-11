@@ -72,7 +72,14 @@ namespace BH.UI.Global
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected void NotifySelection(SearchItem item, BH.oM.Geometry.Point location = null)
+        protected void NotifySelection(SearchItem item)
+        {
+            NotifySelection(item, null);
+        }
+
+        /*************************************/
+
+        protected void NotifySelection(SearchItem item, BH.oM.Geometry.Point location)
         {
             ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
         }
