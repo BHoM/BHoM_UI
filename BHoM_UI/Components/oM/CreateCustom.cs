@@ -79,9 +79,17 @@ namespace BH.UI.Components
         /**** Public Methods              ****/
         /*************************************/
 
-        public void SetInputs(List<string> names)
+        public void SetInputs(List<string> names, List<Type> types = null)
         {
-            InputParams = names.Select(x => GetParam(x)).ToList();
+            if (names.Count != types.Count)
+            {
+                Engine.Reflection.Compute.RecordWarning("The list length for names and types does not match. Inputs are set, but <types> variable will be ignored.");
+                InputParams = names.Select(x => GetParam(x)).ToList();
+            }
+            else
+            {
+                InputParams = names.Select((x, i) => GetParam(names[i], types[i])).ToList();
+            }
 
             CompileInputGetters();
             CompileOutputSetters();
@@ -122,7 +130,7 @@ namespace BH.UI.Components
                 Description = ForcedType.Description();
                 InputParams = ForcedType.GetProperties().Select(x => GetParam(x)).ToList();
             }
-                
+
 
             return true;
         }
@@ -132,9 +140,11 @@ namespace BH.UI.Components
         /**** Private Fields              ****/
         /*************************************/
 
-        public oM.UI.ParamInfo GetParam(string name)
+        public oM.UI.ParamInfo GetParam(string name, Type type = null)
         {
-            Type type = typeof(object);
+            if (type == null)
+                type = typeof(object);
+
             if (ForcedType != null)
             {
                 PropertyInfo info = ForcedType.GetProperty(name);
@@ -162,7 +172,6 @@ namespace BH.UI.Components
                 Kind = ParamKind.Input
             };
         }
-
 
         /*************************************/
     }
