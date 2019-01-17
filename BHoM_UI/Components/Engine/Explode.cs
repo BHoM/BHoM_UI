@@ -196,10 +196,10 @@ namespace BH.UI.Components
                 }
                 else if (group.Key == typeof(CustomObject))
                 {
-                    foreach (string propName in group.Cast<BHoMObject>().SelectMany(x => x.CustomData.Keys).Distinct())
+                    foreach (KeyValuePair<string, object> prop in group.Cast<BHoMObject>().SelectMany(x => x.CustomData).Distinct())
                     {
-                        if (!properties.ContainsKey(propName))
-                            properties[propName] = typeof(object);
+                        if (!properties.ContainsKey(prop.Key))
+                            properties[prop.Key] = prop.Value.GetType();
                     }
                 }
                 else
