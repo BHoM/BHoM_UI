@@ -183,8 +183,14 @@ namespace BH.UI.Components
                         {
                             foreach (string key in dic.Keys.OfType<string>())
                             {
-                                if (key != null & dic[key] != null &!properties.ContainsKey(key))
-                                    properties[key] = dic[key].GetType();
+                                if (key != null & !properties.ContainsKey(key))
+                                {
+                                    if (dic[key] != null)
+                                        properties[key] = dic[key].GetType();
+                                    else
+                                        properties[key] = typeof(object);
+                                }
+
                             }
                         }
                         else
@@ -198,8 +204,13 @@ namespace BH.UI.Components
                 {
                     foreach (KeyValuePair<string, object> prop in group.Cast<BHoMObject>().SelectMany(x => x.CustomData).Distinct())
                     {
-                        if (!properties.ContainsKey(prop.Key) & prop.Value != null)
-                            properties[prop.Key] = prop.Value.GetType();
+                        if (!properties.ContainsKey(prop.Key))
+                        {
+                            if (prop.Value != null)
+                                properties[prop.Key] = prop.Value.GetType();
+                            else
+                                properties[prop.Key] = typeof(object);
+                        }
                     }
                 }
                 else
