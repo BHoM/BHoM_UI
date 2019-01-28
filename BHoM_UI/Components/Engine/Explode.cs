@@ -131,9 +131,9 @@ namespace BH.UI.Components
                     {
                         OutputParams = outputs.OfType<ParamInfo>().ToList();
                         CompileOutputSetters();
-                    }     
+                    }
                 }
-                    
+
                 return true;
             }
             catch
@@ -163,7 +163,8 @@ namespace BH.UI.Components
                 return false;
 
             // Group the objects by type
-            Dictionary<string, Type> properties = new Dictionary<string, Type>();
+            Dictionary<string, List<Type>> properties = new Dictionary<string, List<Type>>();
+
             var groups = objects.Where(x => x != null).GroupBy(x => x.GetType());
             if (groups.Count() == 0)
                 return false;
@@ -184,19 +185,16 @@ namespace BH.UI.Components
                             foreach (string key in dic.Keys.OfType<string>())
                             {
                                 if (key != null & !properties.ContainsKey(key))
-                                {
-                                    if (dic[key] != null)
-                                        properties[key] = dic[key].GetType();
-                                    else
-                                        properties[key] = typeof(object);
-                                }
+                                    properties[key] = new List<Type>();
 
+                                if (dic[key] != null)
+                                    properties[key].Add(dic[key].GetType() ?? null);
                             }
                         }
                         else
                         {
-                            properties["Keys"] = typeof(List<>).MakeGenericType(new Type[] { types[0] });
-                            properties["Values"] = typeof(List<>).MakeGenericType(new Type[] { types[1] });
+                            properties["Keys"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[0] }) };
+                            properties["Values"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[1] }) };
                         }
                     }
                 }
@@ -205,36 +203,33 @@ namespace BH.UI.Components
                     foreach (KeyValuePair<string, object> prop in group.Cast<BHoMObject>().SelectMany(x => x.CustomData).Distinct())
                     {
                         if (!properties.ContainsKey(prop.Key))
-                        {
-                            if (prop.Value != null)
-                                properties[prop.Key] = prop.Value.GetType();
-                            else
-                                properties[prop.Key] = typeof(object);
-                        }
+                            properties[prop.Key] = new List<Type>();
+                        if (prop.Value != null)
+                            properties[prop.Key].Add(prop.Value.GetType() ?? null);
                     }
                 }
                 else
                 {
                     foreach (PropertyInfo prop in group.Key.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
                     {
-                        if (properties.ContainsKey(prop.Name) && properties[prop.Name] != prop.PropertyType)
+                        if (properties.ContainsKey(prop.Name) && properties[prop.Name].Contains(prop.PropertyType))
                         {
-                            BH.Engine.Reflection.Compute.RecordError("Some object have properties with the same name but with different property types.");
-                            return false;
+                            BH.Engine.Reflection.Compute.RecordWarning($"The property with name {prop.Name} is present in more than one object with different types. Type will be set to System.Object");
+                            properties[prop.Name] = new List<Type> { typeof(object) };
                         }
                         else
-                            properties[prop.Name] = prop.PropertyType;
+                            properties[prop.Name] = new List<Type> { prop.PropertyType };
                     }
-                }  
+                }
             }
 
             // Create the new output parameters
             OutputParams = new List<ParamInfo>() { };
-            foreach (KeyValuePair<string,Type> kvp in properties)
+            foreach (KeyValuePair<string, List<Type>> kvp in properties)
             {
                 OutputParams.Add(new ParamInfo
                 {
-                    DataType = kvp.Value,
+                    DataType = BH.Engine.Reflection.Query.CommonBaseType(kvp.Value),
                     Name = kvp.Key,
                     Kind = ParamKind.Output
                 });
