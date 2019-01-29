@@ -229,7 +229,7 @@ namespace BH.UI.Components
             {
                 OutputParams.Add(new ParamInfo
                 {
-                    DataType = BH.Engine.Reflection.Query.CommonBaseType(kvp.Value),
+                    DataType = kvp.Value.Where(t => t != null).FirstOrDefault() ?? typeof(object),
                     Name = kvp.Key,
                     Kind = ParamKind.Output
                 });
