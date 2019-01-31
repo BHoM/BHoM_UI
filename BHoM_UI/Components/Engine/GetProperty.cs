@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Reflection.Attributes;
+using BH.oM.UI;
 using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,17 @@ namespace BH.UI.Components
 
         public GetPropertyCaller() : base(typeof(GetPropertyCaller).GetMethod("GetProperty")) { }
 
+        /*************************************/
+        /**** Override Method             ****/
+        /*************************************/
+
+        public override object Run(object[] inputs)
+        {
+            object result = base.Run(inputs);
+            SetOutputTypes(result);
+            return result;
+        }
+
 
         /*************************************/
         /**** Public Method               ****/
@@ -65,6 +77,21 @@ namespace BH.UI.Components
         public static object GetProperty(object obj, string propName)
         {
             return Engine.Reflection.Query.PropertyValue(obj, propName);
+        }
+
+        /*************************************/
+
+        public bool SetOutputTypes(object result)
+        {
+            if (result == null)
+                return true;
+
+            if (OutputParams.Count < 1)
+                return true;
+
+            OutputParams[0].DataType = result.GetType();
+            CompileOutputSetters();
+            return true;
         }
 
         /*************************************/
