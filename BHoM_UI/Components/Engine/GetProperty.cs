@@ -21,15 +21,9 @@
  */
 
 using BH.oM.Reflection.Attributes;
-using BH.oM.UI;
 using BH.UI.Templates;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
