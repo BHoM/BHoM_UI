@@ -97,6 +97,40 @@ namespace BH.UI.Components
             CompileOutputSetters();
         }
 
+        /*************************************/
+
+        public void AddInput(string name, Type type)
+        {
+            InputParams.Add(GetParam(name, type));
+            CompileInputGetters();
+        }
+
+        /*************************************/
+
+        public bool RemoveInput(string name)
+        {
+            bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
+            CompileInputGetters();
+            return success;
+        }
+
+        /*************************************/
+
+        public bool UpdateInput(int index, string name, Type type = null)
+        {
+            if (InputParams.Count <= index)
+                return false;
+
+            if (name != null)
+                InputParams[index].Name = name;
+
+            if (type != null)
+                InputParams[index].DataType = type;
+
+            CompileInputGetters();
+            return true;
+        }
+
 
         /*************************************/
         /**** Override Methods            ****/
