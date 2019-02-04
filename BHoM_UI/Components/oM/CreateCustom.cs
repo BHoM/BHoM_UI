@@ -24,13 +24,10 @@ using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using BH.oM.Base;
 using BH.oM.UI;
 using BH.Engine.Reflection;
-using System.ComponentModel;
 using BH.Engine.Serialiser;
 using System.Collections;
 
