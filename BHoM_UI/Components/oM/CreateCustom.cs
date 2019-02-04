@@ -31,6 +31,8 @@ using BH.oM.Base;
 using BH.oM.UI;
 using BH.Engine.Reflection;
 using System.ComponentModel;
+using BH.Engine.Serialiser;
+using System.Collections;
 
 namespace BH.UI.Components
 {
@@ -128,11 +130,65 @@ namespace BH.UI.Components
             {
                 Name = ForcedType.Name;
                 Description = ForcedType.Description();
-                InputParams = ForcedType.GetProperties().Select(x => GetParam(x)).ToList();
+                InputParams.AddRange(ForcedType.GetProperties().Select(x => GetParam(x)).ToList());
             }
-
-
             return true;
+        }
+
+        /*************************************/
+
+        public override string Write()
+        {
+            try
+            {
+                CustomObject component = new CustomObject();
+                component.CustomData["SelectedItem"] = SelectedItem;
+                component.CustomData["InputParams"] = InputParams;
+                return component.ToJson();
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
+                return "";
+            }
+        }
+
+        /*************************************/
+
+        public override bool Read(string json)
+        {
+            if (json == "")
+                return true;
+
+            try
+            {
+                List<string> baseInputs = new List<string>();
+                CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+                if (component.CustomData["SelectedItem"] != null)
+                {
+                    SelectedItem = component.CustomData["SelectedItem"];
+                }
+
+                if (ForcedType != null)
+                {
+                    this.Name = ForcedType.Name;
+                    this.Description = ForcedType.Description();
+                }
+
+                if (component.CustomData["InputParams"] != null)
+                {
+                    IEnumerable inputs = component.CustomData["InputParams"] as IEnumerable;
+                    InputParams = inputs.OfType<ParamInfo>().ToList();
+                }
+                CompileInputGetters();
+                CompileOutputSetters();
+                return true;
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
+                return false;
+            }
         }
 
 
