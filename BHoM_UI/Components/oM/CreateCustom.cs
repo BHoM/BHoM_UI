@@ -81,7 +81,7 @@ namespace BH.UI.Components
 
         public void SetInputs(List<string> names, List<Type> types = null)
         {
-            if (types != null & names.Count != types.Count)
+            if (types == null || names.Count != types.Count)
             {
                 Engine.Reflection.Compute.RecordWarning("The list length for names and types does not match. Inputs are set, but <types> variable will be ignored.");
                 InputParams = names.Select(x => GetParam(x)).ToList();
