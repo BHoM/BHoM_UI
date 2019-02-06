@@ -96,9 +96,9 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        public void AddInput(string name, Type type)
+        public void AddInput(int index, string name, Type type)
         {
-            InputParams.Add(GetParam(name, type));
+            InputParams.Insert(index, GetParam(name, type));
             CompileInputGetters();
         }
 
