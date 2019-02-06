@@ -96,16 +96,23 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        public void AddInput(int index, string name, Type type)
+        public bool AddInput(int index, string name, Type type)
         {
+            if (name == null)
+                return false;
+
             InputParams.Insert(index, GetParam(name, type));
             CompileInputGetters();
+            return true;
         }
 
         /*************************************/
 
         public bool RemoveInput(string name)
         {
+            if (name == null)
+                return false;
+
             bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
             CompileInputGetters();
             return success;
