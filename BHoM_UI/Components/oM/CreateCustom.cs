@@ -123,7 +123,7 @@ namespace BH.UI.Components
         public bool UpdateInput(int index, string name, Type type = null)
         {
             if (InputParams.Count <= index)
-                return false;
+                return AddInput(index, name, type);
 
             if (name != null)
                 InputParams[index].Name = name;
