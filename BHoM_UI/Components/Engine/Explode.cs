@@ -200,13 +200,20 @@ namespace BH.UI.Components
                 }
                 else if (group.Key == typeof(CustomObject))
                 {
-                    foreach (KeyValuePair<string, object> prop in group.Cast<BHoMObject>().SelectMany(x => x.CustomData).Distinct())
+                    IEnumerable<CustomObject> objs = group.Cast<CustomObject>();
+                    foreach (KeyValuePair<string, object> prop in objs.SelectMany(x => x.CustomData).Distinct())
                     {
                         if (!properties.ContainsKey(prop.Key))
                             properties[prop.Key] = new List<Type>();
                         if (prop.Value != null)
                             properties[prop.Key].Add(prop.Value.GetType() ?? null);
                     }
+                    if (!properties.ContainsKey("Name") && objs.Any(x => x.Name != ""))
+                        properties["Name"] = new List<Type> { typeof(string) };
+                    if (!properties.ContainsKey("Tags") && objs.Any(x => x.Tags.Count > 0))
+                        properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
+                    if (!properties.ContainsKey("BHoM_Guid"))
+                        properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
                 }
                 else
                 {
