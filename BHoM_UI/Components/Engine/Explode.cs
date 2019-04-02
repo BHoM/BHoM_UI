@@ -208,9 +208,9 @@ namespace BH.UI.Components
                         if (prop.Value != null)
                             properties[prop.Key].Add(prop.Value.GetType() ?? null);
                     }
-                    if (!properties.ContainsKey("Name") && objs.Any(x => x.Name != ""))
+                    if (!properties.ContainsKey("Name"))
                         properties["Name"] = new List<Type> { typeof(string) };
-                    if (!properties.ContainsKey("Tags") && objs.Any(x => x.Tags.Count > 0))
+                    if (!properties.ContainsKey("Tags"))
                         properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
                     if (!properties.ContainsKey("BHoM_Guid"))
                         properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
