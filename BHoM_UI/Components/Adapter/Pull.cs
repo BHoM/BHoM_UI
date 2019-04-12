@@ -81,7 +81,7 @@ namespace BH.UI.Components
 
         [Description("Pull objects from the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("query", "Filter on the objects to pull (default: get all)")]
+        [Input("query", "Filter on the objects to pull")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("Objects pulled")]
