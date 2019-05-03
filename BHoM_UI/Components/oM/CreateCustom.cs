@@ -67,7 +67,7 @@ namespace BH.UI.Components
 
         public CreateCustomCaller() : base()
         {
-            SetPossibleItems(Engine.Reflection.Query.BHoMTypeList());
+            SetPossibleItems(Engine.Reflection.Query.BHoMTypeList().Where(t => t.GetInterface("IImmutable") == null));
 
             InputParams = new List<ParamInfo>();
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs." } };
