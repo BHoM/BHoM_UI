@@ -130,9 +130,12 @@ namespace BHoM_UI
         private static void CleanDirectory(string folder)
         {
             DirectoryInfo di = new DirectoryInfo(folder);
-
+            List<string> skipThese = new List<string> { ".gha", ".xll", ".dna", ".Addin" };
             foreach (FileInfo file in di.GetFiles())
-                file.Delete();
+            {
+                if (!skipThese.Contains(file.Extension))
+                    file.Delete();
+            }
             foreach (DirectoryInfo dir in di.GetDirectories())
                 dir.Delete(true);
         }
