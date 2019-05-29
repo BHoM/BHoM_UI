@@ -234,9 +234,11 @@ namespace BH.UI.Components
             OutputParams = new List<ParamInfo>() { };
             foreach (KeyValuePair<string, List<Type>> kvp in properties)
             {
+                IEnumerable<Type> uniqueTypes = kvp.Value.Distinct();
+                Type commonType = uniqueTypes.Count() > 1 ? typeof(object) : uniqueTypes.FirstOrDefault();
                 OutputParams.Add(new ParamInfo
                 {
-                    DataType = kvp.Value.Where(t => t != null).FirstOrDefault() ?? typeof(object),
+                    DataType = commonType ?? typeof(object),
                     Name = kvp.Key,
                     Kind = ParamKind.Output
                 });
