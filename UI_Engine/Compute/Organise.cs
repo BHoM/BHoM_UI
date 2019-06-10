@@ -55,7 +55,7 @@ namespace BH.Engine.UI
         public static Output<List<SearchItem>, Tree<MethodBase>> OrganiseMethods(this List<MethodBase> methods)
         {
             // Create method list
-            IEnumerable<string> paths = methods.Select(x => x.ToText(true));
+            IEnumerable<string> paths = methods.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
             List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
