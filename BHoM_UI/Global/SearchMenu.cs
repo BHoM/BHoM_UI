@@ -120,13 +120,6 @@ namespace BH.UI.Global
             items.AddRange(Engine.Reflection.Query.AdapterTypeList().Where(x => x.IsSubclassOf(typeof(BHoMAdapter))).SelectMany(x => x.GetConstructors())
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateAdapterCaller), Icon = Properties.Resources.Adapter, Text = x.ToText(true) }));
 
-            // All query constructors
-            // EP: Why are these not included in the above "All methods for the BHoM Engine"?
-            // EP: BHoMMethodList() should not contain constructors, but only public static methods
-            Type queryType = typeof(BH.oM.DataManipulation.Queries.IQuery);
-            items.AddRange(Engine.Reflection.Query.BHoMMethodList(true).Where(x => queryType.IsAssignableFrom(x.ReturnType) && !x.IsNotImplemented() && !x.IsDeprecated())
-                                    .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateQueryCaller), Icon = Properties.Resources.QueryAdapter, Text = x.ToText(true) }));
-
             // All Types
             items.AddRange(Engine.Reflection.Query.BHoMTypeList()
                                     .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
