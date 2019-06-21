@@ -26,7 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using BH.oM.DataStructure;
+using BH.oM.Data.Collections;
 using System.Windows;
 using BH.oM.UI;
 using BH.Engine.UI;

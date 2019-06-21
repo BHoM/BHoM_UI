@@ -22,7 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
@@ -65,10 +65,10 @@ namespace BH.UI.Components
         [Input("config", "Move config")]
         [Input("active", "Execute the move")]
         [Output("Confirms the success of the operation")]
-        public static bool Move(BHoMAdapter source, BHoMAdapter target, IQuery query = null, Dictionary<string, object> config = null, bool active = false)
+        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest query = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (query == null)
-                query = new FilterQuery();
+                query = new FilterRequest();
 
             if (active)
                 return source.PullTo(target, query, config);

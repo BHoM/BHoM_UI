@@ -22,7 +22,7 @@
 
 using BH.Engine.Reflection;
 using BH.Engine.UI;
-using BH.oM.DataStructure;
+using BH.oM.Data.Collections;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;

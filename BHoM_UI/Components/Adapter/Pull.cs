@@ -22,7 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
@@ -85,10 +85,10 @@ namespace BH.UI.Components
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("Objects pulled")]
-        public static IEnumerable<object> Pull(BHoMAdapter adapter, IQuery query = null, Dictionary<string, object> config = null, bool active = false)
+        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest query = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (query == null)
-                query = new FilterQuery();
+                query = new FilterRequest();
 
             if (active)
                 return adapter.Pull(query, config);

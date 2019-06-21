@@ -56,7 +56,7 @@ namespace BH.UI.Components
 
         public CreateQueryCaller() : base()
         {
-            Type queryType = typeof(BH.oM.DataManipulation.Queries.IQuery);
+            Type queryType = typeof(BH.oM.Data.Requests.IRequest);
             IEnumerable<MethodBase> methods  = BH.Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => x.DeclaringType.Name == "Create"
                 && queryType.IsAssignableFrom(x.ReturnType)

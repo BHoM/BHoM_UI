@@ -22,7 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
@@ -64,10 +64,10 @@ namespace BH.UI.Components
         [Input("config", "Delete config")]
         [Input("active", "Execute the delete")]
         [Output("#deleted", "Number of objects that have been deleted")]
-        public static int Delete(BHoMAdapter adapter, FilterQuery filter = null, Dictionary<string, object> config = null, bool active = false)
+        public static int Delete(BHoMAdapter adapter, FilterRequest filter = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (filter == null)
-                filter = new FilterQuery();
+                filter = new FilterRequest();
 
             if (active)
                 return adapter.Delete(filter, config);

@@ -20,9 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.DataStructure;
+using BH.Engine.Data;
 using BH.Engine.Reflection;
-using BH.oM.DataStructure;
+using BH.oM.Data.Collections;
 using BH.oM.Reflection;
 using BH.oM.UI;
 using System;
@@ -60,7 +60,7 @@ namespace BH.Engine.UI
 
             //Create method tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "Modify", "Query" };
-            Tree<MethodBase> tree = DataStructure.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
+            Tree<MethodBase> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupMethodsByName();
@@ -77,7 +77,7 @@ namespace BH.Engine.UI
             List<SearchItem> list = paths.Zip(types, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create type tree
-            Tree<Type> tree = DataStructure.Create.Tree(types, paths.Select(x => x.Split('.').ToList()).ToList(), "select a type");
+            Tree<Type> tree = Data.Create.Tree(types, paths.Select(x => x.Split('.').ToList()).ToList(), "select a type");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
 
@@ -93,7 +93,7 @@ namespace BH.Engine.UI
             List<SearchItem> list = paths.Zip(items, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create ietm tree
-            Tree<T> tree = DataStructure.Create.Tree(items, paths.Select(x => x.Split(new char[] { '.', '/', '\\' }).ToList()).ToList(), "select an item");
+            Tree<T> tree = Data.Create.Tree(items, paths.Select(x => x.Split(new char[] { '.', '/', '\\' }).ToList()).ToList(), "select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
 
