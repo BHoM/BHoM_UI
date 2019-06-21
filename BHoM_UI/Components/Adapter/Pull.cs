@@ -81,17 +81,17 @@ namespace BH.UI.Components
 
         [Description("Pull objects from the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("query", "Filter on the objects to pull")]
+        [Input("request", "Filter on the objects to pull")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("Objects pulled")]
-        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest query = null, Dictionary<string, object> config = null, bool active = false)
+        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
         {
-            if (query == null)
-                query = new FilterRequest();
+            if (request == null)
+                request = new FilterRequest();
 
             if (active)
-                return adapter.Pull(query, config);
+                return adapter.Pull(request, config);
             else
                 return new List<object>();
         }

@@ -61,17 +61,17 @@ namespace BH.UI.Components
         [Description("Copy objects from a source adapter to a target adapter")]
         [Input("source", "Adapter the data is copied from")]
         [Input("target", "Adapter the data is copied to")]
-        [Input("query", "Filter on the objects to pull (default: get all)")]
+        [Input("request", "Filter on the objects to pull (default: get all)")]
         [Input("config", "Move config")]
         [Input("active", "Execute the move")]
         [Output("Confirms the success of the operation")]
-        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest query = null, Dictionary<string, object> config = null, bool active = false)
+        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
         {
-            if (query == null)
-                query = new FilterRequest();
+            if (request == null)
+                request = new FilterRequest();
 
             if (active)
-                return source.PullTo(target, query, config);
+                return source.PullTo(target, request, config);
             else
                 return false;
         }
