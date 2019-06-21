@@ -31,7 +31,7 @@ using BH.Engine.Reflection;
 
 namespace BH.UI.Components
 {
-    public class CreateQueryCaller : MethodCaller
+    public class CreateRequestCaller : MethodCaller
     {
         /*************************************/
         /**** Properties                  ****/
@@ -41,11 +41,11 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("A4C4D4BA-8FB9-4CE5-802E-46A39B89FE5E");
 
-        public override string Name { get; protected set; } = "CreateQuery";
+        public override string Name { get; protected set; } = "CreateRequest";
 
         public override string Category { get; protected set; } = "Adapter";
 
-        public override string Description { get; protected set; } = "Creates an instance of a selected type of adapter query";
+        public override string Description { get; protected set; } = "Creates an instance of a selected type of adapter request";
 
         public override int GroupIndex { get; protected set; } = 2;
 
@@ -54,12 +54,12 @@ namespace BH.UI.Components
         /**** Constructors                ****/
         /*************************************/
 
-        public CreateQueryCaller() : base()
+        public CreateRequestCaller() : base()
         {
-            Type queryType = typeof(BH.oM.Data.Requests.IRequest);
+            Type requestType = typeof(BH.oM.Data.Requests.IRequest);
             IEnumerable<MethodBase> methods  = BH.Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => x.DeclaringType.Name == "Create"
-                && queryType.IsAssignableFrom(x.ReturnType)
+                && requestType.IsAssignableFrom(x.ReturnType)
                 && !x.IsDeprecated())
                 .OrderBy(x => x.Name);
             SetPossibleItems(methods);
