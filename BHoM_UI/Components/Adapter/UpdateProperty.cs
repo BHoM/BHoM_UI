@@ -22,7 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
@@ -66,10 +66,10 @@ namespace BH.UI.Components
         [Input("config", "UpdateProperty config")]
         [Input("active", "Execute the update")]
         [Output("#updated", "Number of objects that have been updated")]
-        public static int UpdateProperty(BHoMAdapter adapter, string property, object newValue, FilterQuery filter = null, Dictionary<string, object> config = null, bool active = false)
+        public static int UpdateProperty(BHoMAdapter adapter, string property, object newValue, FilterRequest filter = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (filter == null)
-                filter = new FilterQuery();
+                filter = new FilterRequest();
 
             if (active)
                 return adapter.UpdateProperty(filter, property, newValue, config);
