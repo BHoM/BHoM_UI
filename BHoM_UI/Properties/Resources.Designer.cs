@@ -465,9 +465,9 @@ namespace BH.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap QueryAdapter {
+        internal static System.Drawing.Bitmap CreateRequest {
             get {
-                object obj = ResourceManager.GetObject("QueryAdapter", resourceCulture);
+                object obj = ResourceManager.GetObject("CreateRequest", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

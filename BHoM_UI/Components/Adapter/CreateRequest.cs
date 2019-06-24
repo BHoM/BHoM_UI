@@ -37,7 +37,7 @@ namespace BH.UI.Components
         /**** Properties                  ****/
         /*************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.QueryAdapter;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateRequest;
 
         public override Guid Id { get; protected set; } = new Guid("A4C4D4BA-8FB9-4CE5-802E-46A39B89FE5E");
 

@@ -156,7 +156,7 @@
     <Content Include="Properties\Resources\Pull.png" />
     <Content Include="Properties\Resources\Push.png" />
     <Content Include="Properties\Resources\Query.png" />
-    <Content Include="Properties\Resources\QueryAdapter.png" />
+    <Content Include="Properties\Resources\CreateRequest.png" />
     <Content Include="Properties\Resources\ToJson.png" />
     <Content Include="Properties\Resources\Type.png" />
     <Content Include="Properties\Resources\UpdateProperty.png" />
