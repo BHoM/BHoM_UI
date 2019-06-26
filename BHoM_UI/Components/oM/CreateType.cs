@@ -73,6 +73,7 @@ namespace BH.UI.Components
         public CreateTypeCaller() : base()
         {
             List<Type> types = Engine.Reflection.Query.BHoMTypeList();
+            types.AddRange(Engine.Reflection.Query.BHoMInterfaceList());
             types.AddRange(new List<Type> { typeof(object), typeof(Type), typeof(Enum), typeof(bool), typeof(byte), typeof(char), typeof(double), typeof(int), typeof(string) });
             SetPossibleItems(types);
 
