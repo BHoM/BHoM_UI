@@ -53,8 +53,7 @@ namespace BH.UI.Components
 
         public QueryCaller() : base()
         {
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.BHoMMethodList().Where(x => x.DeclaringType.Name == "Query");
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.QueryItems());
         }
 
         /*************************************/

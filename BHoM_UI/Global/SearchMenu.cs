@@ -113,24 +113,24 @@ namespace BH.UI.Global
             }
 
             // All methods for the BHoM Engine
-            items.AddRange(Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated())
-                                    .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
+            items.AddRange(BH.Engine.UI.Query.EngineItems()
+                        .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
 
             // All adapter constructors
-            items.AddRange(Engine.Reflection.Query.AdapterTypeList().Where(x => x.IsSubclassOf(typeof(BHoMAdapter))).SelectMany(x => x.GetConstructors())
-                                    .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateAdapterCaller), Icon = Properties.Resources.Adapter, Text = x.ToText(true) }));
+            items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateAdapterCaller), Icon = Properties.Resources.Adapter, Text = x.ToText(true) }));
 
             // All Types
-            items.AddRange(Engine.Reflection.Query.BHoMTypeList()
-                                    .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
+            items.AddRange(BH.Engine.UI.Query.TypeItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
 
             // All Enums
-            items.AddRange(Engine.Reflection.Query.BHoMEnumList()
-                                    .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateEnumCaller), Icon = Properties.Resources.BHoM_Enum, Text = x.ToText(true) }));
+            items.AddRange(BH.Engine.UI.Query.EnumItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateEnumCaller), Icon = Properties.Resources.BHoM_Enum, Text = x.ToText(true) }));
 
             // All data libraries
-            items.AddRange(Engine.Library.Query.LibraryNames()
-                                    .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x }));
+            items.AddRange(BH.Engine.UI.Query.LibraryItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x }));
 
             // Return the list
             return items;

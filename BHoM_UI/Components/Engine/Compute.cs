@@ -53,8 +53,7 @@ namespace BH.UI.Components
 
         public ComputeCaller() : base()
         {
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.BHoMMethodList().Where(x => x.DeclaringType.Name == "Compute");
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.ComputeItems());
         }
 
         /*************************************/

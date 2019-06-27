@@ -53,8 +53,7 @@ namespace BH.UI.Components
 
         public ConvertCaller() : base()
         {
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.BHoMMethodList().Where(x => x.DeclaringType.Name == "Convert");
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.ConvertItems());
         }
 
         /*************************************/

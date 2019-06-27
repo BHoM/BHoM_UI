@@ -72,11 +72,7 @@ namespace BH.UI.Components
 
         public CreateTypeCaller() : base()
         {
-            List<Type> types = Engine.Reflection.Query.BHoMTypeList();
-            types.AddRange(Engine.Reflection.Query.BHoMInterfaceList());
-            types.AddRange(new List<Type> { typeof(object), typeof(Type), typeof(Enum), typeof(bool), typeof(byte), typeof(char), typeof(double), typeof(int), typeof(string) });
-            SetPossibleItems(types);
-
+            SetPossibleItems(Engine.UI.Query.TypeItems());
             InputParams = new List<ParamInfo>();
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Type), Kind = ParamKind.Output, Name = "type", Description = "type definition" } };
         }
