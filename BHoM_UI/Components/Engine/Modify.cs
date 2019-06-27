@@ -53,8 +53,7 @@ namespace BH.UI.Components
 
         public ModifyCaller() : base()
         {
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.BHoMMethodList().Where(x => x.DeclaringType.Name == "Modify");
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.ModifyItems());
         }
 
         /*************************************/

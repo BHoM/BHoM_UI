@@ -56,13 +56,7 @@ namespace BH.UI.Components
 
         public CreateRequestCaller() : base()
         {
-            Type requestType = typeof(BH.oM.Data.Requests.IRequest);
-            IEnumerable<MethodBase> methods  = BH.Engine.Reflection.Query.BHoMMethodList()
-                .Where(x => x.DeclaringType.Name == "Create"
-                && requestType.IsAssignableFrom(x.ReturnType)
-                && !x.IsDeprecated())
-                .OrderBy(x => x.Name);
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.CreateRequestItems());
         }
 
         /*************************************/

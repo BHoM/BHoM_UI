@@ -73,8 +73,7 @@ namespace BH.UI.Components
 
         public CreateDataCaller() : base()
         {
-            List<string> names = Engine.Library.Query.LibraryNames();
-            SetPossibleItems(names);
+            SetPossibleItems(Engine.UI.Query.LibraryItems());
 
             InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(int), Kind = ParamKind.Input, Name = "index", Description = "index of the data reference" } };
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "data", Description = "selected reference data" } };

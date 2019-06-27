@@ -56,9 +56,7 @@ namespace BH.UI.Components
 
         public CreateAdapterCaller() : base()
         {
-            Type adapterType = typeof(BHoMAdapter);
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.AdapterTypeList().Where(x => x.IsSubclassOf(adapterType)).OrderBy(x => x.Name).SelectMany(x => x.GetConstructors());
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.AdapterConstructorItems());
         }
 
         /*************************************/

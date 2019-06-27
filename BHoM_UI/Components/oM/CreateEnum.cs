@@ -72,8 +72,7 @@ namespace BH.UI.Components
 
         public CreateEnumCaller() : base()
         {
-            List<Type> types = Engine.Reflection.Query.BHoMEnumList();
-            SetPossibleItems(types);
+            SetPossibleItems(Engine.UI.Query.EnumItems());
 
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Enum), Kind = ParamKind.Output, Name = "enum", Description = "enum value" } };
         }

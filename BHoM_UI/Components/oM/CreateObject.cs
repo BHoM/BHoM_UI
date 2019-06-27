@@ -53,8 +53,7 @@ namespace BH.UI.Components
 
         public CreateObjectCaller() : base()
         {
-            IEnumerable<MethodBase> methods = BH.Engine.Reflection.Query.BHoMMethodList().Where(x => x.DeclaringType.Name == "Create");
-            SetPossibleItems(methods);
+            SetPossibleItems(Engine.UI.Query.CreateItems());
         }
 
             /*************************************/
