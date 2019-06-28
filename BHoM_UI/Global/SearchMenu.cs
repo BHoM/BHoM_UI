@@ -20,19 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Adapter;
 using BH.Engine.Reflection;
-using BH.Engine.UI;
 using BH.oM.UI;
 using BH.UI.Components;
-using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.UI.Global
 {
