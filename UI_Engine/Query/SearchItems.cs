@@ -107,6 +107,10 @@ namespace BH.Engine.UI
         {
             return Engine.Reflection.Query.BHoMTypeList()
                 .Concat(Engine.Reflection.Query.BHoMInterfaceList())
+                .Concat(new List<Type> { typeof(Type), typeof(Enum),
+                    typeof(object), typeof(bool), typeof(byte),
+                    typeof(char), typeof(string),
+                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),})
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
         }
 
