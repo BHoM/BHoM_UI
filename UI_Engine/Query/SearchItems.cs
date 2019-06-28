@@ -35,14 +35,14 @@ namespace BH.Engine.UI
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> EngineItems()
+        public static IEnumerable<MethodBase> EngineItems()
         {
             return Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
         }
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> CreateItems()
+        public static IEnumerable<MethodBase> CreateItems()
         {
             return Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Create");
@@ -50,7 +50,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> ComputeItems()
+        public static IEnumerable<MethodBase> ComputeItems()
         {
             return Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Compute");
@@ -58,7 +58,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> ConvertItems()
+        public static IEnumerable<MethodBase> ConvertItems()
         {
             return Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Convert");
@@ -66,7 +66,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> ModifyItems()
+        public static IEnumerable<MethodBase> ModifyItems()
         {
             return Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Modify");
@@ -74,7 +74,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> QueryItems()
+        public static IEnumerable<MethodBase> QueryItems()
         {
             return Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Query");
@@ -82,7 +82,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<ConstructorInfo> AdapterConstructorItems()
+        public static IEnumerable<MethodBase> AdapterConstructorItems()
         {
             return Engine.Reflection.Query.AdapterTypeList()
                 .Where(x => x.IsSubclassOf(typeof(BHoMAdapter)))
@@ -92,7 +92,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodInfo> CreateRequestItems()
+        public static IEnumerable<MethodBase> CreateRequestItems()
         {
             return BH.Engine.Reflection.Query.BHoMMethodList()
                 .Where(x => x.DeclaringType.Name == "Create"

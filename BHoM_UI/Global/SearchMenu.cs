@@ -138,7 +138,7 @@ namespace BH.UI.Global
 
         /*************************************/
 
-        protected Bitmap GetIcon(MethodInfo item)
+        protected Bitmap GetIcon(MethodBase item)
         {
             if (item == null)
                 return Properties.Resources.Empty;
@@ -162,7 +162,7 @@ namespace BH.UI.Global
 
         /*************************************/
 
-        private static Type GetCallerType(MethodInfo item)
+        private static Type GetCallerType(MethodBase item)
         {
             if (item.DeclaringType.Namespace.StartsWith("BH.Engine"))
             {
