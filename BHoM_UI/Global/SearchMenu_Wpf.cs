@@ -81,6 +81,7 @@ namespace BH.UI.Global
                 grid.Children.Add(m_SearchResultGrid);
 
                 container.Children.Add(m_Popup);
+                m_Popup.KeyDown += M_Popup_KeyDown;
             }
 
             m_SearchTextBox.Text = "";
@@ -91,7 +92,41 @@ namespace BH.UI.Global
             return true;
         }
 
-        
+        private void M_Popup_KeyDown(object sender, KeyEventArgs e)
+        {
+            e.Handled = true;
+            switch (e.Key)
+            {
+                case Key.Up:
+                    if (--m_selected < 0)
+                        m_selected = m_hits - 1;
+                    break;
+                case Key.Down:
+                    m_selected = (m_selected + 1) % m_hits;
+                    break;
+                case Key.Enter:
+                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
+                    m_Popup.IsOpen = false;
+                    if (m_selected < hits.Count)
+                    {
+                        NotifySelection(hits[m_selected]);
+                    }
+                    return;
+                case Key.Escape:
+                    m_Popup.IsOpen = false;
+                    return;
+                default:
+                    e.Handled = false;
+                    return;
+            }
+            foreach (Label element in m_SearchResultGrid.Children)
+            {
+                int i = Grid.GetRow(element);
+                element.Background = (i == m_selected) ? System.Windows.SystemColors.HighlightBrush : System.Windows.Media.Brushes.White;
+            }
+        }
+
+
         /*************************************/
         /**** Private Methods             ****/
         /*************************************/
@@ -121,6 +156,9 @@ namespace BH.UI.Global
         {
             List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
 
+            m_selected = 0;
+            m_hits = hits.Count;
+
             m_SearchResultGrid.Children.Clear();
             m_SearchResultGrid.RowDefinitions.Clear();
 
@@ -146,6 +184,7 @@ namespace BH.UI.Global
                 m_SearchResultGrid.Children.Add(icon);
 
                 Label label = new Label { Content = hit.Text, Background = System.Windows.Media.Brushes.White };
+                if (i == m_selected) label.Background = System.Windows.SystemColors.HighlightBrush;
                 label.MouseUp += (a, b) =>
                 {
                     m_Popup.IsOpen = false;
@@ -194,6 +233,8 @@ namespace BH.UI.Global
         private static Grid m_SearchResultGrid = null;
 
         private static Dictionary<Bitmap, ImageSource> m_ImageSources = new Dictionary<Bitmap, ImageSource>();
+        private int m_selected;
+        private int m_hits;
 
         /*************************************/
     }
