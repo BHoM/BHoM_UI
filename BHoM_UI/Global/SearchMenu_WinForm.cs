@@ -91,7 +91,8 @@ namespace BH.UI.Global
                     Size = new System.Drawing.Size(m_MinWidth, 1),
                     TabIndex = 1,
                 };
-                m_Popup.Controls.Add(m_SearchResultPanel);  
+                m_Popup.Controls.Add(m_SearchResultPanel);
+                m_Popup.KeyDown += M_Popup_KeyDown;
             }
 
             // Finish the popup form
@@ -113,7 +114,42 @@ namespace BH.UI.Global
 
             TextBox_TextChanged(null, null);
 
+
             return true;
+        }
+
+        private void M_Popup_KeyDown(object sender, KeyEventArgs e)
+        {
+            e.SuppressKeyPress = true;
+            switch (e.KeyData)
+            {
+                case Keys.Up:
+                    if (--m_selected < 0)
+                        m_selected = m_SearchResultPanel.Controls.Count - 1;
+                    break;
+                case Keys.Down:
+                    m_selected = (m_selected + 1) % m_SearchResultPanel.Controls.Count;
+                    break;
+                case Keys.Enter:
+                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
+                    if (m_selected < hits.Count)
+                    {
+                        m_Popup.Hide();
+                        NotifySelection(hits[m_selected]);
+                    }
+                    return;
+                case Keys.Escape:
+                    m_Popup.Hide();
+                    return;
+                default:
+                    e.SuppressKeyPress = false;
+                    return;
+            }
+            for (int i = 0; i < m_SearchResultPanel.Controls.Count; i++)
+            {
+                Control row = m_SearchResultPanel.Controls[i];
+                row.BackColor = (i == m_selected) ? System.Drawing.SystemColors.MenuHighlight : Color.Transparent;
+            }
         }
 
 
@@ -130,6 +166,7 @@ namespace BH.UI.Global
 
         private void TextBox_TextChanged(object sender, EventArgs e)
         {
+            m_selected = 0;
             List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
 
             int yPos = 0;
@@ -141,7 +178,7 @@ namespace BH.UI.Global
                 Label label = new Label
                 {
                     Text = hit.Text,
-                    BackColor = Color.White,
+                    BackColor = Color.Transparent,
                     Cursor = Cursors.Hand,
                     TextAlign = ContentAlignment.MiddleLeft,
                 };
@@ -156,6 +193,7 @@ namespace BH.UI.Global
                 label.Location = new System.Drawing.Point(icon.Width + 5, 0);
 
                 Panel row = new Panel { Width = label.Width + icon.Width, Height = label.Height, Location = new System.Drawing.Point(0, yPos) };
+                if (i == m_selected) row.BackColor = System.Drawing.SystemColors.MenuHighlight;
                 row.Controls.Add(icon);
                 row.Controls.Add(label);
                 maxWidth = Math.Max(maxWidth, row.Width);
@@ -172,6 +210,7 @@ namespace BH.UI.Global
             }
             
             m_Popup.Width = maxWidth;
+            foreach (Control row in m_SearchResultPanel.Controls) row.Width = maxWidth;
             m_SearchResultPanel.Size = new System.Drawing.Size(maxWidth, yPos);
             m_Popup.Height = m_SearchResultPanel.Bottom + 10;
         }
@@ -187,6 +226,7 @@ namespace BH.UI.Global
         private static Form m_Popup = null;
         private static TextBox m_SearchTextBox = null;
         private static Panel m_SearchResultPanel = null;
+        private int m_selected;
 
         /*************************************/
     }
