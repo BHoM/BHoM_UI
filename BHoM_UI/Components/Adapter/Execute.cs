@@ -64,7 +64,7 @@ namespace BH.UI.Components
         [Input("parameters", "Parameters of the command")]
         [Input("config", "Execute config")]
         [Input("active", "Execute the command")]
-        [Output("Confirms the success of the operation")]
+        [Output("success", "Define if the execution was sucessful")]
         public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (active)

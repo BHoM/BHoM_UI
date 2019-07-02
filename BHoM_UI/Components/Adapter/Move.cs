@@ -64,7 +64,7 @@ namespace BH.UI.Components
         [Input("request", "Filter on the objects to pull (default: get all)")]
         [Input("config", "Move config")]
         [Input("active", "Execute the move")]
-        [Output("Confirms the success of the operation")]
+        [Output("success", "Define if the move was sucessful")]
         public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (request == null)
