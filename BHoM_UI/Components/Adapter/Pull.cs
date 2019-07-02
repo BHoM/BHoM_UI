@@ -84,7 +84,7 @@ namespace BH.UI.Components
         [Input("request", "Filter on the objects to pull")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
-        [Output("pullList","Objects pulled")]
+        [Output("objects","Objects pulled")]
         public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
         {
             if (request == null)
