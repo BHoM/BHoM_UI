@@ -81,7 +81,7 @@ namespace BH.UI.Global
                 grid.Children.Add(m_SearchResultGrid);
 
                 container.Children.Add(m_Popup);
-                m_Popup.KeyDown += M_Popup_KeyDown;
+                m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown; 
             }
 
             m_SearchTextBox.Text = "";
@@ -92,7 +92,7 @@ namespace BH.UI.Global
             return true;
         }
 
-        private void M_Popup_KeyDown(object sender, KeyEventArgs e)
+        private void M_SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
             switch (e.Key)
@@ -119,7 +119,7 @@ namespace BH.UI.Global
                     e.Handled = false;
                     return;
             }
-            foreach (Label element in m_SearchResultGrid.Children)
+            foreach (Label element in m_SearchResultGrid.Children.OfType<Label>())
             {
                 int i = Grid.GetRow(element);
                 element.Background = (i == m_selected) ? System.Windows.SystemColors.HighlightBrush : System.Windows.Media.Brushes.White;
