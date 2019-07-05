@@ -75,7 +75,7 @@ namespace BH.UI.Global
                     Location = new System.Drawing.Point(0, 0),
                     Size = new System.Drawing.Size(m_MinWidth, 22),
                     TabIndex = 0,
-                    TextAlign = System.Windows.Forms.HorizontalAlignment.Center,
+                    TextAlign = System.Windows.Forms.HorizontalAlignment.Left,
                     WordWrap = false,
                     Text = ""
                 };
