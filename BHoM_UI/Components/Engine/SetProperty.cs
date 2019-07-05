@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,18 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
 using BH.oM.Base;
-using BH.oM.Reflection;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
@@ -72,11 +66,14 @@ namespace BH.UI.Components
 
 
         /*************************************/
-        /**** Protected Methods           ****/
+        /**** Override Methods            ****/
         /*************************************/
 
         protected override object[] CollectInputs()
         {
+            // EP. I am not sure why this code is here. It seems like it does nothing more than what the
+            // RemoveInput and UpdateInput methods are doing. 
+            // Maybe it has something to do with generics, but I will leave this here, since it works.
             object[] inputs = new object[] { };
             try
             {
@@ -109,6 +106,54 @@ namespace BH.UI.Components
 
             return inputs;
         }
+
+        /*************************************/
+
+        //public override string Write()
+        //{
+        //    try
+        //    {
+        //        CustomObject component = new CustomObject();
+        //        component.CustomData["SelectedItem"] = SelectedItem;
+        //        component.CustomData["InputParams"] = InputParams;
+        //        return component.ToJson();
+        //    }
+        //    catch
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
+        //        return "";
+        //    }
+        //}
+
+        ///*************************************/
+
+        //public override bool Read(string json)
+        //{
+        //    if (json == "")
+        //        return true;
+
+        //    try
+        //    {
+        //        CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+
+        //        object item;
+        //        if (component.CustomData.TryGetValue("SelectedItem", out item))
+        //            SelectedItem = item;
+
+        //        object inputParams;
+        //        if (component.CustomData.TryGetValue("InputParams", out inputParams))
+        //        {
+        //            InputParams = (inputParams as IEnumerable).OfType<ParamInfo>().ToList();
+        //            CompileInputGetters();
+        //        }
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
+        //        return false;
+        //    }
+        //}
 
 
         /*************************************/
