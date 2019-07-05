@@ -71,7 +71,9 @@
   <ItemGroup>
     <Compile Include="Compute\LoadAssemblies.cs" />
     <Compile Include="Compute\Organise.cs" />
+    <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Create\MethodInfo.cs" />
+    <Compile Include="Create\ParamInfo.cs" />
     <Compile Include="Modify\GroupMethodsByName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Hits.cs" />
@@ -81,9 +83,7 @@
     <Compile Include="Query\SubType.cs" />
     <Compile Include="Query\Depth.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Convert\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

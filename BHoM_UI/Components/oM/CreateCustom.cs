@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -30,6 +30,7 @@ using BH.oM.UI;
 using BH.Engine.Reflection;
 using BH.Engine.Serialiser;
 using System.Collections;
+using BH.Engine.UI;
 
 namespace BH.UI.Components
 {
@@ -78,63 +79,20 @@ namespace BH.UI.Components
         /**** Public Methods              ****/
         /*************************************/
 
-        public void SetInputs(List<string> names, List<Type> types = null)
+        public void SetInputParams(List<string> names, List<Type> types = null)
         {
             if (types == null || names.Count != types.Count)
             {
                 Engine.Reflection.Compute.RecordWarning("The list length for names and types does not match. Inputs are set, but <types> variable will be ignored.");
-                InputParams = names.Select(x => GetParam(x)).ToList();
+                types = new List<Type>(new Type[names.Count]);
             }
-            else
-            {
-                InputParams = names.Zip(types, (name, type) => GetParam(name, type)).ToList();
-            }
+
+            for (int i = 0; i < names.Count; i++)
+                AddInput(i, names[i], types[i]);
 
             CompileInputGetters();
             CompileOutputSetters();
         }
-
-        /*************************************/
-
-        public bool AddInput(int index, string name, Type type)
-        {
-            if (name == null)
-                return false;
-
-            InputParams.Insert(index, GetParam(name, type));
-            CompileInputGetters();
-            return true;
-        }
-
-        /*************************************/
-
-        public bool RemoveInput(string name)
-        {
-            if (name == null)
-                return false;
-
-            bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
-            CompileInputGetters();
-            return success;
-        }
-
-        /*************************************/
-
-        public bool UpdateInput(int index, string name, Type type = null)
-        {
-            if (InputParams.Count <= index)
-                return AddInput(index, name, type);
-
-            if (name != null)
-                InputParams[index].Name = name;
-
-            if (type != null)
-                InputParams[index].DataType = type;
-
-            CompileInputGetters();
-            return true;
-        }
-
 
         /*************************************/
         /**** Override Methods            ****/
@@ -168,77 +126,15 @@ namespace BH.UI.Components
             {
                 Name = ForcedType.Name;
                 Description = ForcedType.Description();
-                InputParams.AddRange(ForcedType.GetProperties().Select(x => GetParam(x)).ToList());
+                InputParams.AddRange(ForcedType.GetProperties().Select(x => x.ToBHoM()).ToList());
             }
             return true;
         }
 
         /*************************************/
 
-        public override string Write()
+        public override bool AddInput(int index, string name, Type type = null)
         {
-            try
-            {
-                CustomObject component = new CustomObject();
-                component.CustomData["SelectedItem"] = SelectedItem;
-                component.CustomData["InputParams"] = InputParams;
-                return component.ToJson();
-            }
-            catch
-            {
-                BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
-                return "";
-            }
-        }
-
-        /*************************************/
-
-        public override bool Read(string json)
-        {
-            if (json == "")
-                return true;
-
-            try
-            {
-                List<string> baseInputs = new List<string>();
-                CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
-                if (component.CustomData["SelectedItem"] != null)
-                {
-                    SelectedItem = component.CustomData["SelectedItem"];
-                }
-
-                if (ForcedType != null)
-                {
-                    this.Name = ForcedType.Name;
-                    this.Description = ForcedType.Description();
-                }
-
-                if (component.CustomData["InputParams"] != null)
-                {
-                    IEnumerable inputs = component.CustomData["InputParams"] as IEnumerable;
-                    InputParams = inputs.OfType<ParamInfo>().ToList();
-                }
-                CompileInputGetters();
-                CompileOutputSetters();
-                return true;
-            }
-            catch
-            {
-                BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
-                return false;
-            }
-        }
-
-
-        /*************************************/
-        /**** Private Fields              ****/
-        /*************************************/
-
-        public oM.UI.ParamInfo GetParam(string name, Type type = null)
-        {
-            if (type == null)
-                type = typeof(object);
-
             if (ForcedType != null)
             {
                 PropertyInfo info = ForcedType.GetProperty(name);
@@ -246,26 +142,64 @@ namespace BH.UI.Components
                     type = info.PropertyType;
             }
 
-            return new ParamInfo
-            {
-                Name = name,
-                DataType = type,
-                Kind = ParamKind.Input
-            };
+            return base.AddInput(index, name, type);
         }
 
         /*************************************/
 
-        public oM.UI.ParamInfo GetParam(PropertyInfo info)
-        {
-            return new ParamInfo
-            {
-                Name = info.Name,
-                DataType = info.PropertyType,
-                Description = info.IDescription(),
-                Kind = ParamKind.Input
-            };
-        }
+        //public override string Write()
+        //{
+        //    try
+        //    {
+        //        CustomObject component = new CustomObject();
+        //        component.CustomData["SelectedItem"] = SelectedItem;
+        //        component.CustomData["InputParams"] = InputParams;
+        //        return component.ToJson();
+        //    }
+        //    catch
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
+        //        return "";
+        //    }
+        //}
+
+        /*************************************/
+
+        //public override bool Read(string json)
+        //{
+        //    if (json == "")
+        //        return true;
+
+        //    try
+        //    {
+        //        List<string> baseInputs = new List<string>();
+        //        CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+        //        if (component.CustomData["SelectedItem"] != null)
+        //        {
+        //            SelectedItem = component.CustomData["SelectedItem"];
+        //        }
+
+        //        if (ForcedType != null)
+        //        {
+        //            this.Name = ForcedType.Name;
+        //            this.Description = ForcedType.Description();
+        //        }
+
+        //        if (component.CustomData["InputParams"] != null)
+        //        {
+        //            IEnumerable inputs = component.CustomData["InputParams"] as IEnumerable;
+        //            InputParams = inputs.OfType<ParamInfo>().ToList();
+        //        }
+        //        CompileInputGetters();
+        //        CompileOutputSetters();
+        //        return true;
+        //    }
+        //    catch
+        //    {
+        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
+        //        return false;
+        //    }
+        //}
 
         /*************************************/
     }

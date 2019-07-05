@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2019, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -22,19 +22,16 @@
 
 using BH.Engine.Reflection;
 using BH.oM.Reflection;
-using BH.Engine.UI;
-using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
+using BH.oM.Base;
+using System.Collections;
 
 namespace BH.UI.Templates
 {
@@ -139,6 +136,47 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public virtual bool AddInput(int index, string name, Type type)
+        {
+            if (name == null)
+                return false;
+
+            InputParams.Insert(index, Engine.UI.Create.ParamInfo(name, type));
+            CompileInputGetters();
+            return true;
+        }
+
+        /*************************************/
+
+        public virtual bool RemoveInput(string name)
+        {
+            if (name == null)
+                return false;
+
+            bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
+            CompileInputGetters();
+            return success;
+        }
+
+        /*************************************/
+
+        public virtual bool UpdateInput(int index, string name, Type type = null)
+        {
+            if (InputParams.Count <= index)
+                return AddInput(index, name, type);
+
+            if (name != null)
+                InputParams[index].Name = name;
+
+            if (type != null)
+                InputParams[index].DataType = type;
+
+            CompileInputGetters();
+            return true;
+        }
+
+        /*************************************/
+
         public virtual void AddToMenu(ToolStripDropDown menu)
         {
             if (Selector != null && SelectedItem == null)
@@ -167,13 +205,15 @@ namespace BH.UI.Templates
         {
             try
             {
-                if (SelectedItem == null)
-                    return "";
-                else
-                    return SelectedItem.ToJson();
+                CustomObject component = new CustomObject();
+                component.CustomData["SelectedItem"] = SelectedItem;
+                component.CustomData["InputParams"] = InputParams;
+                component.CustomData["OutputParams"] = OutputParams;
+                return component.ToJson();
             }
             catch
             {
+                BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
                 return "";
             }
         }
@@ -187,15 +227,41 @@ namespace BH.UI.Templates
 
             try
             {
-                SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
+                object obj = BH.Engine.Serialiser.Convert.FromJson(json);
 
-                if (SelectedItem != null)
-                    ItemSelected?.Invoke(this, SelectedItem);
+                CustomObject component = obj as CustomObject; // Old component, serialised only with the SelectedItem as object
+                if (component == null)
+                {
+                    SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
+                    if (SelectedItem != null)
+                        ItemSelected?.Invoke(this, SelectedItem);
+                    return true;
+                }
 
+                // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
+                object backendElement;
+                if (component.CustomData.TryGetValue("SelectedItem", out backendElement))
+                    SetItem(backendElement);
+
+                // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
+                // Also, if SelectedItem is null, the component will still have its input and outputs
+                object inputParams;
+                if (component.CustomData.TryGetValue("InputParams", out inputParams))
+                {
+                    InputParams = (inputParams as IEnumerable).OfType<ParamInfo>().ToList();
+                    CompileInputGetters();
+                }
+                object outputParams;
+                if (component.CustomData.TryGetValue("OutputParams", out outputParams))
+                {
+                    OutputParams = (outputParams as IEnumerable).OfType<ParamInfo>().ToList();
+                    CompileOutputSetters();
+                }
                 return true;
             }
             catch
             {
+                BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
                 return false;
             }
         }
@@ -232,7 +298,7 @@ namespace BH.UI.Templates
                 else if (m_CompiledSetters.Count > 0)
                 {
                     for (int i = 0; i < m_CompiledSetters.Count; i++)
-                        m_CompiledSetters[i](DataAccessor, BH.Engine.Reflection.Query.Item(result as dynamic, i));
+                        m_CompiledSetters[i](DataAccessor, BH.Engine.Reflection.Query.IItem(result, i));
                 }
             }
             catch (Exception e)
