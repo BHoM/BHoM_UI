@@ -124,7 +124,7 @@ namespace BH.UI.Templates
             {
                 return m_CompiledFunc(inputs);
             }
-            else if (inputs.Length <= 0)
+            else if (InputParams.Count <= 0)
             {
                 BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
                 return null;
