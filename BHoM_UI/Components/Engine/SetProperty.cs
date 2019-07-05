@@ -39,7 +39,7 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("A186D4F1-FC80-499B-8BBF-ECDD49BF6E6E");
 
-        public override string Name { get; protected set; } = "SetProperty";
+        public override string Name { get { return "SetProperty";  } protected set { } }
 
         public override int GroupIndex { get; protected set; } = 2;
 
@@ -50,19 +50,7 @@ namespace BH.UI.Components
         /**** Constructors                ****/
         /*************************************/
 
-        public SetPropertyCaller() : base(typeof(SetPropertyCaller).GetMethod("SetProperty")) { }
-
-
-        /*************************************/
-        /**** Public Method               ****/
-        /*************************************/
-
-        [Description("Set the value of a property with a given name for an object")]
-        [Output("New object with its property changed to the new value")]
-        public static BHoMObject SetProperty(BHoMObject obj, string propName, object value)
-        {
-            return Engine.Reflection.Modify.PropertyValue(obj, propName, value);
-        }
+        public SetPropertyCaller() : base(typeof(Engine.Reflection.Modify).GetMethod("PropertyValue")) { }
 
 
         /*************************************/
