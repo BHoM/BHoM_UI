@@ -74,6 +74,7 @@ namespace BH.UI.Components
             // EP. I am not sure why this code is here. It seems like it does nothing more than what the
             // RemoveInput and UpdateInput methods are doing. 
             // Maybe it has something to do with generics, but I will leave this here, since it works.
+            // see https://github.com/BHoM/BHoM_UI/commit/88838d91bbd698497f3898b1d526c10f5d1dead4 for more
             object[] inputs = new object[] { };
             try
             {
@@ -106,54 +107,6 @@ namespace BH.UI.Components
 
             return inputs;
         }
-
-        /*************************************/
-
-        //public override string Write()
-        //{
-        //    try
-        //    {
-        //        CustomObject component = new CustomObject();
-        //        component.CustomData["SelectedItem"] = SelectedItem;
-        //        component.CustomData["InputParams"] = InputParams;
-        //        return component.ToJson();
-        //    }
-        //    catch
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
-        //        return "";
-        //    }
-        //}
-
-        ///*************************************/
-
-        //public override bool Read(string json)
-        //{
-        //    if (json == "")
-        //        return true;
-
-        //    try
-        //    {
-        //        CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
-
-        //        object item;
-        //        if (component.CustomData.TryGetValue("SelectedItem", out item))
-        //            SelectedItem = item;
-
-        //        object inputParams;
-        //        if (component.CustomData.TryGetValue("InputParams", out inputParams))
-        //        {
-        //            InputParams = (inputParams as IEnumerable).OfType<ParamInfo>().ToList();
-        //            CompileInputGetters();
-        //        }
-        //        return true;
-        //    }
-        //    catch
-        //    {
-        //        BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
-        //        return false;
-        //    }
-        //}
 
 
         /*************************************/
