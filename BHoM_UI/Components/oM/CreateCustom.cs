@@ -79,7 +79,7 @@ namespace BH.UI.Components
         /**** Public Methods              ****/
         /*************************************/
 
-        public void SetInputParams(List<string> names, List<Type> types = null)
+        public void SetInputs(List<string> names, List<Type> types = null)
         {
             if (types == null || names.Count != types.Count)
             {
