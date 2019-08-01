@@ -42,6 +42,10 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public abstract T[] GetDataArray<T>(int index);
+
+        /*************************************/
+
         public abstract List<List<T>> GetDataTree<T>(int index);
 
 
