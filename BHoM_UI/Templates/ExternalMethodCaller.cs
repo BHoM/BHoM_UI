@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -31,17 +31,17 @@ using System.Reflection;
 
 namespace BH.UI.Templates
 {
-    public class MethodCaller : Caller
+    public class ExternalMethodCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
-        public MethodBase Method
+        public Delegate Delegate
         {
             get
             {
-                return SelectedItem as MethodBase;
+                return SelectedItem as Delegate;
             }
             protected set
             {
@@ -49,31 +49,35 @@ namespace BH.UI.Templates
             }
         }
 
-        public Delegate Delegate { get; set; }
-
-
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public MethodCaller() : base()
+        public ExternalMethodCaller() : base()
         {
-            if (Method != null)
-                SetItem(Method);
+            if (Delegate != null)
+                SetItem(Delegate);
         }
 
         /*************************************/
 
-        public MethodCaller(MethodBase method) : base()
+        public ExternalMethodCaller(MethodBase method) : base()
         {
             SetItem(method);
         }
 
         /*************************************/
 
-        public MethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
+        public ExternalMethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
         {
             SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
+        }
+
+        /*************************************/
+
+        public ExternalMethodCaller(Delegate deleg)
+        {
+            SetItem(deleg);
         }
 
 
@@ -81,20 +85,21 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public override bool SetItem(object method)
+        public override bool SetItem(object @delegate)
         {
-            if (!base.SetItem(method))
+            if (!base.SetItem(@delegate))
                 return false;
 
-            if (Method == null)
+            if (Delegate == null)
                 return false;
 
-            if (Method.ContainsGenericParameters)
+            if (Delegate.Method.ContainsGenericParameters)
             {
-                if (Method is MethodInfo)
+                if (Delegate.Method is MethodInfo)
                 {
-                    Type[] types = Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
-                    Method = ((MethodInfo)Method).MakeGenericMethod(types);
+                    Type[] types = Delegate.Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
+                    MethodInfo method = ((MethodInfo)Delegate.Method).MakeGenericMethod(types);
+                    Delegate = Delegate.CreateDelegate(Delegate.GetType(), method);
                 }
             }
 
@@ -116,7 +121,7 @@ namespace BH.UI.Templates
 
         public override object Run(object[] inputs)
         {
-            if (m_CompiledFunc != null && Method.IsStatic)
+            if (m_CompiledFunc != null && Delegate.Method.IsStatic)
             {
                 return m_CompiledFunc(inputs);
             }
@@ -143,36 +148,36 @@ namespace BH.UI.Templates
 
         protected virtual void CompileFunction()
         {
-            if (Method == null)
+            if (Delegate == null)
                 return;
 
             ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
+            Expression[] inputs = Delegate.Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
 
-            if (Method is MethodInfo)
+            if (Delegate.Method is MethodInfo)
             {
                 MethodCallExpression methodExpression;
-                if (Method.IsStatic)
+                if (Delegate.Method.IsStatic)
                 {
-                    methodExpression = Expression.Call(Method as MethodInfo, inputs);
+                    methodExpression = Expression.Call(Delegate.Method as MethodInfo, inputs);
                     m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
                 }
                 else
                 {
                     ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "instance");
-                    Expression instanceInput = Expression.Convert(instanceParameter, Method.DeclaringType);
-                    methodExpression = Expression.Call(instanceInput, Method as MethodInfo, inputs);
+                    Expression instanceInput = Expression.Convert(instanceParameter, Delegate.Method.DeclaringType);
+                    methodExpression = Expression.Call(instanceInput, Delegate.Method as MethodInfo, inputs);
                     m_CompiledInstanceFunc = Expression.Lambda<Func<object, object[], object>>(
                         Expression.Convert(methodExpression, typeof(object)),
                         new ParameterExpression[] { instanceParameter, lambdaInput }
                         ).Compile();
                 }
             }
-            else if (Method is ConstructorInfo)
-            {
-                NewExpression constructorExpression = Expression.New(Method as ConstructorInfo, inputs);
-                m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
-            }
+            //else if (Delegate.Method is ConstructorInfo)
+            //{
+            //    NewExpression constructorExpression = Expression.New(Delegate.Method as ConstructorInfo, inputs);
+            //    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
+            //}
 
         }
 
@@ -201,13 +206,13 @@ namespace BH.UI.Templates
 
         protected virtual void SetName()
         {
-            if (Method == null)
+            if (Delegate.Method == null)
                 return;
 
-            if (Method is MethodInfo)
-                Name = Method.Name;
-            else if (Method is ConstructorInfo)
-                Name = Method.DeclaringType.Name;
+            if (Delegate.Method is MethodInfo)
+                Name = Delegate.Method.Name;
+            //else if (Delegate.Method is ConstructorInfo)
+            //    Name = Delegate.Method.DeclaringType.Name;
             else
                 Name = "UnknownMethod";
         }
@@ -216,17 +221,17 @@ namespace BH.UI.Templates
 
         protected virtual void SetDescription()
         {
-            if (Method != null)
-                Description = Method.Description();
+            if (Delegate.Method != null)
+                Description = Delegate.Method.Description();
         }
 
         /*************************************/
 
         protected virtual void SetCategory()
         {
-            if (Method != null && Category == "Undefined")
+            if (Delegate.Method != null && Category == "Undefined")
             {
-                string[] nameSpace = Method.DeclaringType.Namespace.Split('.');
+                string[] nameSpace = Delegate.Method.DeclaringType.Namespace.Split('.');
                 if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
                     Category = nameSpace[1];
                 else
@@ -238,12 +243,12 @@ namespace BH.UI.Templates
 
         public virtual void SetInputParams()
         {
-            if (Method == null)
+            if (Delegate.Method == null)
                 InputParams = new List<ParamInfo>();
             else
             {
-                Dictionary<string, string> descriptions = Method.InputDescriptions();
-                InputParams = Method.GetParameters().Select(x => new ParamInfo
+                Dictionary<string, string> descriptions = Delegate.Method.InputDescriptions();
+                InputParams = Delegate.Method.GetParameters().Select(x => new ParamInfo
                 {
                     Name = x.Name,
                     DataType = x.ParameterType,
@@ -252,12 +257,13 @@ namespace BH.UI.Templates
                     HasDefaultValue = x.HasDefaultValue,
                     DefaultValue = x.DefaultValue
                 }).ToList();
-                if (!Method.IsStatic)
+
+                if (!Delegate.Method.IsStatic)
                 {
                     InputParams.Insert(0, new ParamInfo
                     {
-                        Name = Method.DeclaringType.Name.ToLower(),
-                        DataType = Method.DeclaringType,
+                        Name = Delegate.Method.DeclaringType.Name.ToLower(),
+                        DataType = Delegate.Method.DeclaringType,
                         Description = "",
                         Kind = ParamKind.Input,
                         HasDefaultValue = false,
@@ -271,17 +277,17 @@ namespace BH.UI.Templates
 
         public virtual void SetOutputParams()
         {
-            if (Method == null)
+            if (Delegate.Method == null)
                 OutputParams = new List<ParamInfo>();
             else
             {
-                if (Method.IsMultipleOutputs())
+                if (Delegate.Method.IsMultipleOutputs())
                 {
-                    Type[] subTypes = Method.OutputType().GenericTypeArguments;
-                    List<OutputAttribute> attributes = Method.OutputAttributes();
+                    Type[] subTypes = Delegate.Method.OutputType().GenericTypeArguments;
+                    List<OutputAttribute> attributes = Delegate.Method.OutputAttributes();
                     if (subTypes.Length == attributes.Count)
                     {
-                        OutputParams = Method.OutputAttributes().Select((x, i) => new ParamInfo
+                        OutputParams = Delegate.Method.OutputAttributes().Select((x, i) => new ParamInfo
                         {
                             Name = x.Name,
                             DataType = subTypes[i],
@@ -302,14 +308,14 @@ namespace BH.UI.Templates
                 }
                 else
                 {
-                    Type nameType = Method.OutputType().UnderlyingType().Type;
-                    string name = Method.OutputName();
+                    Type nameType = Delegate.Method.OutputType().UnderlyingType().Type;
+                    string name = Delegate.Method.OutputName();
                     OutputParams = new List<ParamInfo> {
                         new ParamInfo
                         {
                             Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
-                            DataType = Method.OutputType(),
-                            Description = Method.OutputDescription(),
+                            DataType = Delegate.Method.OutputType(),
+                            Description = Delegate.Method.OutputDescription(),
                             Kind = ParamKind.Output
                         }
                     };

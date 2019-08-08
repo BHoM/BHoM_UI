@@ -46,8 +46,28 @@ namespace BH.Engine.UI
                 return OrganiseMethods(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             if (typeof(T) == typeof(Type))
                 return OrganiseTypes(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+            if (typeof(T) == typeof(Delegate))
+                return OrganiseMethods(items.Cast<Delegate>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else
                 return OrganiseOthers(items) as Output<List<SearchItem>, Tree<T>>;
+        }
+
+        /*************************************/
+
+        public static Output<List<SearchItem>, Tree<Delegate>> OrganiseMethods(this List<Delegate> methods)
+        {
+            // Create method list
+            IEnumerable<string> paths = methods.Select(x => x.Method.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
+
+            //Create method tree
+            List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "Modify", "Query" };
+            Tree<Delegate> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
+            while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
+                tree.Children = tree.Children.Values.First().Children;
+            tree = tree.GroupMethodsByName();
+
+            return new Output<List<SearchItem>, Tree<Delegate>> { Item1 = list, Item2 = tree };
         }
 
         /*************************************/

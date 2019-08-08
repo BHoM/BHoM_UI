@@ -20,48 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.UI;
+using BH.UI.Components;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
-namespace BH.UI.Templates
+namespace BH.UI.Global
 {
-    public abstract class DataAccessor
+    public class SearchMenuExternal : SearchMenu_WinForm
     {
         /*************************************/
-        /**** Input Getter Methods        ****/
+        /**** Override Methods            ****/
         /*************************************/
 
-        public abstract T GetDataItem<T>(int index);
+        protected override List<SearchItem> GetAllPossibleItems()
+        {
+            // All methods defined from the BHoM_UI
+            // Reflection is pretty slow on this one so better to just do it manually even if less elegant
+            List<SearchItem> items = new List<SearchItem>();
 
-        /*************************************/
+            items.AddRange(BH.Engine.UI.Query.ExternalComputeItems()
+                .Where(x => x != null)
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(ExternalComputeCaller), Icon = Properties.Resources.ExternalCompute, Text = x.Method.ToText(true) }));
 
-        public abstract List<T> GetDataList<T>(int index);
-
-        /*************************************/
-
-        public abstract T[] GetDataArray<T>(int index);
-
-        /*************************************/
-
-        public abstract List<List<T>> GetDataTree<T>(int index);
-
-
-        /*************************************/
-        /**** Output Setter Methods       ****/
-        /*************************************/
-
-        public abstract bool SetDataItem<T>(int index, T data);
-
-        /*************************************/
-
-        public abstract bool SetDataList<T>(int index, IEnumerable<T> data);
-
-        /*************************************/
-
-        public abstract bool SetDataTree<T>(int index, IEnumerable<IEnumerable<T>> data);
+            return items;
+        }
 
         /*************************************/
     }

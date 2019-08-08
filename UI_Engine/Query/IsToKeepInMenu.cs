@@ -39,6 +39,8 @@ namespace BH.Engine.UI
 
         public static bool IIsToKeepInMenu(this object obj)
         {
+            if (obj == null)
+                return false;
             return IsToKeepInMenu(obj as dynamic);
         }
 
@@ -65,6 +67,14 @@ namespace BH.Engine.UI
         {
             return !type.IsNotImplemented() && !type.IsDeprecated();
         }
+
+        /***************************************************/
+
+        public static bool IsToKeepInMenu(this Delegate @delegate)
+        {
+            return @delegate != null;
+        }
+
 
         /***************************************************/
     }
