@@ -54,28 +54,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<Delegate>> OrganiseMethods(this List<Delegate> methods)
-        {
-            // Create method list
-            IEnumerable<string> paths = methods.Select(x => x.Method.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
-            List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
-
-            //Create method tree
-            List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "Modify", "Query" };
-            Tree<Delegate> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
-            while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
-                tree.Children = tree.Children.Values.First().Children;
-            tree = tree.GroupByName();
-
-            return new Output<List<SearchItem>, Tree<Delegate>> { Item1 = list, Item2 = tree };
-        }
-
-        /*************************************/
-
         public static Output<List<SearchItem>, Tree<MethodBase>> OrganiseMethods(this List<MethodBase> methods)
         {
             // Create method list
-            IEnumerable<string> paths = methods.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            IEnumerable<string> paths = methods.AsParallel().Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
             List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
