@@ -104,9 +104,6 @@ namespace BH.UI.Global
 
         private static SearchMenu m_SearchMenu = null;
 
-        private static SearchMenu m_ExternalSearchMenu = null;
-
-
         /*************************************/
     }
 
