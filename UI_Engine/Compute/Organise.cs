@@ -46,8 +46,6 @@ namespace BH.Engine.UI
                 return OrganiseMethods(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             if (typeof(T) == typeof(Type))
                 return OrganiseTypes(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
-            if (typeof(T) == typeof(Delegate))
-                return OrganiseMethods(items.Cast<Delegate>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else
                 return OrganiseOthers(items) as Output<List<SearchItem>, Tree<T>>;
         }
