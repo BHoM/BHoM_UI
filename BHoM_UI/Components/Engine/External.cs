@@ -31,7 +31,7 @@ using BH.Adapter;
 
 namespace BH.UI.Components
 {
-    public class ExternalComputeCaller : ExternalMethodCaller
+    public class ExternalCaller : MethodCaller
     {
         /*************************************/
         /**** Properties                  ****/
@@ -52,7 +52,7 @@ namespace BH.UI.Components
         /**** Constructors                ****/
         /*************************************/
 
-        public ExternalComputeCaller() : base()
+        public ExternalCaller() : base()
         {
             SetPossibleItems(Engine.UI.Query.ExternalComputeItems());
         }
