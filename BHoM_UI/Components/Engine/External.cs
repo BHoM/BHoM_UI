@@ -54,7 +54,7 @@ namespace BH.UI.Components
 
         public ExternalCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.ExternalComputeItems());
+            SetPossibleItems(Engine.UI.Query.ExternalItems());
         }
 
         /*************************************/
