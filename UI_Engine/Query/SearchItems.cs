@@ -37,7 +37,7 @@ namespace BH.Engine.UI
 
         public static IEnumerable<MethodBase> EngineItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList().Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
+            return Engine.Reflection.Query.BHoMMethodList().Where(x => x.IsExposed());
         }
 
         /***************************************************/
@@ -131,7 +131,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static List<MethodInfo> ExternalComputeItems()
+        public static List<MethodInfo> ExternalItems()
         {
             return Engine.Reflection.Query.ExternalMethodList();
         }
