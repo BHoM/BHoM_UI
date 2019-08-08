@@ -88,7 +88,7 @@ namespace BH.UI.Templates
             SetInputParams();
             SetOutputParams();
 
-            Engine.Reflection.Compute.Compile(Method);
+            SetDelegate();
             CompileInputGetters();
             CompileOutputSetters();
 
@@ -193,6 +193,19 @@ namespace BH.UI.Templates
         }
 
         /*************************************/
+
+        public virtual void SetDelegate()
+        {
+            Delegate compiledFunc = Engine.Reflection.Compute.Compile(Method);
+            if (compiledFunc is Func<object, object[], object>)
+            {
+                m_CompiledInstanceFunc = (Func<object, object[], object>)compiledFunc;
+            }
+            else if (compiledFunc is Func<object[], object>)
+            {
+                m_CompiledFunc = (Func<object[], object>)compiledFunc;
+            }
+        }
 
         public virtual void SetOutputParams()
         {
