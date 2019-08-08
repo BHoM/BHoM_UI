@@ -109,7 +109,11 @@ namespace BH.UI.Global
 
             // All methods for the BHoM Engine
             items.AddRange(BH.Engine.UI.Query.EngineItems()
-                        .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
+                        .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = Properties.Resources.ExternalCompute, Text = x.ToText(true) }));
+
+            // All methods from External class
+            items.AddRange(BH.Engine.UI.Query.ExternalItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(ExternalCaller), Icon = GetIcon(x), Text = x.ToText(true) }));
 
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
@@ -146,6 +150,8 @@ namespace BH.UI.Global
                     return Properties.Resources.Convert;
                 case "Create":
                     return Properties.Resources.CreateBHoM;
+                case "External":
+                    return Properties.Resources.ExternalCompute;
                 case "Modify":
                     return Properties.Resources.Modify;
                 case "Query":
@@ -169,6 +175,8 @@ namespace BH.UI.Global
                         return typeof(ConvertCaller);
                     case "Create":
                         return typeof(CreateObjectCaller);
+                    case "External":
+                        return typeof(ExternalCaller);
                     case "Modify":
                         return typeof(ModifyCaller);
                     case "Query":
