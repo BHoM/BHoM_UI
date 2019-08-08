@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
  *
@@ -20,48 +20,42 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using BH.Adapter;
 
-namespace BH.UI.Templates
+namespace BH.UI.Components
 {
-    public abstract class DataAccessor
+    public class ExternalComputeCaller : ExternalMethodCaller
     {
         /*************************************/
-        /**** Input Getter Methods        ****/
+        /**** Properties                  ****/
         /*************************************/
 
-        public abstract T GetDataItem<T>(int index);
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.ExternalCompute;
 
-        /*************************************/
+        public override Guid Id { get; protected set; } = new Guid("4DEC2B78-4A83-49A2-BD7D-A03DD5CAE43E");
 
-        public abstract List<T> GetDataList<T>(int index);
+        public override string Name { get; protected set; } = "ExternalCompute";
 
-        /*************************************/
+        public override string Category { get; protected set; } = "Engine";
 
-        public abstract T[] GetDataArray<T>(int index);
-
-        /*************************************/
-
-        public abstract List<List<T>> GetDataTree<T>(int index);
+        public override string Description { get; protected set; } = "Exposes methods from external libraries without porting them to the BHoM common language";
 
 
         /*************************************/
-        /**** Output Setter Methods       ****/
+        /**** Constructors                ****/
         /*************************************/
 
-        public abstract bool SetDataItem<T>(int index, T data);
-
-        /*************************************/
-
-        public abstract bool SetDataList<T>(int index, IEnumerable<T> data);
-
-        /*************************************/
-
-        public abstract bool SetDataTree<T>(int index, IEnumerable<IEnumerable<T>> data);
+        public ExternalComputeCaller() : base()
+        {
+            SetPossibleItems(Engine.UI.Query.ExternalComputeItems());
+        }
 
         /*************************************/
     }

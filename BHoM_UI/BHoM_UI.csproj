@@ -80,6 +80,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\External\ExternalCompute.cs" />
     <Compile Include="Components\Adapter\CreateRequest.cs" />
     <Compile Include="Components\Adapter\CreateAdapter.cs" />
     <Compile Include="Components\Adapter\Move.cs" />
@@ -105,10 +106,12 @@
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
+    <Compile Include="Global\SearchMenuExternal.cs" />
     <Compile Include="Global\SearchMenu.cs" />
     <Compile Include="Global\SearchMenu_WinForm.cs" />
     <Compile Include="Global\SearchMenu_Wpf.cs" />
     <Compile Include="Templates\DataAccessor.cs" />
+    <Compile Include="Templates\ExternalMethodCaller.cs" />
     <Compile Include="Templates\ISelectorMenu.cs" />
     <Compile Include="Templates\ISelector.cs" />
     <Compile Include="Templates\MultiChoiceCaller.cs" />
@@ -122,7 +125,9 @@
     <Compile Include="Templates\SelectorMenu_Wpf.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Resources\Adapter.png" />
@@ -148,6 +153,7 @@
     <Content Include="Properties\Resources\Enum.png" />
     <Content Include="Properties\Resources\Execute.png" />
     <Content Include="Properties\Resources\Explode.png" />
+    <Content Include="Properties\Resources\ExternalCompute.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
     <Content Include="Properties\Resources\GetInfo.png" />
@@ -162,6 +168,8 @@
     <Content Include="Properties\Resources\UpdateProperty.png" />
     <Content Include="Properties\Resources\VBH_Script.png" />
     <Content Include="Properties\Resources\VS_Script.png" />
+    <None Include="Resources\ExternalCompute.png" />
+    <None Include="Resources\ExternalCompute.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\UI\" />

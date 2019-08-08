@@ -360,7 +360,17 @@ namespace BH.UI.Templates
         protected virtual Func<DataAccessor, object> CreateInputAccessor(Type dataType, int index)
         {
             UnderlyingType subType = dataType.UnderlyingType();
-            string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
+            string methodName;
+            if (subType.Depth == 0)
+                methodName = "GetDataItem";
+            else if (subType.Depth == 1)
+                if (dataType.IsArray)
+                    methodName = "GetDataArray";
+                else
+                    methodName = "GetDataList";
+            else
+                methodName = "GetDataTree";
+
             MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
