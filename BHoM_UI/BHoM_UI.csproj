@@ -80,7 +80,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\External\ExternalCompute.cs" />
+    <Compile Include="Components\Engine\External.cs" />
     <Compile Include="Components\Adapter\CreateRequest.cs" />
     <Compile Include="Components\Adapter\CreateAdapter.cs" />
     <Compile Include="Components\Adapter\Move.cs" />
@@ -106,7 +106,6 @@
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
-    <Compile Include="Global\SearchMenuExternal.cs" />
     <Compile Include="Global\SearchMenu.cs" />
     <Compile Include="Global\SearchMenu_WinForm.cs" />
     <Compile Include="Global\SearchMenu_Wpf.cs" />

@@ -26,7 +26,6 @@ using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace BH.UI.Templates
@@ -49,8 +48,6 @@ namespace BH.UI.Templates
             }
         }
 
-        public Delegate Delegate { get; set; }
-
 
         /*************************************/
         /**** Constructors                ****/
@@ -70,14 +67,6 @@ namespace BH.UI.Templates
         }
 
         /*************************************/
-
-        public MethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
-        {
-            SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
-        }
-
-
-        /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
@@ -89,14 +78,8 @@ namespace BH.UI.Templates
             if (Method == null)
                 return false;
 
-            if (Method.ContainsGenericParameters)
-            {
-                if (Method is MethodInfo)
-                {
-                    Type[] types = Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
-                    Method = ((MethodInfo)Method).MakeGenericMethod(types);
-                }
-            }
+            if (Method is MethodInfo)
+                Method = ((MethodInfo)Method).MakeGeneric();
 
             SetName();
             SetCategory();
@@ -105,7 +88,7 @@ namespace BH.UI.Templates
             SetInputParams();
             SetOutputParams();
 
-            CompileFunction();
+            Engine.Reflection.Compute.Compile(Method);
             CompileInputGetters();
             CompileOutputSetters();
 
@@ -120,7 +103,7 @@ namespace BH.UI.Templates
             {
                 return m_CompiledFunc(inputs);
             }
-            else if (Delegate != null && m_CompiledInstanceFunc != null)
+            else if (m_CompiledInstanceFunc != null && !Method.IsStatic)
             {
                 return m_CompiledInstanceFunc(inputs[0], inputs);
             }
@@ -139,64 +122,6 @@ namespace BH.UI.Templates
 
         /*************************************/
         /**** Private Methods             ****/
-        /*************************************/
-
-        protected virtual void CompileFunction()
-        {
-            if (Method == null)
-                return;
-
-            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
-
-            if (Method is MethodInfo)
-            {
-                MethodCallExpression methodExpression;
-                if (Method.IsStatic)
-                {
-                    methodExpression = Expression.Call(Method as MethodInfo, inputs);
-                    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
-                }
-                else
-                {
-                    ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "instance");
-                    Expression instanceInput = Expression.Convert(instanceParameter, Method.DeclaringType);
-                    methodExpression = Expression.Call(instanceInput, Method as MethodInfo, inputs);
-                    m_CompiledInstanceFunc = Expression.Lambda<Func<object, object[], object>>(
-                        Expression.Convert(methodExpression, typeof(object)),
-                        new ParameterExpression[] { instanceParameter, lambdaInput }
-                        ).Compile();
-                }
-            }
-            else if (Method is ConstructorInfo)
-            {
-                NewExpression constructorExpression = Expression.New(Method as ConstructorInfo, inputs);
-                m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
-            }
-
-        }
-
-        /*************************************/
-
-        protected Type GetConstructedType(Type type)
-        {
-            if (type.IsGenericParameter)
-            {
-                Type[] constrains = type.GetGenericParameterConstraints();
-                if (constrains.Length == 0)
-                    return typeof(object);
-                else
-                    return constrains[0];
-            }
-            else if (type.ContainsGenericParameters)
-            {
-                Type[] constrains = type.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
-                return type.GetGenericTypeDefinition().MakeGenericType(constrains);
-            }
-            else
-                return type;
-        }
-
         /*************************************/
 
         protected virtual void SetName()

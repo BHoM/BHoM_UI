@@ -1,338 +1,338 @@
-﻿/*
- * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
- *
- * Each contributor holds copyright over their respective contributions.
- * The project versioning (Git) records all such contribution source information.
- *                                           
- *                                                                              
- * The BHoM is free software: you can redistribute it and/or modify         
- * it under the terms of the GNU Lesser General Public License as published by  
- * the Free Software Foundation, either version 3.0 of the License, or          
- * (at your option) any later version.                                          
- *                                                                              
- * The BHoM is distributed in the hope that it will be useful,              
- * but WITHOUT ANY WARRANTY; without even the implied warranty of               
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
- * GNU Lesser General Public License for more details.                          
- *                                                                            
- * You should have received a copy of the GNU Lesser General Public License     
- * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
- */
+﻿///*
+// * This file is part of the Buildings and Habitats object Model (BHoM)
+// * Copyright (c) 2015 - 2018, the respective contributors. All rights reserved.
+// *
+// * Each contributor holds copyright over their respective contributions.
+// * The project versioning (Git) records all such contribution source information.
+// *                                           
+// *                                                                              
+// * The BHoM is free software: you can redistribute it and/or modify         
+// * it under the terms of the GNU Lesser General Public License as published by  
+// * the Free Software Foundation, either version 3.0 of the License, or          
+// * (at your option) any later version.                                          
+// *                                                                              
+// * The BHoM is distributed in the hope that it will be useful,              
+// * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+// * GNU Lesser General Public License for more details.                          
+// *                                                                            
+// * You should have received a copy of the GNU Lesser General Public License     
+// * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+// */
 
-using BH.Engine.Reflection;
-using BH.oM.Reflection.Attributes;
-using BH.oM.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+//using BH.Engine.Reflection;
+//using BH.oM.Reflection.Attributes;
+//using BH.oM.UI;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Linq.Expressions;
+//using System.Reflection;
 
-namespace BH.UI.Templates
-{
-    public class ExternalMethodCaller : Caller
-    {
-        /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
+//namespace BH.UI.Templates
+//{
+//    public class ExternalMethodCaller : Caller
+//    {
+//        /*************************************/
+//        /**** Properties                  ****/
+//        /*************************************/
 
-        public Delegate Delegate
-        {
-            get
-            {
-                return SelectedItem as Delegate;
-            }
-            protected set
-            {
-                SelectedItem = value;
-            }
-        }
+//        public Delegate Delegate
+//        {
+//            get
+//            {
+//                return SelectedItem as Delegate;
+//            }
+//            protected set
+//            {
+//                SelectedItem = value;
+//            }
+//        }
 
-        /*************************************/
-        /**** Constructors                ****/
-        /*************************************/
+//        /*************************************/
+//        /**** Constructors                ****/
+//        /*************************************/
 
-        public ExternalMethodCaller() : base()
-        {
-            if (Delegate != null)
-                SetItem(Delegate);
-        }
+//        public ExternalMethodCaller() : base()
+//        {
+//            if (Delegate != null)
+//                SetItem(Delegate);
+//        }
 
-        /*************************************/
+//        /*************************************/
 
-        public ExternalMethodCaller(MethodBase method) : base()
-        {
-            SetItem(method);
-        }
+//        public ExternalMethodCaller(MethodBase method) : base()
+//        {
+//            SetItem(method);
+//        }
 
-        /*************************************/
+//        /*************************************/
 
-        public ExternalMethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
-        {
-            SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
-        }
+//        public ExternalMethodCaller(Type methodDeclaringType, string methodName, List<Type> paramTypes) : base()
+//        {
+//            SetItem(BH.Engine.UI.Create.MethodInfo(methodDeclaringType, methodName, paramTypes));
+//        }
 
-        /*************************************/
+//        /*************************************/
 
-        public ExternalMethodCaller(Delegate deleg)
-        {
-            SetItem(deleg);
-        }
-
-
-        /*************************************/
-        /**** Public Methods              ****/
-        /*************************************/
-
-        public override bool SetItem(object @delegate)
-        {
-            if (!base.SetItem(@delegate))
-                return false;
-
-            if (Delegate == null)
-                return false;
-
-            if (Delegate.Method.ContainsGenericParameters)
-            {
-                if (Delegate.Method is MethodInfo)
-                {
-                    Type[] types = Delegate.Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
-                    MethodInfo method = ((MethodInfo)Delegate.Method).MakeGenericMethod(types);
-                    Delegate = Delegate.CreateDelegate(Delegate.GetType(), method);
-                }
-            }
-
-            SetName();
-            SetCategory();
-            SetDescription();
-
-            SetInputParams();
-            SetOutputParams();
-
-            CompileFunction();
-            CompileInputGetters();
-            CompileOutputSetters();
-
-            return true;
-        }
-
-        /*************************************/
-
-        public override object Run(object[] inputs)
-        {
-            if (m_CompiledFunc != null && Delegate.Method.IsStatic)
-            {
-                return m_CompiledFunc(inputs);
-            }
-            else if (Delegate != null && m_CompiledInstanceFunc != null)
-            {
-                return m_CompiledInstanceFunc(inputs[0], inputs);
-            }
-            else if (InputParams.Count <= 0)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
-                return null;
-            }
-            else
-            {
-                BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
-                return null;
-            }
-        }
+//        public ExternalMethodCaller(Delegate deleg)
+//        {
+//            SetItem(deleg);
+//        }
 
 
-        /*************************************/
-        /**** Private Methods             ****/
-        /*************************************/
+//        /*************************************/
+//        /**** Public Methods              ****/
+//        /*************************************/
 
-        protected virtual void CompileFunction()
-        {
-            if (Delegate == null)
-                return;
+//        public override bool SetItem(object @delegate)
+//        {
+//            if (!base.SetItem(@delegate))
+//                return false;
 
-            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = Delegate.Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
+//            if (Delegate == null)
+//                return false;
 
-            if (Delegate.Method is MethodInfo)
-            {
-                MethodCallExpression methodExpression;
-                if (Delegate.Method.IsStatic)
-                {
-                    methodExpression = Expression.Call(Delegate.Method as MethodInfo, inputs);
-                    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
-                }
-                else
-                {
-                    ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "instance");
-                    Expression instanceInput = Expression.Convert(instanceParameter, Delegate.Method.DeclaringType);
-                    methodExpression = Expression.Call(instanceInput, Delegate.Method as MethodInfo, inputs);
-                    m_CompiledInstanceFunc = Expression.Lambda<Func<object, object[], object>>(
-                        Expression.Convert(methodExpression, typeof(object)),
-                        new ParameterExpression[] { instanceParameter, lambdaInput }
-                        ).Compile();
-                }
-            }
-            //else if (Delegate.Method is ConstructorInfo)
-            //{
-            //    NewExpression constructorExpression = Expression.New(Delegate.Method as ConstructorInfo, inputs);
-            //    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
-            //}
+//            if (Delegate.Method.ContainsGenericParameters)
+//            {
+//                if (Delegate.Method is MethodInfo)
+//                {
+//                    Type[] types = Delegate.Method.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
+//                    MethodInfo method = ((MethodInfo)Delegate.Method).MakeGenericMethod(types);
+//                    Delegate = Delegate.CreateDelegate(Delegate.GetType(), method);
+//                }
+//            }
 
-        }
+//            SetName();
+//            SetCategory();
+//            SetDescription();
 
-        /*************************************/
+//            SetInputParams();
+//            SetOutputParams();
 
-        protected Type GetConstructedType(Type type)
-        {
-            if (type.IsGenericParameter)
-            {
-                Type[] constrains = type.GetGenericParameterConstraints();
-                if (constrains.Length == 0)
-                    return typeof(object);
-                else
-                    return constrains[0];
-            }
-            else if (type.ContainsGenericParameters)
-            {
-                Type[] constrains = type.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
-                return type.GetGenericTypeDefinition().MakeGenericType(constrains);
-            }
-            else
-                return type;
-        }
+//            CompileFunction();
+//            CompileInputGetters();
+//            CompileOutputSetters();
 
-        /*************************************/
+//            return true;
+//        }
 
-        protected virtual void SetName()
-        {
-            if (Delegate.Method == null)
-                return;
+//        /*************************************/
 
-            if (Delegate.Method is MethodInfo)
-                Name = Delegate.Method.Name;
-            //else if (Delegate.Method is ConstructorInfo)
-            //    Name = Delegate.Method.DeclaringType.Name;
-            else
-                Name = "UnknownMethod";
-        }
-
-        /*************************************/
-
-        protected virtual void SetDescription()
-        {
-            if (Delegate.Method != null)
-                Description = Delegate.Method.Description();
-        }
-
-        /*************************************/
-
-        protected virtual void SetCategory()
-        {
-            if (Delegate.Method != null && Category == "Undefined")
-            {
-                string[] nameSpace = Delegate.Method.DeclaringType.Namespace.Split('.');
-                if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
-                    Category = nameSpace[1];
-                else
-                    Category = "Other";
-            }
-        }
-
-        /*************************************/
-
-        public virtual void SetInputParams()
-        {
-            if (Delegate.Method == null)
-                InputParams = new List<ParamInfo>();
-            else
-            {
-                Dictionary<string, string> descriptions = Delegate.Method.InputDescriptions();
-                InputParams = Delegate.Method.GetParameters().Select(x => new ParamInfo
-                {
-                    Name = x.Name,
-                    DataType = x.ParameterType,
-                    Description = descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "",
-                    Kind = ParamKind.Input,
-                    HasDefaultValue = x.HasDefaultValue,
-                    DefaultValue = x.DefaultValue
-                }).ToList();
-
-                if (!Delegate.Method.IsStatic)
-                {
-                    InputParams.Insert(0, new ParamInfo
-                    {
-                        Name = Delegate.Method.DeclaringType.Name.ToLower(),
-                        DataType = Delegate.Method.DeclaringType,
-                        Description = "",
-                        Kind = ParamKind.Input,
-                        HasDefaultValue = false,
-                        DefaultValue = System.DBNull.Value
-                    });
-                }
-            }
-        }
-
-        /*************************************/
-
-        public virtual void SetOutputParams()
-        {
-            if (Delegate.Method == null)
-                OutputParams = new List<ParamInfo>();
-            else
-            {
-                if (Delegate.Method.IsMultipleOutputs())
-                {
-                    Type[] subTypes = Delegate.Method.OutputType().GenericTypeArguments;
-                    List<OutputAttribute> attributes = Delegate.Method.OutputAttributes();
-                    if (subTypes.Length == attributes.Count)
-                    {
-                        OutputParams = Delegate.Method.OutputAttributes().Select((x, i) => new ParamInfo
-                        {
-                            Name = x.Name,
-                            DataType = subTypes[i],
-                            Description = x.Description,
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
-                    else
-                    {
-                        OutputParams = subTypes.Select(x => new ParamInfo
-                        {
-                            Name = x.UnderlyingType().Type.Name.Substring(0, 1),
-                            DataType = x,
-                            Description = "",
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
-                }
-                else
-                {
-                    Type nameType = Delegate.Method.OutputType().UnderlyingType().Type;
-                    string name = Delegate.Method.OutputName();
-                    OutputParams = new List<ParamInfo> {
-                        new ParamInfo
-                        {
-                            Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
-                            DataType = Delegate.Method.OutputType(),
-                            Description = Delegate.Method.OutputDescription(),
-                            Kind = ParamKind.Output
-                        }
-                    };
-                }
-            }
-        }
+//        public override object Run(object[] inputs)
+//        {
+//            if (m_CompiledFunc != null && Delegate.Method.IsStatic)
+//            {
+//                return m_CompiledFunc(inputs);
+//            }
+//            else if (Delegate != null && m_CompiledInstanceFunc != null)
+//            {
+//                return m_CompiledInstanceFunc(inputs[0], inputs);
+//            }
+//            else if (InputParams.Count <= 0)
+//            {
+//                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
+//                return null;
+//            }
+//            else
+//            {
+//                BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
+//                return null;
+//            }
+//        }
 
 
-        /*************************************/
-        /**** Private Fields              ****/
-        /*************************************/
+//        /*************************************/
+//        /**** Private Methods             ****/
+//        /*************************************/
 
-        protected Func<object[], object> m_CompiledFunc = null;
+//        protected virtual void CompileFunction()
+//        {
+//            if (Delegate == null)
+//                return;
 
-        protected Func<object, object[], object> m_CompiledInstanceFunc = null;
+//            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
+//            Expression[] inputs = Delegate.Method.GetParameters().Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.ParameterType)).ToArray();
+
+//            if (Delegate.Method is MethodInfo)
+//            {
+//                MethodCallExpression methodExpression;
+//                if (Delegate.Method.IsStatic)
+//                {
+//                    methodExpression = Expression.Call(Delegate.Method as MethodInfo, inputs);
+//                    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInput).Compile();
+//                }
+//                else
+//                {
+//                    ParameterExpression instanceParameter = Expression.Parameter(typeof(object), "instance");
+//                    Expression instanceInput = Expression.Convert(instanceParameter, Delegate.Method.DeclaringType);
+//                    methodExpression = Expression.Call(instanceInput, Delegate.Method as MethodInfo, inputs);
+//                    m_CompiledInstanceFunc = Expression.Lambda<Func<object, object[], object>>(
+//                        Expression.Convert(methodExpression, typeof(object)),
+//                        new ParameterExpression[] { instanceParameter, lambdaInput }
+//                        ).Compile();
+//                }
+//            }
+//            //else if (Delegate.Method is ConstructorInfo)
+//            //{
+//            //    NewExpression constructorExpression = Expression.New(Delegate.Method as ConstructorInfo, inputs);
+//            //    m_CompiledFunc = Expression.Lambda<Func<object[], object>>(Expression.Convert(constructorExpression, typeof(object)), lambdaInput).Compile();
+//            //}
+
+//        }
+
+//        /*************************************/
+
+//        protected Type GetConstructedType(Type type)
+//        {
+//            if (type.IsGenericParameter)
+//            {
+//                Type[] constrains = type.GetGenericParameterConstraints();
+//                if (constrains.Length == 0)
+//                    return typeof(object);
+//                else
+//                    return constrains[0];
+//            }
+//            else if (type.ContainsGenericParameters)
+//            {
+//                Type[] constrains = type.GetGenericArguments().Select(x => GetConstructedType(x)).ToArray();
+//                return type.GetGenericTypeDefinition().MakeGenericType(constrains);
+//            }
+//            else
+//                return type;
+//        }
+
+//        /*************************************/
+
+//        protected virtual void SetName()
+//        {
+//            if (Delegate.Method == null)
+//                return;
+
+//            if (Delegate.Method is MethodInfo)
+//                Name = Delegate.Method.Name;
+//            //else if (Delegate.Method is ConstructorInfo)
+//            //    Name = Delegate.Method.DeclaringType.Name;
+//            else
+//                Name = "UnknownMethod";
+//        }
+
+//        /*************************************/
+
+//        protected virtual void SetDescription()
+//        {
+//            if (Delegate.Method != null)
+//                Description = Delegate.Method.Description();
+//        }
+
+//        /*************************************/
+
+//        protected virtual void SetCategory()
+//        {
+//            if (Delegate.Method != null && Category == "Undefined")
+//            {
+//                string[] nameSpace = Delegate.Method.DeclaringType.Namespace.Split('.');
+//                if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
+//                    Category = nameSpace[1];
+//                else
+//                    Category = "Other";
+//            }
+//        }
+
+//        /*************************************/
+
+//        public virtual void SetInputParams()
+//        {
+//            if (Delegate.Method == null)
+//                InputParams = new List<ParamInfo>();
+//            else
+//            {
+//                Dictionary<string, string> descriptions = Delegate.Method.InputDescriptions();
+//                InputParams = Delegate.Method.GetParameters().Select(x => new ParamInfo
+//                {
+//                    Name = x.Name,
+//                    DataType = x.ParameterType,
+//                    Description = descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "",
+//                    Kind = ParamKind.Input,
+//                    HasDefaultValue = x.HasDefaultValue,
+//                    DefaultValue = x.DefaultValue
+//                }).ToList();
+
+//                if (!Delegate.Method.IsStatic)
+//                {
+//                    InputParams.Insert(0, new ParamInfo
+//                    {
+//                        Name = Delegate.Method.DeclaringType.Name.ToLower(),
+//                        DataType = Delegate.Method.DeclaringType,
+//                        Description = "",
+//                        Kind = ParamKind.Input,
+//                        HasDefaultValue = false,
+//                        DefaultValue = System.DBNull.Value
+//                    });
+//                }
+//            }
+//        }
+
+//        /*************************************/
+
+//        public virtual void SetOutputParams()
+//        {
+//            if (Delegate.Method == null)
+//                OutputParams = new List<ParamInfo>();
+//            else
+//            {
+//                if (Delegate.Method.IsMultipleOutputs())
+//                {
+//                    Type[] subTypes = Delegate.Method.OutputType().GenericTypeArguments;
+//                    List<OutputAttribute> attributes = Delegate.Method.OutputAttributes();
+//                    if (subTypes.Length == attributes.Count)
+//                    {
+//                        OutputParams = Delegate.Method.OutputAttributes().Select((x, i) => new ParamInfo
+//                        {
+//                            Name = x.Name,
+//                            DataType = subTypes[i],
+//                            Description = x.Description,
+//                            Kind = ParamKind.Output
+//                        }).ToList();
+//                    }
+//                    else
+//                    {
+//                        OutputParams = subTypes.Select(x => new ParamInfo
+//                        {
+//                            Name = x.UnderlyingType().Type.Name.Substring(0, 1),
+//                            DataType = x,
+//                            Description = "",
+//                            Kind = ParamKind.Output
+//                        }).ToList();
+//                    }
+//                }
+//                else
+//                {
+//                    Type nameType = Delegate.Method.OutputType().UnderlyingType().Type;
+//                    string name = Delegate.Method.OutputName();
+//                    OutputParams = new List<ParamInfo> {
+//                        new ParamInfo
+//                        {
+//                            Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
+//                            DataType = Delegate.Method.OutputType(),
+//                            Description = Delegate.Method.OutputDescription(),
+//                            Kind = ParamKind.Output
+//                        }
+//                    };
+//                }
+//            }
+//        }
 
 
-        /*************************************/
-    }
-}
+//        /*************************************/
+//        /**** Private Fields              ****/
+//        /*************************************/
+
+//        protected Func<object[], object> m_CompiledFunc = null;
+
+//        protected Func<object, object[], object> m_CompiledInstanceFunc = null;
+
+
+//        /*************************************/
+//    }
+//}

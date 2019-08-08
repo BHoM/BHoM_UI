@@ -131,7 +131,7 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static List<Delegate> ExternalComputeItems()
+        public static List<MethodInfo> ExternalComputeItems()
         {
             return Engine.Reflection.Query.ExternalMethodList();
         }

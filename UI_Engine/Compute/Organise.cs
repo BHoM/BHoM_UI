@@ -65,7 +65,7 @@ namespace BH.Engine.UI
             Tree<Delegate> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
-            tree = tree.GroupMethodsByName();
+            tree = tree.GroupByName();
 
             return new Output<List<SearchItem>, Tree<Delegate>> { Item1 = list, Item2 = tree };
         }
@@ -83,7 +83,7 @@ namespace BH.Engine.UI
             Tree<MethodBase> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
-            tree = tree.GroupMethodsByName();
+            tree = tree.GroupByName();
             
             return new Output<List<SearchItem>, Tree<MethodBase>> { Item1 = list, Item2 = tree };
         }

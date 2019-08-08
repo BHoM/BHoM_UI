@@ -20,22 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
 using BH.oM.Reflection;
 using BH.Engine.UI;
-using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Data.Collections;
 using System.Windows.Forms;
-using BH.Engine.Serialiser;
+using BH.Engine.Reflection;
 
 namespace BH.UI.Templates
 {
@@ -58,7 +51,7 @@ namespace BH.UI.Templates
 
             if (!m_ItemTreeStore.ContainsKey(key) || !m_ItemListStore.ContainsKey(key))
             {
-                List<T> toKeep = possibleItems.Where(x => x.IIsToKeepInMenu()).ToList();
+                List<T> toKeep = possibleItems.Where(x => x.IIsExposed()).ToList();
                 Output<List<SearchItem>, Tree<T>> organisedMethod = Engine.UI.Compute.OrganiseItems(toKeep);
                 m_ItemListStore[key] = organisedMethod.Item1;
                 m_ItemTreeStore[key] = organisedMethod.Item2;
