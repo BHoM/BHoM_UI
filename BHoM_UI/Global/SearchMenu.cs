@@ -109,7 +109,7 @@ namespace BH.UI.Global
 
             // All methods for the BHoM Engine
             items.AddRange(BH.Engine.UI.Query.EngineItems()
-                        .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = Properties.Resources.ExternalCompute, Text = x.ToText(true) }));
+                        .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = Properties.Resources.External, Text = x.ToText(true) }));
 
             // All methods from External class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
