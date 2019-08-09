@@ -150,8 +150,6 @@ namespace BH.UI.Global
                     return Properties.Resources.Convert;
                 case "Create":
                     return Properties.Resources.CreateBHoM;
-                case "External":
-                    return Properties.Resources.ExternalCompute;
                 case "Modify":
                     return Properties.Resources.Modify;
                 case "Query":
@@ -175,8 +173,6 @@ namespace BH.UI.Global
                         return typeof(ConvertCaller);
                     case "Create":
                         return typeof(CreateObjectCaller);
-                    case "External":
-                        return typeof(ExternalCaller);
                     case "Modify":
                         return typeof(ModifyCaller);
                     case "Query":
