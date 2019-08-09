@@ -385,11 +385,11 @@ namespace BH.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ExternalCompute
+        internal static System.Drawing.Bitmap External
         {
             get
             {
-                object obj = ResourceManager.GetObject("ExternalCompute", resourceCulture);
+                object obj = ResourceManager.GetObject("External", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

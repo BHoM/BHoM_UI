@@ -151,7 +151,7 @@
     <Content Include="Properties\Resources\Enum.png" />
     <Content Include="Properties\Resources\Execute.png" />
     <Content Include="Properties\Resources\Explode.png" />
-    <Content Include="Properties\Resources\ExternalCompute.png" />
+    <Content Include="Properties\Resources\External.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
     <Content Include="Properties\Resources\GetInfo.png" />
