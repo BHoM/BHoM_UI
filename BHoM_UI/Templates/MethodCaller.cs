@@ -99,13 +99,23 @@ namespace BH.UI.Templates
 
         public override object Run(object[] inputs)
         {
-            if (m_CompiledFunc != null && Method.IsStatic)
+            if (m_CompiledFunc != null)
             {
                 return m_CompiledFunc(inputs);
             }
-            else if (m_CompiledInstanceFunc != null && !Method.IsStatic)
+            else if (m_CompiledInstanceFunc != null)
             {
                 return m_CompiledInstanceFunc(inputs[0], inputs);
+            }
+            else if (m_CompiledAction != null)
+            {
+                m_CompiledAction(inputs);
+                return null;
+            }
+            else if (m_CompiledInstanceAction != null)
+            {
+                m_CompiledInstanceAction(inputs[0], inputs);
+                return null;
             }
             else if (InputParams.Count <= 0)
             {
@@ -205,6 +215,23 @@ namespace BH.UI.Templates
             {
                 m_CompiledFunc = (Func<object[], object>)compiledFunc;
             }
+            else if (compiledFunc is Action<object[]>)
+            {
+                m_CompiledAction = (Action<object[]>)compiledFunc;
+            }
+            else if (compiledFunc is Action<object, object[]>)
+            {
+                m_CompiledInstanceAction = (Action<object, object[]>)compiledFunc;
+            }
+            else
+            {
+                throw new ArgumentException($"Delegate must of type " +
+                    $"{m_CompiledFunc.GetType()}, " +
+                    $"{m_CompiledAction.GetType()}, " +
+                    $"{m_CompiledInstanceFunc.GetType()} or " +
+                    $"{m_CompiledInstanceAction.GetType()}, " +
+                    $"not {compiledFunc.GetType()}");
+            }
         }
 
         public virtual void SetOutputParams()
@@ -241,6 +268,8 @@ namespace BH.UI.Templates
                 else
                 {
                     Type nameType = Method.OutputType().UnderlyingType().Type;
+                    if (nameType == typeof(void))
+                        return;
                     string name = Method.OutputName();
                     OutputParams = new List<ParamInfo> {
                         new ParamInfo
@@ -262,8 +291,11 @@ namespace BH.UI.Templates
 
         protected Func<object[], object> m_CompiledFunc = null;
 
+        protected Action<object[]> m_CompiledAction = null;
+
         protected Func<object, object[], object> m_CompiledInstanceFunc = null;
 
+        protected Action<object, object[]> m_CompiledInstanceAction = null;
 
         /*************************************/
     }
