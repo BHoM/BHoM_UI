@@ -103,20 +103,6 @@ namespace BH.UI.Templates
             {
                 return m_CompiledFunc(inputs);
             }
-            else if (m_CompiledInstanceFunc != null)
-            {
-                return m_CompiledInstanceFunc(inputs[0], inputs);
-            }
-            else if (m_CompiledAction != null)
-            {
-                m_CompiledAction(inputs);
-                return null;
-            }
-            else if (m_CompiledInstanceAction != null)
-            {
-                m_CompiledInstanceAction(inputs[0], inputs);
-                return null;
-            }
             else if (InputParams.Count <= 0)
             {
                 BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
@@ -187,7 +173,7 @@ namespace BH.UI.Templates
                     HasDefaultValue = x.HasDefaultValue,
                     DefaultValue = x.DefaultValue
                 }).ToList();
-                if (!Method.IsStatic)
+                if (Method is MethodInfo && !Method.IsStatic)
                 {
                     InputParams.Insert(0, new ParamInfo
                     {
@@ -206,32 +192,7 @@ namespace BH.UI.Templates
 
         public virtual void SetDelegate()
         {
-            Delegate compiledFunc = Engine.Reflection.Create.Delegate(Method);
-            if (compiledFunc is Func<object, object[], object>)
-            {
-                m_CompiledInstanceFunc = (Func<object, object[], object>)compiledFunc;
-            }
-            else if (compiledFunc is Func<object[], object>)
-            {
-                m_CompiledFunc = (Func<object[], object>)compiledFunc;
-            }
-            else if (compiledFunc is Action<object[]>)
-            {
-                m_CompiledAction = (Action<object[]>)compiledFunc;
-            }
-            else if (compiledFunc is Action<object, object[]>)
-            {
-                m_CompiledInstanceAction = (Action<object, object[]>)compiledFunc;
-            }
-            else
-            {
-                throw new ArgumentException($"Delegate must of type " +
-                    $"{m_CompiledFunc.GetType()}, " +
-                    $"{m_CompiledAction.GetType()}, " +
-                    $"{m_CompiledInstanceFunc.GetType()} or " +
-                    $"{m_CompiledInstanceAction.GetType()}, " +
-                    $"not {compiledFunc.GetType()}");
-            }
+            m_CompiledFunc = Method.ToFunc();
         }
 
         public virtual void SetOutputParams()
@@ -290,12 +251,6 @@ namespace BH.UI.Templates
         /*************************************/
 
         protected Func<object[], object> m_CompiledFunc = null;
-
-        protected Action<object[]> m_CompiledAction = null;
-
-        protected Func<object, object[], object> m_CompiledInstanceFunc = null;
-
-        protected Action<object, object[]> m_CompiledInstanceAction = null;
 
         /*************************************/
     }
