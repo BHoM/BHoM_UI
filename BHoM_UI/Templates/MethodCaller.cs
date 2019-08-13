@@ -206,7 +206,7 @@ namespace BH.UI.Templates
 
         public virtual void SetDelegate()
         {
-            Delegate compiledFunc = Engine.Reflection.Compute.Compile(Method);
+            Delegate compiledFunc = Engine.Reflection.Create.Delegate(Method);
             if (compiledFunc is Func<object, object[], object>)
             {
                 m_CompiledInstanceFunc = (Func<object, object[], object>)compiledFunc;

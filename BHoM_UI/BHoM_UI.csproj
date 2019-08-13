@@ -91,7 +91,6 @@
     <Compile Include="Components\Adapter\Push.cs" />
     <Compile Include="Components\Engine\Explode.cs" />
     <Compile Include="Components\Engine\GetInfo.cs" />
-    <Compile Include="Components\Engine\Iterate.cs" />
     <Compile Include="Components\Engine\Query.cs" />
     <Compile Include="Components\Engine\Modify.cs" />
     <Compile Include="Components\Engine\Convert.cs" />
