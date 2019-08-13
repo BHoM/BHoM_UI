@@ -48,8 +48,7 @@ namespace BH.UI.Templates
 
         protected override void AddTree(ToolStripDropDown menu, Tree<T> itemTree)
         {
-            ToolStripMenuItem item = AppendMenuItem(menu, itemTree.Name, Item_Click);
-            AppendMenuTree(itemTree, item.DropDown);
+            AppendMenuTree(itemTree, menu);
         }
 
         /*************************************/
@@ -73,34 +72,21 @@ namespace BH.UI.Templates
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected void AppendMenuTree(Tree<T> tree, ToolStripDropDown root)
+        protected void AppendMenuTree(Tree<T> tree, ToolStripDropDown menu)
         {
             if (tree.Children.Count > 0)
             {
-                //ToolStripMenuItem treeMenu = AppendMenuItem(root, tree.Name);
-                //foreach (Tree<T> childTree in tree.Children.Values.OrderBy(x => x.Name))
-                //    AppendMenuTree(childTree, treeMenu.DropDown);
-
-                var children = tree.Children.OrderBy(x => x.Key);
-                ToolStripMenuItem[] items = AppendMenuItemsRange(root, children.Select(x => x.Key), Item_Click);
-                for (int i = 0; i < items.Length; i++)
-                    AppendMenuTree(children.Select(x => x.Value).ToList()[i], items[i].DropDown);
+                ToolStripMenuItem treeMenu = AppendMenuItem(menu, tree.Name);
+                foreach (Tree<T> childTree in tree.Children.Values.OrderBy(x => x.Name))
+                    AppendMenuTree(childTree, treeMenu.DropDown);
             }
-            else // append leaf
+            else
             {
-                ToolStripMenuItem item = AppendMenuItem(root, tree.Name, Item_Click);
-                m_ItemLinks[item] = tree.Value;
-                item.ToolTipText = tree.Value.IDescription();
+                T method = tree.Value;
+                ToolStripMenuItem methodItem = AppendMenuItem(menu, tree.Name, Item_Click);
+                m_ItemLinks[methodItem] = tree.Value;
+                methodItem.ToolTipText = method.IDescription();
             }
-        }
-
-        /*************************************/
-
-        protected ToolStripMenuItem[] AppendMenuItemsRange(ToolStrip menu, IEnumerable<string> entries, EventHandler click = null, bool enabled = true, bool @checked = false)
-        {
-            ToolStripMenuItem[] items = entries.Select(x => new ToolStripMenuItem(x, null, click)).ToArray();
-            menu.Items.AddRange(items);
-            return items;
         }
 
         /*************************************/
