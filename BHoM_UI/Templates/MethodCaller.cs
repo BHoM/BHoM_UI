@@ -79,7 +79,7 @@ namespace BH.UI.Templates
                 return false;
 
             if (Method is MethodInfo)
-                Method = ((MethodInfo)Method).MakeGeneric();
+                Method = ((MethodInfo)Method).MakeFromGeneric();
 
             SetName();
             SetCategory();
