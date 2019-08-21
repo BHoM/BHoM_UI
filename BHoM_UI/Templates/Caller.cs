@@ -369,8 +369,19 @@ namespace BH.UI.Templates
 
             Expression[] methodInputs = new Expression[] { Expression.Constant(index) };
             MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
+            Func<DataAccessor, object> lambda = Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
 
-            return Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
+            if (!dataType.IsArray)
+                return lambda;
+            
+            // If dataType is an array type, the underlying method asks for an array type
+            // Thus, we add a new node to the syntax tree that casts the List to an Array
+            MethodInfo castMethod = typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(subType.Type);
+            ParameterExpression lambdaResult = Expression.Parameter(typeof(object), "lambdaResult");
+            MethodCallExpression castExpression = Expression.Call(null, castMethod, Expression.Convert(lambdaResult, typeof(IEnumerable<>).MakeGenericType(subType.Type)));
+            Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
+
+            return (accessor) => { return castDelegate(lambda(accessor)); };
         }
 
         /*******************************************/
