@@ -41,7 +41,7 @@ namespace BH.UI.Components
 
         public override Guid Id { get; protected set; } = new Guid("4DEC2B78-4A83-49A2-BD7D-A03DD5CAE43E");
 
-        public override string Name { get; protected set; } = "ExternalCompute";
+        public override string Name { get; protected set; } = "External";
 
         public override string Category { get; protected set; } = "Engine";
 
