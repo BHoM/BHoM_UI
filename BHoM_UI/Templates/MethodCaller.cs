@@ -195,6 +195,8 @@ namespace BH.UI.Templates
             m_CompiledFunc = Method.ToFunc();
         }
 
+        /*************************************/
+
         public virtual void SetOutputParams()
         {
             if (Method == null)
