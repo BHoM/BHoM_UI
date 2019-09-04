@@ -54,8 +54,20 @@ namespace BH.Engine.UI
 
         public static Output<List<SearchItem>, Tree<MethodBase>> OrganiseMethods(this List<MethodBase> methods)
         {
-            // Create method list
-            IEnumerable<string> paths = methods.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            // Create method path list
+            List<string> paths = methods.Select(m =>
+            {
+                // Deal with nested FilterRequest
+                var mInfo = m as MethodInfo;
+                if (mInfo != null)
+                {
+                    if (mInfo.ReturnType == typeof(BH.oM.Data.Requests.FilterRequest))
+                        return m.ToText(true).Replace("BH.oM.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""));
+                }
+
+                return m.ToText(true).Replace("Engine", "oM.NonBHoMObjects");
+            }).ToList();
+
             List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
@@ -64,7 +76,8 @@ namespace BH.Engine.UI
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupByName();
-            
+            tree = tree.ShortenBranches();
+
             return new Output<List<SearchItem>, Tree<MethodBase>> { Item1 = list, Item2 = tree };
         }
 
