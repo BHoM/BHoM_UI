@@ -64,12 +64,12 @@ namespace BH.Engine.UI
                     if (typeof(BH.oM.Data.Requests.IRequest).IsAssignableFrom(mInfo.ReturnType))
                     {
                         string pathString = m.ToText(true);
-                        pathString
+                        string modifiedString = pathString
                             .Replace("BH.oM.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
                             .Replace("BH.Engine.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
                             .Replace("BH.oM.", "")
                             .Replace("BH.Engine.", "");
-                        return pathString;
+                        return modifiedString;
                     }
 
                 }
