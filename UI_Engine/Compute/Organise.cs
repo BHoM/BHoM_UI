@@ -57,12 +57,21 @@ namespace BH.Engine.UI
             // Create method path list
             List<string> paths = methods.Select(m =>
             {
-                // Deal with nested FilterRequest
+                // Deal with nested IRequests in menu
                 var mInfo = m as MethodInfo;
                 if (mInfo != null)
                 {
-                    if (mInfo.ReturnType == typeof(BH.oM.Data.Requests.FilterRequest))
-                        return m.ToText(true).Replace("BH.oM.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""));
+                    if (typeof(BH.oM.Data.Requests.IRequest).IsAssignableFrom(mInfo.ReturnType))
+                    {
+                        string pathString = m.ToText(true);
+                        pathString
+                            .Replace("BH.oM.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
+                            .Replace("BH.Engine.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
+                            .Replace("BH.oM.", "")
+                            .Replace("BH.Engine.", "");
+                        return pathString;
+                    }
+
                 }
 
                 return m.ToText(true).Replace("Engine", "oM.NonBHoMObjects");
