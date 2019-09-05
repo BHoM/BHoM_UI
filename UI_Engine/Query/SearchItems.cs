@@ -42,10 +42,10 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        public static IEnumerable<MethodBase> CreateItems()
+        public static IEnumerable<MethodBase> CreateItems() //object
         {
             return Engine.Reflection.Query.BHoMMethodList()
-                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Create");
+                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Create"); //concate BHoMTypeList
         }
 
         /***************************************************/

@@ -63,15 +63,8 @@ namespace BH.Engine.UI
                 {
                     if (typeof(BH.oM.Data.Requests.IRequest).IsAssignableFrom(mInfo.ReturnType))
                     {
-                        string pathString = m.ToText(true);
-                        string modifiedString = pathString
-                            .Replace("BH.oM.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
-                            .Replace("BH.Engine.Data.", m.DeclaringType.FullName.Replace(m.DeclaringType.Name, ""))
-                            .Replace("BH.oM.", "")
-                            .Replace("BH.Engine.", "");
-                        return modifiedString;
+                        return m.ToText(true, useReturnTypeForCreate: false);
                     }
-
                 }
 
                 return m.ToText(true).Replace("Engine", "oM.NonBHoMObjects");
