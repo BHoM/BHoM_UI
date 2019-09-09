@@ -66,8 +66,10 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Get the value of a property with a given name from an object")]
-        [Output("Value of the property")]
+        [Description("Get the value of a property or of a list of properties from an object.")]
+        [Input("obj", "Object to extract the property value from. Can be a list of objects.")]
+        [Input("propName", "Name of the property to extract. Can be a list of names. \nTo know what property names you can specify, try connecting your object to a BHoM `Explode` component.")]
+        [Output("Value", "Extracted values.")]
         public static object GetProperty(object obj, string propName)
         {
             return Engine.Reflection.Query.PropertyValue(obj, propName);
