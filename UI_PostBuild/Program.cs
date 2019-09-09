@@ -42,6 +42,11 @@ namespace BHoM_UI
             string sourceFolder = args[0];
             string targetFolder = args[1];
 
+            //set targetDatasetsFolder via Replace below such that we can avoid changing executable arguments. This can be updated once clean up and removal of calling exe from other repos is complete
+            string targetAssembliesFolder = targetFolder;
+            string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets"); 
+
+
             //Make sure the source and target folders exists
             if (!Directory.Exists(sourceFolder))
                 throw new DirectoryNotFoundException("The source folder does not exists: " + sourceFolder);
@@ -49,7 +54,9 @@ namespace BHoM_UI
                 Directory.CreateDirectory(targetFolder);
             else
                 CleanDirectory(targetFolder);
-                
+
+
+            //********************* Copy Assemblies *****************************
 
             // Create the list of files to move starting with the BHoM.dll 
             Dictionary<string, List<string>> filesToMove = new Dictionary<string, List<string>>();
@@ -77,7 +84,7 @@ namespace BHoM_UI
                 AddFilesToList(filesToMove, Directory.GetFiles(Path.Combine(sourceFolder, @"BHoM_Test\Build"), "*.dll"));
                 Console.WriteLine("Adding files from BHoM_Test");
             }
-            
+
 
             // Add all the Toolkit dlls to the list
             foreach (string path in Directory.GetDirectories(sourceFolder).Where(x => x.EndsWith(@"_Toolkit")))
@@ -98,7 +105,7 @@ namespace BHoM_UI
                                 Directory.CreateDirectory(Path.GetDirectoryName(target));
                                 File.Copy(file, target, true);
                             }
-                                
+
                         }
                     }
                     catch
@@ -109,19 +116,29 @@ namespace BHoM_UI
                 else
                 {
                     Console.WriteLine("Failed to collect files from " + path);
-                }   
+                }
             }
 
-            // Copy al the files accross
-            Console.WriteLine("\nCopying " + filesToMove.Count.ToString() + " files to " + targetFolder);
+            // Copy all the files accross
+            Console.WriteLine("\nCopying " + filesToMove.Count.ToString() + " files to " + targetAssembliesFolder);
             foreach (KeyValuePair<string, List<string>> kvp in filesToMove)
             {
                 string file = kvp.Value.OrderBy(x => File.GetLastWriteTime(x)).Last();
-                File.Copy(file, Path.Combine(targetFolder, kvp.Key), true);
+                File.Copy(file, Path.Combine(targetAssembliesFolder, kvp.Key), true);
             }
 
-        }
 
+            //********************* Copy Datasets *****************************
+
+
+            foreach (string path in Directory.GetDirectories(sourceFolder).Where((x => x.EndsWith(@"_Datasets") || x.EndsWith(@"_Toolkit"))))
+            {
+                string datasetPath = Path.Combine(path, "DataSets");
+
+                if (Directory.Exists(datasetPath))
+                    CopyJsonInFoldersRecursively(datasetPath, targetDatasetsFolder);
+            }
+        }
 
         /***************************************************/
         /**** Private Methods                           ****/
@@ -155,5 +172,25 @@ namespace BHoM_UI
         }
 
         /*************************************/
-    }
+
+        private static void CopyJsonInFoldersRecursively(string sourceFolder, string targetFolder)
+        {
+            if (!Directory.Exists(targetFolder))
+                Directory.CreateDirectory(targetFolder);
+            
+            //Copy all files
+            string[] files = Directory.GetFiles(sourceFolder, "*.json");
+            foreach (string file in files)
+                File.Copy(file, Path.Combine(targetFolder, Path.GetFileName(file)), true);
+
+            //Copy all sub folders
+            string[] folders = Directory.GetDirectories(sourceFolder);
+            foreach (string folder in folders)
+                CopyJsonInFoldersRecursively(folder, Path.Combine(targetFolder, Path.GetFileName(folder)));
+            
+        }
+
+
+    /*************************************/
+}
 }
