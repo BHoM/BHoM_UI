@@ -17,16 +17,16 @@ You will need the following to build BHoM:
 - Note that there are no software - specific dependencies (only operating system relevant), this is specific: BHoM is a software agnostic object model.
 
 
-### Clone and build the Core BHoM Repos
+### Clone and build the Foundational Core BHoM Repos
 
 In the following build order:
 - [BHoM](https://github.com/BHoM/BHoM)
+- [BHoM_Datasets](https://github.com/BHoM/BHoM_Datasets)
 - [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
 - [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
-- [BHoM_UI](https://github.com/BHoM/BHoM_UI)
-
 - [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
 - [Mongo_Toolkit](https://github.com/BHoM/Mongo_Toolkit)
+
 
 
 Build as many as you like of your chosen Interop Toolkits:
@@ -39,6 +39,7 @@ Build as many as you like of your chosen Interop Toolkits:
 - [XML_Toolkit](https://github.com/BHoM/XML_Toolkit)
 
 Then build as many User Interface Repositories as you like:
+- [BHoM_UI](https://github.com/BHoM/BHoM_UI)
 - [Rhinoceros_Toolkit](https://github.com/BHoM/Rhinoceros_Toolkit) & [Grasshopper_Toolkit](https://github.com/BHoM/Grasshopper_Toolkit) (you need both)
 - [Dynamo_Toolkit](https://github.com/BHoM/Dynamo_Toolkit)
 - [Excel_Toolkit](https://github.com/BHoM/Excel_Toolkit)
