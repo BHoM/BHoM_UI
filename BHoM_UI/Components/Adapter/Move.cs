@@ -58,13 +58,14 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Copy objects from a source adapter to a target adapter")]
+        [Description("Copy objects from a Source adapter to a Target adapter")]
         [Input("source", "Adapter the data is copied from")]
         [Input("target", "Adapter the data is copied to")]
         [Input("request", "Filter on the objects to pull (default: get all)")]
-        [Input("config", "Move config")]
-        [Input("active", "Execute the move")]
-        [Output("success", "Define if the move was sucessful")]
+        [Input("pullConfig", "Config options for the Pull from Source adapter")]
+        [Input("pushConfig", "Config options for the Push to Target adapter")]
+        [Input("active", "Execute the Move")]
+        [Output("success", "Define if the Move was successful")]
         public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> pullConfig = null, Dictionary<string, object> pushConfig = null, bool active = false)
         {
             if (request == null)
