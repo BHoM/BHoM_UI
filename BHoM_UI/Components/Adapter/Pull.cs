@@ -51,6 +51,7 @@ namespace BH.UI.Components
         /**** Constructors                ****/
         /*************************************/
 
+        // The wrapping of the Caller is needed in order to specify the `active` boolean input
         public PullCaller() : base(typeof(PullCaller).GetMethod("Pull")) { }
 
 
