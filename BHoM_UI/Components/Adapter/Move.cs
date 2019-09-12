@@ -71,7 +71,7 @@ namespace BH.UI.Components
                 request = new FilterRequest();
 
             if (active)
-                return source.PullTo(target, request, config);
+                return source.Move(target, request, config);
             else
                 return false;
         }
