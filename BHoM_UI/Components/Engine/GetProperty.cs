@@ -68,7 +68,9 @@ namespace BH.UI.Components
 
         [Description("Get the value of a property or of a list of properties from an object.")]
         [Input("obj", "Object to extract the property value from. Can be a list of objects.")]
-        [Input("propName", "Name of the property to extract. Can be a list of names. \nTo know what property names you can specify, try connecting your object to a BHoM `Explode` component.")]
+        [Input("propName", "Name of the property to extract. Can be a list of names."
+            + "\nYou can use the dot notation to access nested properties: e.g. for e.g. for a BH.oM.Structure.Bar, you can input 'StartNode.Position' to get the BH.oM.Geometry.Point."
+            + "\nTo know what property names you can specify for a given object, connect your object to a BHoM `Explode` component.")]
         [Output("Value", "Extracted values.")]
         public static object GetProperty(object obj, string propName)
         {
