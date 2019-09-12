@@ -65,13 +65,13 @@ namespace BH.UI.Components
         [Input("config", "Move config")]
         [Input("active", "Execute the move")]
         [Output("success", "Define if the move was sucessful")]
-        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
+        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> pullConfig = null, Dictionary<string, object> pushConfig = null, bool active = false)
         {
             if (request == null)
                 request = new FilterRequest();
 
             if (active)
-                return source.Move(target, request, config);
+                return source.Move(target, request, pullConfig, pushConfig);
             else
                 return false;
         }
