@@ -50,7 +50,8 @@ namespace BH.UI.Components
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
-
+        
+        // The wrapping of the Adapter method in the Caller is needed in order to specify the `active` boolean input
         public PushCaller() : base(typeof(PushCaller).GetMethod("Push")) { }
 
 
