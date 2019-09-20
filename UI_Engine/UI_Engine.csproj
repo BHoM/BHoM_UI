@@ -32,29 +32,37 @@
   <ItemGroup>
     <Reference Include="BHoM">
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Adapter, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Engine">
       <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Data_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Data_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Library_Engine, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_oM">
       <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,6 +74,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UI_oM">
       <HintPath>..\Build\UI_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
