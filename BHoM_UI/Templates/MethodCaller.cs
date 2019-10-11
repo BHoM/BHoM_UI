@@ -149,7 +149,9 @@ namespace BH.UI.Templates
             {
                 Category = "Other";
                 string nameSpace = Method.DeclaringType.Namespace;
-                if (nameSpace != null && nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
+                if (nameSpace != null)
+                    Category = "Global";
+                if (nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
                     Category = nameSpace.Split('.')[1];
             }
         }
