@@ -147,11 +147,10 @@ namespace BH.UI.Templates
         {
             if (Method != null && Category == "Undefined")
             {
-                string[] nameSpace = Method.DeclaringType.Namespace.Split('.');
-                if (nameSpace.Length >= 2 && nameSpace[0] == "BH")
-                    Category = nameSpace[1];
-                else
-                    Category = "Other";
+                Category = "Other";
+                string nameSpace = Method.DeclaringType.Namespace;
+                if (nameSpace != null && nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
+                    Category = nameSpace.Split('.')[1];
             }
         }
 

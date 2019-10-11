@@ -70,7 +70,7 @@ namespace BH.Engine.UI
                 else
                     name = declaringName;
 
-                foreach (string part in search.Where(p => method.DeclaringType.Namespace.ToLower().Contains(p)))
+                foreach (string part in search.Where(p => method.DeclaringType.Namespace != null && method.DeclaringType.Namespace.ToLower().Contains(p)))
                     weight += 2;
             }
             else if (item.Item is Type)
