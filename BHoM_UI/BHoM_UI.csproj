@@ -138,6 +138,7 @@
     <Compile Include="Components\Engine\GetProperty.cs" />
     <Compile Include="Components\Engine\FromJson.cs" />
     <Compile Include="Components\Engine\ToJson.cs" />
+    <Compile Include="Components\oM\CreateObject2.cs" />
     <Compile Include="Components\oM\CreateCustom.cs" />
     <Compile Include="Components\oM\CreateData.cs" />
     <Compile Include="Components\oM\CreateEnum.cs" />

@@ -42,10 +42,14 @@ namespace BH.Engine.UI
 
         public static Output<List<SearchItem>, Tree<T>> OrganiseItems<T>(this List<T> items)
         {
-            if (typeof(T) == typeof(MethodBase))
+            Type type = typeof(T);
+
+            if (type == typeof(MethodBase))
                 return OrganiseMethods(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
-            if (typeof(T) == typeof(Type))
+            else if (type == typeof(Type))
                 return OrganiseTypes(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+            else if (type == typeof(MemberInfo))
+                return OrganiseMembers(items.Cast<MemberInfo>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else
                 return OrganiseOthers(items) as Output<List<SearchItem>, Tree<T>>;
         }
@@ -86,6 +90,24 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        public static Output<List<SearchItem>, Tree<MemberInfo>> OrganiseMembers(this List<MemberInfo> members)
+        {
+            // Create method list
+            IEnumerable<string> paths = members.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
+
+            //Create method tree
+            List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
+            Tree<MemberInfo> tree = Data.Create.Tree(members, paths.Select(x => SplitPath(x, toSkip)).ToList(), "Select an item");
+            while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
+                tree.Children = tree.Children.Values.First().Children;
+            tree = tree.GroupByName();
+
+            return new Output<List<SearchItem>, Tree<MemberInfo>> { Item1 = list, Item2 = tree };
+        }
+
+        /*************************************/
+
         public static Output<List<SearchItem>, Tree<T>> OrganiseOthers<T>(this List<T> items)
         {
             // Create item list
@@ -99,6 +121,26 @@ namespace BH.Engine.UI
 
             return new Output<List<SearchItem>, Tree<T>> { Item1 = list, Item2 = tree };
         }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static List<string> SplitPath(string path, List<string> toSkip)
+        {
+            if (path.EndsWith(")"))
+            {
+                return path.Split('.').Except(toSkip).ToList();
+            }
+            else
+            {
+                string[] split = path.Split('.');
+                return split.Concat(new string[] { split.Last() + "(...)" }).ToList();
+            }
+                
+        }
+
 
         /*************************************/
     }
