@@ -92,7 +92,6 @@ namespace BH.UI.Global
                 new SearchItem { Item = typeof(MoveCaller).GetMethod("Move"), CallerType = typeof(MoveCaller), Icon = Properties.Resources.Move },
                 new SearchItem { Item = typeof(PullCaller).GetMethod("Pull"), CallerType = typeof(PullCaller), Icon = Properties.Resources.Pull },
                 new SearchItem { Item = typeof(PushCaller).GetMethod("Push"), CallerType = typeof(PushCaller), Icon = Properties.Resources.Push },
-                new SearchItem { Item = typeof(UpdatePropertyCaller).GetMethod("UpdateProperty"), CallerType = typeof(UpdatePropertyCaller), Icon = Properties.Resources.UpdateProperty },
                 new SearchItem { Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("FromJson"), CallerType = typeof(FromJsonCaller), Icon = Properties.Resources.FromJson },
                 new SearchItem { Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("ToJson"), CallerType = typeof(ToJsonCaller), Icon = Properties.Resources.ToJson },
                 new SearchItem { Item = null, CallerType = typeof(ExplodeCaller), Icon = Properties.Resources.Explode, Text = "BH.UI.Components.ExplodeCaller.Explode" },
