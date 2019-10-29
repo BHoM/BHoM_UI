@@ -35,15 +35,23 @@ namespace BH.Engine.UI
 
         [Input("property", "The system property to convert to bhom")]
         [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
-        public static oM.UI.ParamInfo ToBHoM(this PropertyInfo property)
+        public static oM.UI.ParamInfo ToBHoM(this PropertyInfo property, object instance = null)
         {
-            return new ParamInfo
+            ParamInfo info = new ParamInfo
             {
                 Name = property.Name,
                 DataType = property.PropertyType,
                 Description = property.PropertyType.IDescription(),
                 Kind = ParamKind.Input
             };
+
+            if (instance != null)
+            {
+                info.HasDefaultValue = true;
+                info.DefaultValue = property.GetValue(instance);
+            }
+
+            return info;
         }
 
         /*************************************/
