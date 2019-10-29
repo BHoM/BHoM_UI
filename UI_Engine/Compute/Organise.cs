@@ -94,7 +94,7 @@ namespace BH.Engine.UI
         {
             // Create method list
             IEnumerable<string> paths = members.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
-            List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
+            List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k.EndsWith(")") ? k : k + "(...)", Item = v }).ToList();
 
             //Create method tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
