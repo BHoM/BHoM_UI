@@ -107,6 +107,10 @@ namespace BH.UI.Global
                     item.Text = ((MethodInfo)item.Item).ToText(true);
             }
 
+            // All constructors for the BHoM objects
+            items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateObjectCaller), Icon = Properties.Resources.CreateBHoM, Text = x.ToText(true) + "(...)" }));
+
             // All methods for the BHoM Engine
             items.AddRange(BH.Engine.UI.Query.EngineItems()
                         .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ToText(true) }));
