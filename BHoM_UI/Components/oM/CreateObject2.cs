@@ -31,6 +31,7 @@ using BH.Engine.Reflection;
 using BH.Engine.Serialiser;
 using System.Collections;
 using BH.Engine.UI;
+using System.Linq.Expressions;
 
 namespace BH.UI.Components
 {
@@ -62,30 +63,8 @@ namespace BH.UI.Components
             possibleItems.AddRange(Engine.UI.Query.CreateItems());
 
             SetPossibleItems(possibleItems);
-
-            InputParams = new List<ParamInfo>();
-            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs." } };
         }
 
-
-        /*************************************/
-        /**** Public Methods              ****/
-        /*************************************/
-
-        public void SetInputs(List<string> names, List<Type> types = null)
-        {
-            if (types == null || names.Count != types.Count)
-            {
-                Engine.Reflection.Compute.RecordWarning("The list length for names and types does not match. Inputs are set, but <types> variable will be ignored.");
-                types = new List<Type>(new Type[names.Count]);
-            }
-
-            for (int i = 0; i < names.Count; i++)
-                AddInput(i, names[i], types[i]);
-
-            CompileInputGetters();
-            CompileOutputSetters();
-        }
 
         /*************************************/
         /**** Override Methods            ****/
@@ -95,18 +74,14 @@ namespace BH.UI.Components
         {
             if (SelectedItem is MethodBase)
                 return base.Run(inputs);
-
-            IObject obj = new CustomObject();
-            if (SelectedItem is Type)
-                obj = Activator.CreateInstance((Type)SelectedItem) as IObject;
-
-            if (inputs.Length == InputParams.Count)
+            else if (SelectedItem is Type)
             {
-                for (int i = 0; i < inputs.Length; i++)
-                    BH.Engine.Reflection.Modify.SetPropertyValue(obj, InputParams[i].Name, inputs[i]);
+                if (m_CompiledFunc == null)
+                    m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+                return m_CompiledFunc(inputs);
             }
-
-            return obj;
+            else 
+                return null;
         }
 
         /*************************************/
@@ -123,7 +98,12 @@ namespace BH.UI.Components
                 Type type = item as Type;
                 Name = type.Name;
                 Description = type.Description();
-                InputParams.AddRange(type.GetProperties().Select(x => x.ToBHoM()).ToList());
+                InputParams = type.GetProperties().Select(x => x.ToBHoM()).ToList();
+                OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
+                m_CompiledFunc = CreateConstructor(type, InputParams);
+
+                CompileInputGetters();
+                CompileOutputSetters();
             }
             return true;
         }
@@ -140,6 +120,64 @@ namespace BH.UI.Components
             }
 
             return base.AddInput(index, name, type);
+        }
+
+        /*************************************/
+
+        public override bool RemoveInput(string name)
+        {
+            if (name == null)
+                return false;
+
+            bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
+            CompileInputGetters();
+
+            if (SelectedItem is Type)
+                m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+            return success;
+        }
+
+        /*************************************/
+
+        public override bool Read(string json)
+        {
+            if (!base.Read(json))
+                return false;
+
+            if (SelectedItem is Type)
+                m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+
+            return true;
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        protected Func<object[], object> CreateConstructor(Type type, List<ParamInfo> parameters)
+        {
+            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
+            Expression[] inputs = parameters.Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.DataType)).ToArray();
+
+            ParameterExpression instance = Expression.Variable(type, "instance");
+            List<Expression> assignments = new List<Expression>();
+            assignments.Add(Expression.Assign(instance, Expression.New(type)));
+
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                ParamInfo param = parameters[i];
+                PropertyInfo property = type.GetProperty(param.Name);
+                MethodInfo setMethod = property.GetSetMethod();
+
+                MethodCallExpression methodCall = Expression.Call(instance, setMethod, inputs[i]);
+                assignments.Add(methodCall);
+            }
+            assignments.Add(instance);
+
+            BlockExpression block = Expression.Block(new[] { instance }, assignments);
+            return Expression.Lambda<Func<object[], object>>(Expression.Convert(block, typeof(object)), lambdaInput).Compile();
+
         }
 
         /*************************************/
