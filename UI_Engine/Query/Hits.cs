@@ -46,6 +46,7 @@ namespace BH.Engine.UI
                 hits = items.Select(x => new Tuple<SearchItem, double>(x, x.Weight(parts)))
                                     .Where(x => x.Item2 > 0)
                                     .OrderByDescending(x => x.Item2)
+                                    .ThenBy(x => x.Item1.Text)
                                     .Take(nbMax)
                                     .Select(x => x.Item1)
                                     .ToList();
