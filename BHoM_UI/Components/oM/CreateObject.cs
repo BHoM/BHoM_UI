@@ -121,7 +121,11 @@ namespace BH.UI.Components
                 Type type = item as Type;
                 Name = type.Name;
                 Description = type.Description();
-                InputParams = type.GetProperties().Select(x => x.ToBHoM()).ToList();
+
+                //object instance = Activator.CreateInstance(type);  // Potentially for later
+                string[] excluded = new string[] { "BHoM_Guid" };
+                InputParams = type.GetProperties().Where(x => !excluded.Contains(x.Name)).Select(x => x.ToBHoM()).ToList();
+
                 OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
                 m_CompiledFunc = CreateConstructor(type, InputParams);
 
