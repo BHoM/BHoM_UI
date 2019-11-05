@@ -82,7 +82,7 @@ namespace BH.UI.Components
                 AddInput(i, names[i], types[i]);
 
             if (SelectedItem is Type)
-                m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
 
             CompileInputGetters();
             CompileOutputSetters();
@@ -100,7 +100,7 @@ namespace BH.UI.Components
             else if (SelectedItem is Type)
             {
                 if (m_CompiledFunc == null)
-                    m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
                 return m_CompiledFunc(inputs);
             }
             else
@@ -123,11 +123,11 @@ namespace BH.UI.Components
                 Description = type.Description();
 
                 //object instance = Activator.CreateInstance(type);  // Potentially for later
-                string[] excluded = new string[] { "BHoM_Guid" };
+                string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
                 InputParams = type.GetProperties().Where(x => !excluded.Contains(x.Name)).Select(x => x.ToBHoM()).ToList();
 
                 OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
-                m_CompiledFunc = CreateConstructor(type, InputParams);
+                m_CompiledFunc = Engine.UI.Create.Constructor(type, InputParams);
 
                 CompileInputGetters();
                 CompileOutputSetters();
@@ -160,7 +160,7 @@ namespace BH.UI.Components
             CompileInputGetters();
 
             if (SelectedItem is Type)
-                m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
             return success;
         }
 
@@ -172,39 +172,9 @@ namespace BH.UI.Components
                 return false;
 
             if (SelectedItem is Type)
-                m_CompiledFunc = CreateConstructor((Type)SelectedItem, InputParams);
+                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
 
             return true;
-        }
-
-
-        /*************************************/
-        /**** Private Methods             ****/
-        /*************************************/
-
-        protected Func<object[], object> CreateConstructor(Type type, List<ParamInfo> parameters)
-        {
-            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = parameters.Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.DataType)).ToArray();
-
-            ParameterExpression instance = Expression.Variable(type, "instance");
-            List<Expression> assignments = new List<Expression>();
-            assignments.Add(Expression.Assign(instance, Expression.New(type)));
-
-            for (int i = 0; i < parameters.Count; i++)
-            {
-                ParamInfo param = parameters[i];
-                PropertyInfo property = type.GetProperty(param.Name);
-                MethodInfo setMethod = property.GetSetMethod();
-
-                MethodCallExpression methodCall = Expression.Call(instance, setMethod, inputs[i]);
-                assignments.Add(methodCall);
-            }
-            assignments.Add(instance);
-
-            BlockExpression block = Expression.Block(new[] { instance }, assignments);
-            return Expression.Lambda<Func<object[], object>>(Expression.Convert(block, typeof(object)), lambdaInput).Compile();
-
         }
 
         /*************************************/
