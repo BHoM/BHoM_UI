@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.Engine.UI;
 using BH.oM.Data.Collections;
 using BH.oM.UI;
 using System;
@@ -27,26 +29,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
-    public abstract class ItemSelectorMenu<T, M> : IItemSelectorMenu<T>
+    public class InputSelectorMenu
     {
         /*************************************/
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler<T> ItemSelected;
-
+        public event EventHandler<Tuple<string, bool>> InputToggled;
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelectorMenu(List<SearchItem> itemList, Tree<T> itemTree)
+        public InputSelectorMenu(List<Tuple<string, bool>> inputs)
         {
-            m_ItemList = itemList;
-            m_ItemTree = itemTree;
+            m_Inputs = inputs.ToDictionary(x => x.Item1, x => x.Item2);
         }
 
 
@@ -54,26 +55,11 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public void FillMenu(M menu)
+        protected void AddInputList(ToolStripDropDown menu)
         {
-            AddTree(menu, m_ItemTree);
-            AddSearchBox(menu, m_ItemList);
-        }
-
-        /*************************************/
-
-        public void FillMenu(object menu)
-        {
-            if (menu is M)
-                FillMenu((M)menu);
-        }
-
-        /*************************************/
-
-        public void SetItems(List<SearchItem> itemList, Tree<T> itemTree)
-        {
-            m_ItemList = itemList;
-            m_ItemTree = itemTree;
+            ToolStripMenuItem treeMenu = AppendMenuItem(menu, "Override Inputs");
+            foreach (KeyValuePair<string, bool> input in m_Inputs)
+                AppendMenuItem(treeMenu.DropDown, input.Key, input.Value);
         }
 
 
@@ -81,29 +67,61 @@ namespace BH.UI.Templates
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected abstract void AddTree(M menu, Tree<T> itemTree);
-
-        /*************************************/
-
-        protected abstract void AddSearchBox(M menu, List<SearchItem> itemList);
-
-        /*************************************/
-
-        protected void ReturnSelectedItem(T item)
+        protected ToolStripMenuItem AppendMenuItem(ToolStrip menu, string text, bool @checked = false)
         {
-            if (ItemSelected != null)
-                ItemSelected(this, item);
+            ToolStripMenuItem item = new ToolStripMenuItem(text);
+            item.Checked = @checked;
+            item.CheckedChanged += Item_CheckedChanged;
+            menu.Items.Add(item);
+            return item;
         }
 
-
-        /*************************************/
-        /**** Private Fields              ****/
         /*************************************/
 
-        protected List<SearchItem> m_ItemList = new List<SearchItem>();
+        protected System.Windows.Controls.MenuItem AppendMenuItem(System.Windows.Controls.ContextMenu menu, string text, bool @checked = false)
+        {
+            System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem
+            {
+                Header = text,
+                IsChecked = @checked,
+            };
+            item.Checked += Item_CheckedChanged;
+            menu.Items.Add(item);
+            return item;
+        }
 
-        protected Tree<T> m_ItemTree = new Tree<T>();
+        /*************************************/
 
+        private void Item_CheckedChanged(object sender, EventArgs e)
+        {
+            string text = "";
+            bool @checked = false;
+
+            if (sender is ToolStripMenuItem)
+            {
+                ToolStripMenuItem item = sender as ToolStripMenuItem;
+                text = item.Text;
+                @checked = item.Checked;
+            }
+            else if (sender is MenuItem)
+            {
+                System.Windows.Controls.MenuItem item = sender as System.Windows.Controls.MenuItem;
+                text = item.Header.ToString();
+                @checked = item.IsChecked;
+            }
+
+            if (m_Inputs.ContainsKey(text))
+            {
+                m_Inputs[text] = @checked;
+                InputToggled?.Invoke(this, new Tuple<string, bool>(text, @checked));
+            }
+        }
+
+        /*************************************/
+        /**** Protected Fields            ****/
+        /*************************************/
+
+        Dictionary<string, bool> m_Inputs = new Dictionary<string, bool>();
 
         /*************************************/
     }

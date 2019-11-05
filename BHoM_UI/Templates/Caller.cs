@@ -62,7 +62,7 @@ namespace BH.UI.Templates
 
         public virtual int GroupIndex { get; protected set; } = 1;
 
-        public virtual ISelector Selector { get; protected set; } = null;
+        public virtual IItemSelector Selector { get; protected set; } = null;
 
         public DataAccessor DataAccessor { get; protected set; } = null;
 
