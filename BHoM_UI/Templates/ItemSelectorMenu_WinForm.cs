@@ -33,13 +33,13 @@ using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
-    public class SelectorMenu_WinForm<T> : SelectorMenu<T, ToolStripDropDown>
+    public class ItemSelectorMenu_WinForm<T> : ItemSelectorMenu<T, ToolStripDropDown>
     {
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public SelectorMenu_WinForm(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
+        public ItemSelectorMenu_WinForm(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/

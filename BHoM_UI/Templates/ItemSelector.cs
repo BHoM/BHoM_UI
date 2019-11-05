@@ -32,7 +32,7 @@ using BH.Engine.Reflection;
 
 namespace BH.UI.Templates
 {
-    public class Selector<T> : ISelector
+    public class ItemSelector<T> : ISelector
     {
         /*************************************/
         /**** Events                      ****/
@@ -45,7 +45,7 @@ namespace BH.UI.Templates
         /**** Constructors                ****/
         /*************************************/
 
-        public Selector(IEnumerable<T> possibleItems, string key) 
+        public ItemSelector(IEnumerable<T> possibleItems, string key) 
         {
             m_Key = key;
 
@@ -65,7 +65,7 @@ namespace BH.UI.Templates
         public void AddToMenu(ToolStripDropDown menu)
         {
             if (m_SelectorMenu == null)
-                SetSelectorMenu(new SelectorMenu_WinForm<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
+                SetSelectorMenu(new ItemSelectorMenu_WinForm<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
             m_SelectorMenu.FillMenu(menu);
         }
@@ -75,7 +75,7 @@ namespace BH.UI.Templates
         public void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
             if (m_SelectorMenu == null)
-                SetSelectorMenu(new SelectorMenu_Wpf<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
+                SetSelectorMenu(new ItemSelectorMenu_Wpf<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
             m_SelectorMenu.FillMenu(menu);
         }
@@ -90,7 +90,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        public void SetSelectorMenu<M>(SelectorMenu<T, M> selectorMenu)
+        public void SetSelectorMenu<M>(ItemSelectorMenu<T, M> selectorMenu)
         {
             selectorMenu.SetItems(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]);
             selectorMenu.ItemSelected += M_Menu_ItemSelected;
