@@ -50,10 +50,10 @@ namespace BH.UI.Templates
         {
             menu.Items.Add(new Separator());
 
-            MenuItem treeMenu = new MenuItem { Header = itemTree.Name };
-            menu.Items.Add(treeMenu);
+            m_ItemMenu = new MenuItem { Header = itemTree.Name };
+            menu.Items.Add(m_ItemMenu);
             foreach (Tree<T> childTree in itemTree.Children.Values.OrderBy(x => x.Name))
-                AppendMenuTree(childTree, treeMenu);
+                AppendMenuTree(childTree, m_ItemMenu);
         }
 
         /*************************************/
@@ -64,9 +64,9 @@ namespace BH.UI.Templates
             menu.SizeChanged += Menu_SizeChanged;
             menu.Items.Add(new Separator());
 
-            MenuItem label = CreateMenuItem("Search");
-            label.FontWeight = FontWeights.Bold;
-            menu.Items.Add(label);
+            m_SearchLabel = CreateMenuItem("Search");
+            m_SearchLabel.FontWeight = FontWeights.Bold;
+            menu.Items.Add(m_SearchLabel);
 
             m_Menu = menu;
             m_SearchBox = new TextBox { Text = "", HorizontalAlignment = HorizontalAlignment.Stretch };
@@ -115,7 +115,25 @@ namespace BH.UI.Templates
         {
             MenuItem item = (MenuItem)sender;
             if (m_ItemLinks.ContainsKey(item))
-                ReturnSelectedItem(m_ItemLinks[item]);
+            {
+                T link = m_ItemLinks[item];
+
+                // Clear the old items
+                foreach (MenuItem result in m_SearchResultItems)
+                    m_Menu.Items.Remove(result);
+                m_SearchResultItems.Clear();
+
+                // Clear the selection menu and search bar
+                m_Menu.Items.Remove(m_SearchBox);
+                m_SearchBox = null;
+                m_Menu.Items.Remove(m_ItemMenu);
+                m_ItemTree = null;
+                m_Menu.Items.Remove(m_SearchLabel);
+                m_SearchLabel = null;
+
+                ReturnSelectedItem(link);
+            }
+                
         }
 
         /*************************************/
@@ -145,7 +163,7 @@ namespace BH.UI.Templates
         private void Menu_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // This is needed to force the TextBox to fill the menu (streatch property doesn't seem to do anything and I don't want to spend time finding out why)
-            if (Double.IsNaN(m_SearchBox.Width) || m_SearchBox.Width == 0)
+            if (m_SearchBox != null && (Double.IsNaN(m_SearchBox.Width) || m_SearchBox.Width == 0))
                 m_SearchBox.Width = m_Menu.Items.OfType<FrameworkElement>().Where(x => x != null).Select(x => x.ActualWidth).Aggregate((a, b) => Math.Max(a, b));
         }
 
@@ -155,7 +173,9 @@ namespace BH.UI.Templates
         /*************************************/
 
         protected ContextMenu m_Menu;
+        protected MenuItem m_ItemMenu;
         protected TextBox m_SearchBox;
+        protected MenuItem m_SearchLabel;
         protected Dictionary<MenuItem, T> m_ItemLinks = new Dictionary<MenuItem, T>();
         protected List<MenuItem> m_SearchResultItems = new List<MenuItem>();
 
