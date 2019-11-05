@@ -399,7 +399,7 @@ namespace BH.UI.Templates
 
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
-            Selector = new Selector<T>(items, Name);
+            Selector = new ItemSelector<T>(items, Name);
             Selector.ItemSelected += (sender, e) =>
             {
                 SetItem(e);

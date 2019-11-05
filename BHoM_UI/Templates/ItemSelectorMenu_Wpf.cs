@@ -33,13 +33,13 @@ using BH.Engine.UI;
 
 namespace BH.UI.Templates
 {
-    public class SelectorMenu_Wpf<T> : SelectorMenu<T, ContextMenu>
+    public class ItemSelectorMenu_Wpf<T> : ItemSelectorMenu<T, ContextMenu>
     {
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public SelectorMenu_Wpf(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
+        public ItemSelectorMenu_Wpf(List<SearchItem> itemList, Tree<T> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/
