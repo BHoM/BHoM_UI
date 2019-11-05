@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
-    public interface ISelectorMenu<T>
+    public interface IItemSelectorMenu<T>
     {
         event EventHandler<T> ItemSelected;
 

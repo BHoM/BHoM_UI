@@ -32,7 +32,7 @@ using BH.Engine.Reflection;
 
 namespace BH.UI.Templates
 {
-    public class ItemSelector<T> : ISelector
+    public class ItemSelector<T> : IItemSelector
     {
         /*************************************/
         /**** Events                      ****/
@@ -114,7 +114,7 @@ namespace BH.UI.Templates
         /*************************************/
 
         protected string m_Key = "";
-        protected ISelectorMenu<T> m_SelectorMenu = null;
+        protected IItemSelectorMenu<T> m_SelectorMenu = null;
 
         protected static Dictionary<string, Tree<T>> m_ItemTreeStore = new Dictionary<string, Tree<T>>();
         protected static Dictionary<string, List<SearchItem>> m_ItemListStore = new Dictionary<string, List<SearchItem>>();
