@@ -39,15 +39,16 @@ namespace BH.UI.Templates
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler<Tuple<string, bool>> InputToggled;
+        public event EventHandler<Tuple<ParamInfo, bool>> InputToggled;
+
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public InputSelectorMenu(List<Tuple<string, bool>> inputs)
+        public InputSelectorMenu(List<Tuple<ParamInfo, bool>> inputs)
         {
-            m_Inputs = inputs.ToDictionary(x => x.Item1, x => x.Item2);
+            m_Inputs = inputs;
         }
 
 
@@ -55,11 +56,50 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        protected void AddInputList(ToolStripDropDown menu)
+        public void AddInputList(ToolStripDropDown menu)
         {
-            ToolStripMenuItem treeMenu = AppendMenuItem(menu, "Override Inputs");
-            foreach (KeyValuePair<string, bool> input in m_Inputs)
-                AppendMenuItem(treeMenu.DropDown, input.Key, input.Value);
+            ToolStripMenuItem listMenu = AppendMenuItem(menu, "Override Inputs");
+            foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
+                AppendMenuItem(listMenu.DropDown, input.Item1.Name, input.Item2);
+        }
+
+        /*************************************/
+
+        public void AddInputList(System.Windows.Controls.ContextMenu menu)
+        {
+            System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Override Inputs" };
+            menu.Items.Add(listMenu);
+
+            foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
+                AppendMenuItem(listMenu, input.Item1.Name, input.Item2);
+        }
+
+        /*************************************/
+
+        public void AddInputList(object menu)
+        {
+            if (menu is ToolStripDropDown)
+                AddInputList(menu as ToolStripDropDown);
+            else if (menu is System.Windows.Controls.ContextMenu)
+                AddInputList(menu as System.Windows.Controls.ContextMenu);
+        }
+
+        /*************************************/
+
+        public void SetInputCheck(string name, bool @checked)
+        {
+            int index = m_Inputs.FindIndex(x => x.Item1.Name == name);
+            if (index >= 0)
+                m_Inputs[index] = new Tuple<ParamInfo, bool>(m_Inputs[index].Item1, @checked);
+
+            if (m_MenuItems.ContainsKey(name))
+            {
+                object item = m_MenuItems[name];
+                if (item is ToolStripMenuItem)
+                    ((ToolStripMenuItem)item).Checked = @checked;
+                else if (item is System.Windows.Controls.MenuItem)
+                    ((System.Windows.Controls.MenuItem)item).IsChecked = @checked;
+            }
         }
 
 
@@ -71,22 +111,24 @@ namespace BH.UI.Templates
         {
             ToolStripMenuItem item = new ToolStripMenuItem(text);
             item.Checked = @checked;
-            item.CheckedChanged += Item_CheckedChanged;
+            item.Click += Item_CheckedChanged;
             menu.Items.Add(item);
+            m_MenuItems[text] = item;
             return item;
         }
 
         /*************************************/
 
-        protected System.Windows.Controls.MenuItem AppendMenuItem(System.Windows.Controls.ContextMenu menu, string text, bool @checked = false)
+        protected System.Windows.Controls.MenuItem AppendMenuItem(System.Windows.Controls.MenuItem menu, string text, bool @checked = false)
         {
             System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem
             {
                 Header = text,
                 IsChecked = @checked,
             };
-            item.Checked += Item_CheckedChanged;
+            item.Click += Item_CheckedChanged;
             menu.Items.Add(item);
+            m_MenuItems[text] = item;
             return item;
         }
 
@@ -101,19 +143,22 @@ namespace BH.UI.Templates
             {
                 ToolStripMenuItem item = sender as ToolStripMenuItem;
                 text = item.Text;
-                @checked = item.Checked;
+                @checked = !item.Checked;
+                item.Checked = @checked;
             }
-            else if (sender is MenuItem)
+            else if (sender is System.Windows.Controls.MenuItem)
             {
                 System.Windows.Controls.MenuItem item = sender as System.Windows.Controls.MenuItem;
                 text = item.Header.ToString();
-                @checked = item.IsChecked;
+                @checked = !item.IsChecked;
+                item.IsChecked = @checked;
             }
 
-            if (m_Inputs.ContainsKey(text))
+            int index = m_Inputs.FindIndex(x => x.Item1.Name == text);
+            if (index >= 0)
             {
-                m_Inputs[text] = @checked;
-                InputToggled?.Invoke(this, new Tuple<string, bool>(text, @checked));
+                m_Inputs[index] = new Tuple<ParamInfo, bool>(m_Inputs[index].Item1, @checked);
+                InputToggled?.Invoke(this, m_Inputs[index]);
             }
         }
 
@@ -121,7 +166,8 @@ namespace BH.UI.Templates
         /**** Protected Fields            ****/
         /*************************************/
 
-        Dictionary<string, bool> m_Inputs = new Dictionary<string, bool>();
+        List<Tuple<ParamInfo, bool>> m_Inputs = new List<Tuple<ParamInfo, bool>>();
+        Dictionary<string, object> m_MenuItems = new Dictionary<string, object>();
 
         /*************************************/
     }
