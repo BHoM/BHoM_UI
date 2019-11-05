@@ -31,11 +31,19 @@ using BH.Engine.Reflection;
 using System.Linq.Expressions;
 using BH.oM.UI;
 using BH.Engine.UI;
+using System.Windows.Forms;
 
 namespace BH.UI.Components
 {
     public class CreateObjectCaller : MethodCaller
     {
+        /*************************************/
+        /**** Public Events               ****/
+        /*************************************/
+
+        public event EventHandler<Tuple<ParamInfo, bool>> InputToggled;
+
+
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
@@ -124,7 +132,11 @@ namespace BH.UI.Components
 
                 //object instance = Activator.CreateInstance(type);  // Potentially for later
                 string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
-                InputParams = type.GetProperties().Where(x => !excluded.Contains(x.Name)).Select(x => x.ToBHoM()).ToList();
+                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM());
+                InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
+
+                m_InputSelector = new InputSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, !excluded.Contains(x.Name))).ToList());
+                m_InputSelector.InputToggled += M_InputSelector_InputToggled;
 
                 OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
                 m_CompiledFunc = Engine.UI.Create.Constructor(type, InputParams);
@@ -133,6 +145,22 @@ namespace BH.UI.Components
                 CompileOutputSetters();
             }
             return true;
+        }
+
+        /*************************************/
+
+        private void M_InputSelector_InputToggled(object sender, Tuple<ParamInfo, bool> e)
+        {
+            if (e.Item2)
+            {
+                AddInput(InputParams.Count, e.Item1.Name, e.Item1.DataType);
+                if (SelectedItem is Type)
+                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+            }   
+            else
+                RemoveInput(e.Item1.Name);
+
+            InputToggled?.Invoke(this, e);
         }
 
         /*************************************/
@@ -159,6 +187,9 @@ namespace BH.UI.Components
             bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
             CompileInputGetters();
 
+            if (m_InputSelector != null)
+                m_InputSelector.SetInputCheck(name, false);
+
             if (SelectedItem is Type)
                 m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
             return success;
@@ -176,6 +207,43 @@ namespace BH.UI.Components
 
             return true;
         }
+
+        /*************************************/
+
+        public override void AddToMenu(ToolStripDropDown menu)
+        {
+            if (SelectedItem != null && m_InputSelector != null)
+                m_InputSelector.AddInputList(menu);
+            else
+                base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        {
+            if (SelectedItem != null && m_InputSelector != null)
+                m_InputSelector.AddInputList(menu);
+            else
+                base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(object menu)
+        {
+            if (SelectedItem != null && m_InputSelector != null)
+                m_InputSelector.AddInputList(menu);
+            else
+                base.AddToMenu(menu);
+        }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        InputSelectorMenu m_InputSelector;
 
         /*************************************/
     }
