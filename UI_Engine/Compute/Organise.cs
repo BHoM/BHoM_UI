@@ -93,12 +93,12 @@ namespace BH.Engine.UI
         public static Output<List<SearchItem>, Tree<MemberInfo>> OrganiseMembers(this List<MemberInfo> members)
         {
             // Create method list
-            IEnumerable<string> paths = members.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
-            List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k.EndsWith(")") ? k : k + "(...)", Item = v }).ToList();
+            IEnumerable<string> paths = members.Select(x => x is Type ? ((Type)x).ConstructorText() : x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
-            Tree<MemberInfo> tree = Data.Create.Tree(members, paths.Select(x => SplitPath(x, toSkip)).ToList(), "Select an item");
+            Tree<MemberInfo> tree = Data.Create.Tree(members, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupByName();
@@ -120,25 +120,6 @@ namespace BH.Engine.UI
                 tree.Children = tree.Children.Values.First().Children;
 
             return new Output<List<SearchItem>, Tree<T>> { Item1 = list, Item2 = tree };
-        }
-
-
-        /*************************************/
-        /**** Private Methods             ****/
-        /*************************************/
-
-        private static List<string> SplitPath(string path, List<string> toSkip)
-        {
-            if (path.EndsWith(")"))
-            {
-                return path.Split('.').Except(toSkip).ToList();
-            }
-            else
-            {
-                string[] split = path.Split('.');
-                return split.Concat(new string[] { split.Last() + "(...)" }).ToList();
-            }
-                
         }
 
 

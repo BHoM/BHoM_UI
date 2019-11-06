@@ -21,6 +21,7 @@
  */
 
 using BH.Engine.Reflection;
+using BH.Engine.UI;
 using BH.oM.UI;
 using BH.UI.Components;
 using System;
@@ -108,7 +109,7 @@ namespace BH.UI.Global
 
             // All constructors for the BHoM objects
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
-                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateObjectCaller), Icon = Properties.Resources.CreateBHoM, Text = x.ToText(true) + "(...)" }));
+                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateObjectCaller), Icon = Properties.Resources.CreateBHoM, Text = x.ConstructorText() }));
 
             // All methods for the BHoM Engine
             items.AddRange(BH.Engine.UI.Query.EngineItems()

@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
 using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
@@ -37,30 +38,48 @@ namespace BH.Engine.UI
         /*************************************/
 
         [Input("type", "The type of object to create a constructor for")]
-        [Input("parameters", "The properties that should be used as parameters for the constructor")]
-        [Output("constructor", "The compiled constructor")]
-        public static Func<object[], object> Constructor(Type type, List<ParamInfo> parameters)
+        [Input("maxParams", "The maximum number of parameters to include in the text")]
+        [Input("maxChars", "The maximum number of characters for the output text")]
+        [Output("text", "The text corresponding to the description of the constructor generated for that type")]
+        public static string ConstructorText(this Type type, int maxParams = 5, int maxChars = 40)
         {
-            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
-            Expression[] inputs = parameters.Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.DataType)).ToArray();
+            string text = type.Namespace + "." + type.Name + "." + type.Name + "() {";
 
-            ParameterExpression instance = Expression.Variable(type, "instance");
-            List<Expression> assignments = new List<Expression>();
-            assignments.Add(Expression.Assign(instance, Expression.New(type)));
-
-            for (int i = 0; i < parameters.Count; i++)
+            try
             {
-                ParamInfo param = parameters[i];
-                PropertyInfo property = type.GetProperty(param.Name);
-                MethodInfo setMethod = property.GetSetMethod();
+                PropertyInfo[] properties = type.GetProperties();
 
-                MethodCallExpression methodCall = Expression.Call(instance, setMethod, inputs[i]);
-                assignments.Add(methodCall);
+                string propertiesText = "";
+                if (properties.Length > 0)
+                {
+                    // Collect parameters text
+                    for (int i = 0; i < properties.Count(); i++)
+                    {
+                        string singlePropertyText = properties[i].PropertyType.ToText() + " " + properties[i].Name;
+
+                        if (i > 0)
+                            propertiesText += ", ";
+
+                        if (i >= maxParams || string.Join(propertiesText, singlePropertyText).Length > maxChars)
+                        {
+                            propertiesText += $"and {properties.Length - i} more inputs";
+                            break;
+                        }
+                        else
+                            propertiesText += singlePropertyText;
+                    }
+                }
+
+                text += propertiesText;
             }
-            assignments.Add(instance);
+            catch (Exception e)
+            {
+                Engine.Reflection.Compute.RecordWarning("Type " + type.Name + " failed to load its properties.\nError: " + e.ToString());
+                text += "?";
+            }
+            text += "}";
 
-            BlockExpression block = Expression.Block(new[] { instance }, assignments);
-            return Expression.Lambda<Func<object[], object>>(Expression.Convert(block, typeof(object)), lambdaInput).Compile();
+            return text;
         }
 
         /*************************************/
