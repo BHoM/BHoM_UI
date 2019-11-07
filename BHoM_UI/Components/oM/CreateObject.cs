@@ -130,9 +130,9 @@ namespace BH.UI.Components
                 Name = type.Name;
                 Description = type.Description();
 
-                //object instance = Activator.CreateInstance(type);  // Potentially for later
+                object instance = Activator.CreateInstance(type);  // Potentially for later
                 string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
-                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM());
+                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
                 InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
 
                 m_InputSelector = new InputSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, !excluded.Contains(x.Name))).ToList());
