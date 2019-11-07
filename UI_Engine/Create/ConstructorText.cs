@@ -47,7 +47,8 @@ namespace BH.Engine.UI
 
             try
             {
-                PropertyInfo[] properties = type.GetProperties();
+                string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
+                PropertyInfo[] properties = type.GetProperties().Where(x => !excluded.Contains(x.Name)).ToArray();
 
                 string propertiesText = "";
                 if (properties.Length > 0)
