@@ -58,7 +58,7 @@ namespace BH.UI.Templates
 
         public void AddInputList(ToolStripDropDown menu)
         {
-            ToolStripMenuItem listMenu = AppendMenuItem(menu, "Override Inputs");
+            ToolStripMenuItem listMenu = AppendMenuItem(menu, "Add/Remove Inputs");
             foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
                 AppendMenuItem(listMenu.DropDown, input.Item1.Name, input.Item2);
         }
@@ -67,7 +67,7 @@ namespace BH.UI.Templates
 
         public void AddInputList(System.Windows.Controls.ContextMenu menu)
         {
-            System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Override Inputs" };
+            System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Add/Remove Inputs" };
             menu.Items.Add(listMenu);
 
             foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
