@@ -119,7 +119,7 @@ namespace BH.Engine.UI
         public static IEnumerable<Type> ConstructableTypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()
-                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x?.GetInterface("IImmutable") == null);
+                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x?.GetInterface("IImmutable") == null && !x.IsEnum && !x.IsAbstract);
         }
 
         /***************************************************/
