@@ -50,17 +50,6 @@ namespace BH.UI.Components
 
         public override string Description { get; protected set; } = "Creates an instance of a selected type of BHoM object by manually defining its properties (default type is CustomObject)";
 
-        public Type ForcedType
-        {
-            get
-            {
-                return SelectedItem as Type;
-            }
-            protected set
-            {
-                SelectedItem = value;
-            }
-        }
 
         /*************************************/
         /**** Constructors                ****/
@@ -68,8 +57,6 @@ namespace BH.UI.Components
 
         public CreateCustomCaller() : base()
         {
-            SetPossibleItems(Engine.Reflection.Query.BHoMTypeList().Where(t => t?.GetInterface("IImmutable") == null));
-
             InputParams = new List<ParamInfo>();
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs." } };
         }
@@ -87,6 +74,7 @@ namespace BH.UI.Components
                 types = new List<Type>(new Type[names.Count]);
             }
 
+            InputParams.Clear();
             for (int i = 0; i < names.Count; i++)
                 AddInput(i, names[i], types[i]);
 
@@ -100,49 +88,15 @@ namespace BH.UI.Components
 
         public override object Run(object[] inputs)
         {
-            IObject obj = new CustomObject();
-            if (ForcedType != null)
-                obj = Activator.CreateInstance(ForcedType) as IObject;
-            if (obj == null)
-                obj = new CustomObject();
+            CustomObject obj = new CustomObject();
 
             if (inputs.Length == InputParams.Count)
             {
                 for (int i = 0; i < inputs.Length; i++)
-                    BH.Engine.Reflection.Modify.SetPropertyValue(obj, InputParams[i].Name, inputs[i]);
+                    obj.CustomData[InputParams[i].Name] = inputs[i];
             }
 
             return obj;
-        }
-
-        /*************************************/
-
-        public override bool SetItem(object item)
-        {
-            if (!base.SetItem(item))
-                return false;
-
-            if (ForcedType != null)
-            {
-                Name = ForcedType.Name;
-                Description = ForcedType.Description();
-                InputParams.AddRange(ForcedType.GetProperties().Select(x => x.ToBHoM()).ToList());
-            }
-            return true;
-        }
-
-        /*************************************/
-
-        public override bool AddInput(int index, string name, Type type = null)
-        {
-            if (ForcedType != null)
-            {
-                PropertyInfo info = ForcedType.GetProperty(name);
-                if (info != null)
-                    type = info.PropertyType;
-            }
-
-            return base.AddInput(index, name, type);
         }
 
         /*************************************/
