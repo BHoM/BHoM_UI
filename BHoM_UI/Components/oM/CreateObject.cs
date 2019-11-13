@@ -32,6 +32,7 @@ using System.Linq.Expressions;
 using BH.oM.UI;
 using BH.Engine.UI;
 using System.Windows.Forms;
+using BH.oM.Base;
 
 namespace BH.UI.Components
 {
@@ -130,21 +131,30 @@ namespace BH.UI.Components
                 Name = type.Name;
                 Description = type.Description();
 
-                object instance = Activator.CreateInstance(type);  // Potentially for later
+                object instance = Activator.CreateInstance(type);  
                 string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
                 IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
                 InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
-
-                m_InputSelector = new InputSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, !excluded.Contains(x.Name))).ToList());
-                m_InputSelector.InputToggled += M_InputSelector_InputToggled;
-
                 OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
-                m_CompiledFunc = Engine.UI.Create.Constructor(type, InputParams);
 
+                SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
+
+                m_CompiledFunc = Engine.UI.Create.Constructor(type, InputParams);
                 CompileInputGetters();
                 CompileOutputSetters();
             }
             return true;
+        }
+
+        /*************************************/
+
+        private void SetInputSelectionMenu(Type type, IEnumerable<string> selectedProperties)
+        {
+            object instance = Activator.CreateInstance(type);
+            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
+
+            m_InputSelector = new InputSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, selectedProperties.Contains(x.Name))).ToList());
+            m_InputSelector.InputToggled += M_InputSelector_InputToggled;
         }
 
         /*************************************/
@@ -201,6 +211,42 @@ namespace BH.UI.Components
         {
             if (!base.Read(json))
                 return false;
+
+            if (SelectedItem == null && OutputParams.Count == 1)
+            {
+                try
+                {
+                    CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
+                    if (component != null && component.CustomData.ContainsKey("SelectedItem"))
+                    {
+                        CustomObject itemData = component.CustomData["SelectedItem"] as CustomObject;
+                        if (itemData != null && itemData.CustomData.ContainsKey("_refType") && (string)itemData.CustomData["_refType"] == "System.Reflection.MethodBase")
+                        {
+                            Type type = OutputParams.First().DataType;
+                            if (!type.IsNotImplemented() && !type.IsDeprecated() && type?.GetInterface("IImmutable") == null && !type.IsEnum && !type.IsAbstract) // Is type constructable ?
+                            {
+                                // Translate from method param name to property name
+                                Dictionary<string, PropertyInfo> properties = type.GetProperties().ToDictionary(x => x.Name.ToLower(), x => x);
+                                foreach (ParamInfo parameter in InputParams)
+                                {
+                                    string key = parameter.Name.ToLower();
+                                    if (properties.ContainsKey(key) && parameter.DataType == properties[key].PropertyType)
+                                        parameter.Name = properties[key].Name;
+                                }
+
+                                // Set the type item and the selection menu
+                                SelectedItem = type;
+                                SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
+                            }
+                                
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Engine.Reflection.Compute.RecordError("Failed to deserialised the selected method. \nError: " + e.Message);
+                }
+            }
 
             if (SelectedItem is Type)
                 m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
