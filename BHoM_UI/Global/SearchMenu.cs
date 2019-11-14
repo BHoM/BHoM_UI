@@ -97,7 +97,7 @@ namespace BH.UI.Global
             // Reflection is pretty slow on this one so better to just do it manually even if less elegant
             List<SearchItem> items = new List<SearchItem>
             {
-                new SearchItem { Item = typeof(DeleteCaller).GetMethod("Delete"), CallerType = typeof(DeleteCaller), Icon = Properties.Resources.Delete },
+                new SearchItem { Item = typeof(RemoveCaller).GetMethod("Delete"), CallerType = typeof(RemoveCaller), Icon = Properties.Resources.Delete },
                 new SearchItem { Item = typeof(ExecuteCaller).GetMethod("Execute"), CallerType = typeof(ExecuteCaller), Icon = Properties.Resources.Execute },
                 new SearchItem { Item = typeof(MoveCaller).GetMethod("Move"), CallerType = typeof(MoveCaller), Icon = Properties.Resources.Move },
                 new SearchItem { Item = typeof(PullCaller).GetMethod("Pull"), CallerType = typeof(PullCaller), Icon = Properties.Resources.Pull },
