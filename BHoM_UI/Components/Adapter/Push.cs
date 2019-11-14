@@ -50,7 +50,7 @@ namespace BH.UI.Components
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
-        
+
         // The wrapping of the Adapter method in the Caller is needed in order to specify the `active` boolean input
         public PushCaller() : base(typeof(PushCaller).GetMethod("Push")) { }
 
@@ -67,11 +67,24 @@ namespace BH.UI.Components
         [Input("active", "Execute the push")]
         [MultiOutput(0, "objects", "Objects that have been pushed (with potentially additional information stored in their CustomData to reflect the push)")]
         [MultiOutput(1, "success", "Define if the push was sucessful")]
-        public static Output<List<IObject>, bool> Push(BHoMAdapter adapter, IEnumerable<IObject> objects, string tag = "", Dictionary<string, object> config = null, bool active = false)
+        public static Output<List<IObject>, bool> Push(BHoMAdapter adapter, IEnumerable<IObject> objects, string tag = "",
+            PushOption pushOption = PushOption.Unset, Dictionary<string, object> config = null, bool active = false)
         {
+            // ---------------------------------------------//
+            // Mandatory Adapter Action set-up              //
+            //----------------------------------------------//
+            // The following are mandatory set-ups to be ALWAYS performed 
+            // before the Adapter Action is called,
+            // whether the Action is overrided at the Toolkit level or not.
+
+            // If specified, set the global ActionConfig value, otherwise make sure to reset it.
+            adapter.ActionConfig = config == null ? new Dictionary<string, object>() : config;
+
+            //----------------------------------------------//
+
             List<IObject> result = new List<IObject>();
             if (active)
-                result = adapter.Push(objects, tag, config);
+                result = adapter.Push(objects, tag, pushOption, config);
 
             return BH.Engine.Reflection.Create.Output(result, result.Count() == objects.Count());
         }
