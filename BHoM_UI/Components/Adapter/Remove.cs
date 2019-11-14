@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class DeleteCaller : MethodCaller
+    public class RemoveCaller : MethodCaller
     {
         /*************************************/
         /**** Properties                  ****/
@@ -52,26 +52,23 @@ namespace BH.UI.Components
         /*************************************/
 
         // The wrapping of the Adapter method in the Caller is needed in order to specify the `active` boolean input
-        public DeleteCaller() : base(typeof(DeleteCaller).GetMethod("Delete")) { }
+        public RemoveCaller() : base(typeof(RemoveCaller).GetMethod("Remove")) { }
 
 
         /*************************************/
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Delete objects in the external software")]
+        [Description("Remove objects in the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("filter", "Filters the objects to be deleted")]
+        [Input("request", "Specifies which objects to be deleted")]
         [Input("config", "Delete config")]
         [Input("active", "Execute the delete")]
         [Output("#deleted", "Number of objects that have been deleted")]
-        public static int Delete(BHoMAdapter adapter, FilterRequest filter = null, Dictionary<string, object> config = null, bool active = false)
+        public static int Remove(BHoMAdapter adapter, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
         {
-            if (filter == null)
-                filter = new FilterRequest();
-
             if (active)
-                return adapter.Delete(filter, config);
+                return adapter.Remove(request, config);
             else
                 return 0;
         }
