@@ -67,13 +67,24 @@ namespace BH.UI.Components
         [Input("pushConfig", "Config options for the Push to Target adapter")]
         [Input("active", "Execute the Move")]
         [Output("success", "Define if the Move was successful")]
-        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, Dictionary<string, object> pullConfig = null, Dictionary<string, object> pushConfig = null, bool active = false)
+        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, 
+            PullOption pullOption = PullOption.Unset, Dictionary<string, object> pullConfig = null, 
+            PushOption pushOption = PushOption.Unset, Dictionary<string, object> pushConfig = null, bool active = false)
         {
+            // ---------------------------------------------//
+            // Mandatory Adapter Action set-up              //
+            //----------------------------------------------//
+            // The following are mandatory set-ups to be ALWAYS performed 
+            // before the Adapter Action is called,
+            // whether the Action is overrided at the Toolkit level or not.
+
             if (request == null)
                 request = new FilterRequest();
 
+            //----------------------------------------------//
+
             if (active)
-                return source.Move(target, request, pullConfig, pushConfig);
+                return source.Move(target, request, pullOption, pullConfig, pushOption, pushConfig);
             else
                 return false;
         }

@@ -86,13 +86,25 @@ namespace BH.UI.Components
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("objects","Objects pulled")]
-        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, Dictionary<string, object> config = null, bool active = false)
+        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, PullOption pullOption = PullOption.Unset, Dictionary<string, object> config = null, bool active = false)
         {
+            // ---------------------------------------------//
+            // Mandatory Adapter Action set-up              //
+            //----------------------------------------------//
+            // The following are mandatory set-ups to be ALWAYS performed 
+            // before the Adapter Action is called,
+            // whether the Action is overrided at the Toolkit level or not.
+
+            // If specified, set the global ActionConfig value, otherwise make sure to reset it.
+            adapter.ActionConfig = config == null ? new Dictionary<string, object>() : config;
+
             if (request == null)
                 request = new FilterRequest();
 
+            //----------------------------------------------//
+
             if (active)
-                return adapter.Pull(request, config);
+                return adapter.Pull(request, pullOption, config);
             else
                 return new List<object>();
         }
