@@ -22,6 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
+using BH.oM.Adapter;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;

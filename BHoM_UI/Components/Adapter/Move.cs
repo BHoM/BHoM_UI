@@ -22,6 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
+using BH.oM.Adapter;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
@@ -68,8 +69,8 @@ namespace BH.UI.Components
         [Input("active", "Execute the Move")]
         [Output("success", "Define if the Move was successful")]
         public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, 
-            PullOption pullOption = PullOption.Unset, Dictionary<string, object> pullConfig = null, 
-            PushOption pushOption = PushOption.Unset, Dictionary<string, object> pushConfig = null, bool active = false)
+            PullType pullType = PullType.AdapterDefault, Dictionary<string, object> pullConfig = null,
+            PushType pushType = PushType.AdapterDefault, Dictionary<string, object> pushConfig = null, bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
@@ -84,7 +85,7 @@ namespace BH.UI.Components
             //----------------------------------------------//
 
             if (active)
-                return source.Move(target, request, pullOption, pullConfig, pushOption, pushConfig);
+                return source.Move(target, request, pullType, pullConfig, pushType, pushConfig);
             else
                 return false;
         }

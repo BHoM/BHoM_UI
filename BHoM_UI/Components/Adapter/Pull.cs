@@ -22,6 +22,7 @@
 
 using BH.Adapter;
 using BH.oM.Base;
+using BH.oM.Adapter;
 using BH.oM.Data.Requests;
 using BH.oM.Reflection.Attributes;
 using BH.UI.Templates;
@@ -86,7 +87,9 @@ namespace BH.UI.Components
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("objects","Objects pulled")]
-        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, PullOption pullOption = PullOption.Unset, Dictionary<string, object> config = null, bool active = false)
+        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, 
+            PullType pullType = PullType.AdapterDefault, Dictionary<string, object> config = null, 
+            bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
@@ -104,7 +107,7 @@ namespace BH.UI.Components
             //----------------------------------------------//
 
             if (active)
-                return adapter.Pull(request, pullOption, config);
+                return adapter.Pull(request, pullType, config);
             else
                 return new List<object>();
         }
