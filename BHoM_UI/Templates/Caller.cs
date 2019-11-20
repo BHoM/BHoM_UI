@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using MongoDB.Bson;
 
 namespace BH.UI.Templates
 {
@@ -71,6 +72,8 @@ namespace BH.UI.Templates
         public List<ParamInfo> OutputParams { get; protected set; } = new List<ParamInfo>();
 
         public object SelectedItem { get; set; } = null;
+
+        public bool WasUpgraded { get; protected set; } = false;
 
 
         /*************************************/
@@ -260,22 +263,47 @@ namespace BH.UI.Templates
                 // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
                 object backendElement;
                 if (component.CustomData.TryGetValue("SelectedItem", out backendElement))
+                {
+                    if (backendElement == null)
+                    {
+                        BsonDocument bson = Engine.Serialiser.Convert.ToBson(json);
+                        BsonValue item = bson["SelectedItem"];
+                        BsonDocument newVersion = Engine.Versioning.Convert.ToNewVersion(item.AsBsonDocument);
+                        backendElement = Engine.Serialiser.Convert.FromBson(newVersion);
+                        SetItem(backendElement);
+                        WasUpgraded = backendElement != null;
+                    }
                     SetItem(backendElement);
+                }
 
                 // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
                 // Also, if SelectedItem is null, the component will still have its input and outputs
-                object inputParams;
-                if (component.CustomData.TryGetValue("InputParams", out inputParams))
+                object inputParamsRecord;
+                List<ParamInfo> inputParams = new List<ParamInfo>();
+                if (component.CustomData.TryGetValue("InputParams", out inputParamsRecord))
+                    inputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+                
+                object outputParamsRecord;
+                List<ParamInfo> outputParams = new List<ParamInfo>();
+                if (component.CustomData.TryGetValue("OutputParams", out outputParamsRecord))
+                    outputParams = (outputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+
+
+                if (WasUpgraded)
                 {
-                    InputParams = (inputParams as IEnumerable).OfType<ParamInfo>().ToList();
-                    CompileInputGetters();
+                    FindOldIndex(InputParams, inputParams);
+                    FindOldIndex(OutputParams, outputParams);
+                    ItemSelected?.Invoke(this, SelectedItem);
                 }
-                object outputParams;
-                if (component.CustomData.TryGetValue("OutputParams", out outputParams))
+                else
                 {
-                    OutputParams = (outputParams as IEnumerable).OfType<ParamInfo>().ToList();
+                    InputParams = inputParams;
+                    CompileInputGetters();
+
+                    OutputParams = outputParams;
                     CompileOutputSetters();
                 }
+                
                 return true;
             }
             catch
@@ -433,6 +461,18 @@ namespace BH.UI.Templates
         {
             if (SolutionExpired != null)
                 SolutionExpired?.Invoke(this, new EventArgs());
+        }
+
+        /*************************************/
+
+        protected void FindOldIndex(List<ParamInfo> newList, List<ParamInfo> oldList)
+        {
+            for (int i = 0; i < newList.Count; i++)
+            {
+                ParamInfo parameter = newList[i];
+                int oldIndex = oldList.FindIndex(x => x.Name == parameter.Name);
+                parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
+            }
         }
 
 

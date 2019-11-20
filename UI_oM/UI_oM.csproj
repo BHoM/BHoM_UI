@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentRequest.cs" />
+    <Compile Include="ParamOldIndexFragment.cs" />
     <Compile Include="SearchItem.cs" />
     <Compile Include="ParamKind.cs" />
     <Compile Include="ParamInfo.cs" />
