@@ -67,7 +67,7 @@ namespace BH.UI.Components
         [Input("config", "Execute config")]
         [Input("active", "Execute the command")]
         [Output("success", "Define if the execution was sucessful")]
-        public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, Dictionary<string, object> config = null, bool active = false)
+        public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, Dictionary<string, object> actionConfig = null, bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
@@ -77,12 +77,12 @@ namespace BH.UI.Components
             // whether the Action is overrided at the Toolkit level or not.
 
             // If specified, set the global ActionConfig value, otherwise make sure to reset it.
-            adapter.ActionConfig = config == null ? new Dictionary<string, object>() : config;
+            adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             //----------------------------------------------//
 
             if (active)
-                return adapter.Execute(command, parameters, config);
+                return adapter.Execute(command, parameters, actionConfig);
             else
                 return false;
         }

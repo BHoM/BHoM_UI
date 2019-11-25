@@ -83,14 +83,17 @@ namespace BH.UI.Components
 
         [Description("Pull objects from the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Filter on the objects to pull")]
+        [Input("request", "Connect a type of object to Pull objects of that type." +
+            "Connect a Request to pull only objects that satisfy a certain rule.")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
-        [Output("objects","Objects pulled")]
+        [Output("objects", "Objects pulled")]
         public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, 
-            PullType pullType = PullType.AdapterDefault, Dictionary<string, object> config = null, 
+            PullType pullType = PullType.AdapterDefault, Dictionary<string, object> actionConfig = null, 
             bool active = false)
         {
+            IRequest actualRequest = null;
+
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
@@ -99,15 +102,29 @@ namespace BH.UI.Components
             // whether the Action is overrided at the Toolkit level or not.
 
             // If specified, set the global ActionConfig value, otherwise make sure to reset it.
-            adapter.ActionConfig = config == null ? new Dictionary<string, object>() : config;
+            adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             if (request == null)
-                request = new FilterRequest();
+                actualRequest = new FilterRequest();
+
+            Type objType = request as Type;
+            if (objType != null)
+            {
+                // it's a Type. Check the namespace to see if it's to pull results.
+                bool isResult = objType.FullName.IndexOf("result", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (isResult)
+                {
+                    Engine.Reflection.Compute.RecordError("In order to Pull results, please input a ResultRequest.");
+                    return new List<object>();
+                }
+                else
+                    actualRequest = Engine.Data.Create.FilterRequest(objType, ""); // Concept: add a new TypeRequest
+            }
 
             //----------------------------------------------//
 
             if (active)
-                return adapter.Pull(request, pullType, config);
+                return adapter.Pull(actualRequest, pullType, actionConfig);
             else
                 return new List<object>();
         }

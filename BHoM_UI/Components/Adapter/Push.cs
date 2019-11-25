@@ -70,7 +70,7 @@ namespace BH.UI.Components
         [MultiOutput(0, "objects", "Objects that have been pushed.\nThese objects may be different from the input objects (e.g. their correspondent external software id may be stored in their CustomData).")]
         [MultiOutput(1, "success", "Define if the push was sucessful")]
         public static Output<List<IObject>, bool> Push(BHoMAdapter adapter, IEnumerable<IObject> objects, string tag = "",
-            PushType pushType = PushType.AdapterDefault, Dictionary<string, object> config = null, 
+            PushType pushType = PushType.AdapterDefault, Dictionary<string, object> actionConfig = null, 
             bool active = false)
         {
             // ---------------------------------------------//
@@ -81,13 +81,13 @@ namespace BH.UI.Components
             // whether the Action is overrided at the Toolkit level or not.
 
             // If specified, set the global ActionConfig value, otherwise make sure to reset it.
-            adapter.ActionConfig = config == null ? new Dictionary<string, object>() : config;
+            adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             //----------------------------------------------//
 
             List<IObject> result = new List<IObject>();
             if (active)
-                result = adapter.Push(objects, tag, pushType, config);
+                result = adapter.Push(objects, tag, pushType, actionConfig);
 
             return BH.Engine.Reflection.Create.Output(result, result.Count() == objects.Count());
         }
