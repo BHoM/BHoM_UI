@@ -65,7 +65,7 @@ namespace BH.UI.Components
             if (inputs.Length > 0)
             {
                 BHoMAdapter adapter = inputs[0] as BHoMAdapter;
-                Guid id = adapter.BHoM_Guid;
+                Guid id = adapter.AdapterGuid;
                 if (id != m_AdapterId)
                 {
                     m_AdapterId = id;
