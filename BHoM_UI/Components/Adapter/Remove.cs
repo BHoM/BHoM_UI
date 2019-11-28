@@ -75,7 +75,7 @@ namespace BH.UI.Components
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
 
-            // If specified, set the global ActionConfig value, otherwise make sure to reset it.
+            // Always re-set the ActionConfig value.
             adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             if (request == null)
