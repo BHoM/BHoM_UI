@@ -69,7 +69,7 @@ namespace BH.UI.Components
         [Input("active", "Execute the push")]
         [MultiOutput(0, "objects", "Objects that have been pushed.\nThese objects may be different from the input objects (e.g. their correspondent external software id may be stored in their CustomData).")]
         [MultiOutput(1, "success", "Define if the push was sucessful")]
-        public static Output<List<IObject>, bool> Push(BHoMAdapter adapter, IEnumerable<IObject> objects, string tag = "",
+        public static Output<List<object>, bool> Push(BHoMAdapter adapter, IEnumerable<object> objects, string tag = "",
             PushType pushType = PushType.AdapterDefault, Dictionary<string, object> actionConfig = null, 
             bool active = false)
         {
@@ -85,7 +85,7 @@ namespace BH.UI.Components
 
             //----------------------------------------------//
 
-            List<IObject> result = new List<IObject>();
+            List<object> result = new List<object>();
             if (active)
                 result = adapter.Push(objects, tag, pushType, actionConfig);
 
