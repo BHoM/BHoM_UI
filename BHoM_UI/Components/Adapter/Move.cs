@@ -69,9 +69,15 @@ namespace BH.UI.Components
         [Input("active", "Execute the Move")]
         [Output("success", "Define if the Move was successful")]
         public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, 
-            PullType pullType = PullType.AdapterDefault, Dictionary<string, object> pullConfig = null,
-            PushType pushType = PushType.AdapterDefault, Dictionary<string, object> pushConfig = null, bool active = false)
+            PullType pullType = PullType.AdapterDefault, ActionConfig pullConfig = null,
+            PushType pushType = PushType.AdapterDefault, ActionConfig pushConfig = null, bool active = false)
         {
+            if (source == null || target == null)
+            {
+                Engine.Reflection.Compute.RecordError("Adapter input cannot be null.");
+                return false;
+            }
+
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//

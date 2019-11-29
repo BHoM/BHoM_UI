@@ -67,17 +67,20 @@ namespace BH.UI.Components
         [Input("config", "Execute config")]
         [Input("active", "Execute the command")]
         [Output("success", "Define if the execution was sucessful")]
-        public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, Dictionary<string, object> actionConfig = null, bool active = false)
+        public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null, bool active = false)
         {
+            if (adapter == null)
+            {
+                Engine.Reflection.Compute.RecordError("Adapter input cannot be null.");
+                return false;
+            }
+
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
             // The following are mandatory set-ups to be ALWAYS performed 
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
-
-            // Always re-set the ActionConfig value.
-            adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             //----------------------------------------------//
 

@@ -47,7 +47,6 @@ namespace BH.UI.Components
 
         public override string Category { get; protected set; } = "Adapter";
 
-
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
@@ -66,17 +65,20 @@ namespace BH.UI.Components
         [Input("config", "Delete config")]
         [Input("active", "Execute the delete")]
         [Output("#deleted", "Number of objects that have been deleted")]
-        public static int Remove(BHoMAdapter adapter, IRequest request = null, Dictionary<string, object> actionConfig = null, bool active = false)
+        public static int Remove(BHoMAdapter adapter, IRequest request = null, ActionConfig actionConfig = null, bool active = false)
         {
+            if (adapter == null)
+            {
+                Engine.Reflection.Compute.RecordError("Adapter input cannot be null.");
+                return 0;
+            }
+
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
             // The following are mandatory set-ups to be ALWAYS performed 
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
-
-            // Always re-set the ActionConfig value.
-            adapter.ActionConfig = actionConfig == null ? new Dictionary<string, object>() : actionConfig;
 
             if (request == null)
                 request = new FilterRequest();
