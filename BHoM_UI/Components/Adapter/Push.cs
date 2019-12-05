@@ -80,6 +80,9 @@ namespace BH.UI.Components
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
 
+            // If unset, set the actionConfig to a new ActionConfig.
+            actionConfig = actionConfig == null ? new ActionConfig() : actionConfig;
+
             //----------------------------------------------//
 
             List<object> result = new List<object>();

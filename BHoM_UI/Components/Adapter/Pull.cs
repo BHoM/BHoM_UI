@@ -83,40 +83,35 @@ namespace BH.UI.Components
 
         [Description("Pull objects from the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Connect a type of object to Pull objects of that type." +
-            "Connect a Request to pull only objects that satisfy a certain rule.")]
+        [Input("request", "Connect a type of object to Pull objects of that type.\n" +
+            "Connect an Request to pull only objects that satisfy a certain rule.\n" + 
+            "Connect a Type to pull only objects of a that type.")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("objects", "Objects pulled")]
-        public static IEnumerable<object> Pull(BHoMAdapter adapter, IRequest request = null, 
-            PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null, 
+        public static IEnumerable<object> Pull(BHoMAdapter adapter, object request = null,
+            PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null,
             bool active = false)
         {
-            IRequest actualRequest = null;
-
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
             // The following are mandatory set-ups to be ALWAYS performed 
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
- 
+
+            // If unset, set the actionConfig to a new ActionConfig.
+            actionConfig = actionConfig == null ? new ActionConfig() : actionConfig;
+
+            // Always assure there is a Request. Allow to input a Type to generate a FilterRequest.
+            IRequest actualRequest = null;
+
             if (request == null)
                 actualRequest = new FilterRequest();
-
-            Type objType = request as Type;
-            if (objType != null)
-            {
-                // it's a Type. Check the namespace to see if it's to pull results.
-                bool isResult = objType.FullName.IndexOf("result", StringComparison.OrdinalIgnoreCase) >= 0;
-                if (isResult)
-                {
-                    Engine.Reflection.Compute.RecordError("In order to Pull results, please input a ResultRequest.");
-                    return new List<object>();
-                }
-                else
-                    actualRequest = Engine.Data.Create.FilterRequest(objType, ""); // Concept: add a new TypeRequest
-            }
+            else if (request is Type)
+                actualRequest = BH.Engine.Data.Create.FilterRequest((Type)request, "");
+            else if (typeof(IRequest).IsAssignableFrom(request.GetType()))
+                actualRequest = request as IRequest;
 
             //----------------------------------------------//
 

@@ -67,18 +67,15 @@ namespace BH.UI.Components
         [Output("#deleted", "Number of objects that have been deleted")]
         public static int Remove(BHoMAdapter adapter, IRequest request = null, ActionConfig actionConfig = null, bool active = false)
         {
-            if (adapter == null)
-            {
-                Engine.Reflection.Compute.RecordError("Adapter input cannot be null.");
-                return 0;
-            }
-
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
             // The following are mandatory set-ups to be ALWAYS performed 
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
+
+            // If unset, set the actionConfig to a new ActionConfig.
+            actionConfig = actionConfig == null ? new ActionConfig() : actionConfig;
 
             if (request == null)
                 request = new FilterRequest();
