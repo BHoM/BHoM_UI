@@ -85,6 +85,10 @@ namespace BH.UI.Components
             // before the Adapter Action is called,
             // whether the Action is overrided at the Toolkit level or not.
 
+            // If unset, set the actionConfig to a new ActionConfig.
+            pullConfig = pullConfig == null ? new ActionConfig() : pullConfig;
+            pushConfig = pushConfig == null ? new ActionConfig() : pushConfig;
+
             if (request == null)
                 request = new FilterRequest();
 
