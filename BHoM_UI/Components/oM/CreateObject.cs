@@ -212,9 +212,9 @@ namespace BH.UI.Components
             if (!base.Read(json))
                 return false;
 
-            if (SelectedItem == null && OutputParams.Count == 1)
+            try
             {
-                try
+                if (SelectedItem == null && OutputParams.Count == 1)
                 {
                     CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
                     if (component != null && component.CustomData.ContainsKey("SelectedItem"))
@@ -238,18 +238,18 @@ namespace BH.UI.Components
                                 SelectedItem = type;
                                 SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
                             }
-                                
+
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    Engine.Reflection.Compute.RecordError("Failed to deserialised the selected method. \nError: " + e.Message);
-                }
-            }
 
-            if (SelectedItem is Type)
-                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                if (SelectedItem is Type)
+                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+            }
+            catch (Exception e)
+            {
+                Engine.Reflection.Compute.RecordError("Failed to deserialised the selected method. \nError: " + e.Message);
+            }
 
             return true;
         }
