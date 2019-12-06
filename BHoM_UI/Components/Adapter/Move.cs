@@ -60,12 +60,14 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Copy objects from a Source adapter to a Target adapter")]
+        [Description("Adapter Action 'Move': copies objects from an external software to another. \nThe objects do not pass through the UI to avoid performance bottleneck.")]
         [Input("source", "Adapter the data is copied from")]
         [Input("target", "Adapter the data is copied to")]
         [Input("request", "Filter on the objects to pull (default: get all)")]
-        [Input("pullConfig", "Config options for the Pull from Source adapter")]
-        [Input("pushConfig", "Config options for the Push to Target adapter")]
+        [Input("pullConfig", "Configuration for the Pull actioned by the Move. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
+        [Input("pushConfig", "Configuration for the Push actioned by the Move. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the Move")]
         [Output("success", "Define if the Move was successful")]
         public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, 

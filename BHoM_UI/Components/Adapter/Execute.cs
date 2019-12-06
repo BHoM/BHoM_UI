@@ -60,11 +60,12 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Execute command in the external software")]
+        [Description("Adapter Action 'Execute': sends commands to be executed in an external software")]
         [Input("adapter", "Adapter to the external software")]
         [Input("command", "Command to run")]
         [Input("parameters", "Parameters of the command")]
-        [Input("config", "Execute config")]
+        [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the command")]
         [Output("success", "Define if the execution was sucessful")]
         public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null, bool active = false)

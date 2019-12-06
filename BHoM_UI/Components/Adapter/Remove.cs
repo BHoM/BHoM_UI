@@ -59,12 +59,13 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Remove objects in the external software")]
+        [Description("Adapter Action 'Remove': removes the objects from an external software.")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Specifies which objects to be deleted")]
-        [Input("config", "Delete config")]
+        [Input("request", "Specifies which objects to be removed")]
+        [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the delete")]
-        [Output("#deleted", "Number of objects that have been deleted")]
+        [Output("#removed", "Number of objects that have been removed")]
         public static int Remove(BHoMAdapter adapter, IRequest request = null, ActionConfig actionConfig = null, bool active = false)
         {
             // ---------------------------------------------//

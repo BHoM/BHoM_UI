@@ -60,12 +60,13 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Push objects to the external software")]
+        [Description("Adapter Action 'Push': exports objects to the external software. \nIf the Toolkit supports it, this also performs the replace/update of the objects as appropriate.")]
         [Input("adapter", "Adapter to the external software")]
         [Input("objects", "Objects to push")]
         [Input("tag", "Tag to apply to the objects being pushed")]
         [Input("pushType", "Push type. Connect the enum PushType for all the alternatives.")]
-        [Input("config", "Push config. Dictionary<string,object> containing any additional data to be used for the Push.")]
+        [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the push")]
         [MultiOutput(0, "objects", "Objects that have been pushed.\nThese objects may be different from the input objects (e.g. their correspondent external software id may be stored in their CustomData).")]
         [MultiOutput(1, "success", "Define if the push was sucessful")]
