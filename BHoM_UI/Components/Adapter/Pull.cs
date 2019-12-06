@@ -83,9 +83,9 @@ namespace BH.UI.Components
 
         [Description("Pull objects from the external software")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Connect a type of object to Pull objects of that type.\n" +
-            "Connect an Request to pull only objects that satisfy a certain rule.\n" + 
-            "Connect a Type to pull only objects of a that type.")]
+        [Input("request", "Connect a type of object to Pull objects of that type. \n" +
+            "Connect a Request to pull only objects that satisfy a certain rule. \n" + 
+            "Connect a Type to pull only objects of that type.")]
         [Input("config", "Pull config")]
         [Input("active", "Execute the pull")]
         [Output("objects", "Objects pulled")]
