@@ -81,12 +81,13 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        [Description("Pull objects from the external software")]
+        [Description("Adapter Action 'Pull': imports objects from an external software. \nAlso allows for querying through Requests.")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Connect a type of object to Pull objects of that type. \n" +
-            "Connect a Request to pull only objects that satisfy a certain rule. \n" + 
-            "Connect a Type to pull only objects of that type.")]
-        [Input("config", "Pull config")]
+        [Input("request", "Input a Request to pull only objects that satisfy a certain rule. \n" + 
+            "Input a Type to pull only objects of that type.")]
+        [Input("pullType", "Pull type. Connect the enum PullType for all the alternatives.")]
+        [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
+            "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the pull")]
         [Output("objects", "Objects pulled")]
         public static IEnumerable<object> Pull(BHoMAdapter adapter, object request = null,
