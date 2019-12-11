@@ -41,7 +41,7 @@ namespace BH.Engine.UI
             {
                 Name = property.Name,
                 DataType = property.PropertyType,
-                Description = property.PropertyType.IDescription(),
+                Description = property.IDescription(),
                 Kind = ParamKind.Input
             };
 
