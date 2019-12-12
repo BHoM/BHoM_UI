@@ -81,7 +81,7 @@ namespace BH.UI.Global
                 grid.Children.Add(m_SearchResultGrid);
 
                 container.Children.Add(m_Popup);
-                m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown; 
+                m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown;
             }
 
             m_SearchTextBox.Text = "";
@@ -109,7 +109,7 @@ namespace BH.UI.Global
                     m_Popup.IsOpen = false;
                     if (m_selected < hits.Count)
                     {
-                        NotifySelection(hits[m_selected]);
+                        NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_Popup.PlacementRectangle.X, Y = m_Popup.PlacementRectangle.Y });
                     }
                     return;
                 case Key.Escape:
