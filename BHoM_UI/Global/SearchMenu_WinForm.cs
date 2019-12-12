@@ -68,7 +68,8 @@ namespace BH.UI.Global
 
 
                 //Add the search box
-                m_SearchTextBox = new TextBox() {
+                m_SearchTextBox = new TextBox()
+                {
                     BorderStyle = BorderStyle.FixedSingle,
                     Dock = DockStyle.Top,
                     Font = new Font("Microsoft Sans Serif", 9.75f, System.Drawing.FontStyle.Regular, GraphicsUnit.Point, 0),
@@ -135,7 +136,7 @@ namespace BH.UI.Global
                     if (m_selected < hits.Count)
                     {
                         m_Popup.Hide();
-                        NotifySelection(hits[m_selected]);
+                        NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_LastPosition.X, Y = m_LastPosition.Y });
                     }
                     return;
                 case Keys.Escape:
@@ -209,6 +210,7 @@ namespace BH.UI.Global
                 yPos += label.Height;
             }
             
+
             m_Popup.Width = maxWidth;
             foreach (Control row in m_SearchResultPanel.Controls) row.Width = maxWidth;
             m_SearchResultPanel.Size = new System.Drawing.Size(maxWidth, yPos);
