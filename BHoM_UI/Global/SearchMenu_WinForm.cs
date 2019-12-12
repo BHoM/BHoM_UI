@@ -209,7 +209,6 @@ namespace BH.UI.Global
                 m_SearchResultPanel.Controls.Add(label);
                 yPos += label.Height;
             }
-            
 
             m_Popup.Width = maxWidth;
             foreach (Control row in m_SearchResultPanel.Controls) row.Width = maxWidth;
