@@ -104,8 +104,26 @@ namespace BH.UI.Templates
             }
             catch (Exception e)
             {
-                RecordError(e, "This component failed to run properly. Are you sure you have the correct type of inputs?\n" +
-                                 "Check their description for more details. Here is the error provided by the method:\n");
+                string message = "This component failed to run properly. Are you sure you have the correct type of inputs?\n" +
+                                 "Check their description for more details. Here is the error provided by the method:\n   ";
+
+                if (e.InnerException != null)
+                    message += e.InnerException.Message;
+                else
+                    message += e.Message;
+
+                List<string> stack = e.StackTrace.Split(new char[] { '\n' })
+                    .Where(x => x.Contains(" BH."))
+                    .Take(2)
+                    .ToList();
+
+                if (stack.Count > 0)
+                    message += "\nHappened " + stack[0].Trim();
+                if (stack.Count > 1)
+                    message += "\n   called " + stack[1].Trim();
+
+                Engine.Reflection.Compute.RecordError(message);
+
                 return false;
             }
 
