@@ -90,7 +90,7 @@ namespace BH.UI.Components
             Type type = result.GetType();
             if (OutputParams[0].DataType != type)
             {
-                OutputParams[0].DataType = result.GetType();
+                OutputParams[0].DataType = type;
                 CompileOutputSetters();
             }
             
