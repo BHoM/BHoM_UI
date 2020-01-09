@@ -87,8 +87,13 @@ namespace BH.UI.Components
             if (OutputParams.Count < 1)
                 return true;
 
-            OutputParams[0].DataType = result.GetType();
-            CompileOutputSetters();
+            Type type = result.GetType();
+            if (OutputParams[0].DataType != type)
+            {
+                OutputParams[0].DataType = result.GetType();
+                CompileOutputSetters();
+            }
+            
             return true;
         }
 
