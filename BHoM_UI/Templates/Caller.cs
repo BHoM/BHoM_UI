@@ -104,8 +104,7 @@ namespace BH.UI.Templates
             }
             catch (Exception e)
             {
-                string message = "This component failed to run properly. Are you sure you have the correct type of inputs?\n" +
-                                 "Check their description for more details. Here is the error provided by the method:\n   ";
+                string message = "This component failed to run properly.\n- Error: "; 
 
                 if (e.InnerException != null)
                     message += e.InnerException.Message;
@@ -118,9 +117,11 @@ namespace BH.UI.Templates
                     .ToList();
 
                 if (stack.Count > 0)
-                    message += "\nHappened " + stack[0].Trim();
+                    message += "\n- Occured in " + stack[0].Trim().Substring(2);
                 if (stack.Count > 1)
-                    message += "\n   called " + stack[1].Trim();
+                    message += "\n     called from" + stack[1].Trim().Substring(2);
+
+                message += "\n- Are you sure you have the correct type of inputs? Check their description for more details.";
 
                 Engine.Reflection.Compute.RecordError(message);
 
