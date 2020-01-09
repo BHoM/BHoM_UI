@@ -84,6 +84,8 @@ namespace BH.UI.Global
                 m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown;
             }
 
+            m_Popup.Unloaded += M_Popup_Unloaded;
+
             m_SearchTextBox.Text = "";
             m_SearchResultGrid.Children.Clear();
             m_Popup.IsOpen = true;
@@ -91,6 +93,19 @@ namespace BH.UI.Global
 
             return true;
         }
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private void M_Popup_Unloaded(object sender, RoutedEventArgs e)
+        {
+            m_Popup = null;
+            NotifyDispose();
+
+        }
+
+        /*************************************/
 
         private void M_SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -126,9 +141,6 @@ namespace BH.UI.Global
             }
         }
 
-
-        /*************************************/
-        /**** Private Methods             ****/
         /*************************************/
 
         private void M_SearchTextBox_Loaded(object sender, RoutedEventArgs e)
