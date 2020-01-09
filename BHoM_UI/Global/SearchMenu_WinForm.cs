@@ -47,7 +47,7 @@ namespace BH.UI.Global
             if (container == null)
                 return false;
 
-            if (m_Popup == null)
+            if (m_Popup == null || m_Popup.IsDisposed)
             {
                 // Create the popup form
                 m_Popup = new Form()
@@ -65,6 +65,7 @@ namespace BH.UI.Global
                     BackColor = Color.White
                 };
                 m_Popup.SuspendLayout();
+                m_Popup.Disposed += M_Popup_Disposed;
 
 
                 //Add the search box
@@ -110,6 +111,7 @@ namespace BH.UI.Global
 
             m_Popup.ResumeLayout(false);
             m_Popup.PerformLayout();
+            m_Popup.Visible = false; // Make sure it is not visible before asking to show (otherwise, causes crash)
             m_Popup.Show(container);
             m_SearchTextBox.Focus();
 
@@ -118,6 +120,17 @@ namespace BH.UI.Global
 
             return true;
         }
+
+        /*************************************/
+
+        private void M_Popup_Disposed(object sender, EventArgs e)
+        {
+            m_Popup.Close();
+            m_Popup = null;
+            NotifyDispose();
+        }
+
+        /*************************************/
 
         private void M_Popup_KeyDown(object sender, KeyEventArgs e)
         {

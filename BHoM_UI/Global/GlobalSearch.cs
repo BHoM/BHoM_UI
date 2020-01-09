@@ -59,6 +59,7 @@ namespace BH.UI.Global
                     {
                         m_SearchMenu = new SearchMenu_Wpf();
                         m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                        m_SearchMenu.Disposed += M_SearchMenu_Disposed;
                     }
                     m_SearchMenu.SetParent(container.Content);
                 }
@@ -79,6 +80,7 @@ namespace BH.UI.Global
                     {
                         m_SearchMenu = new SearchMenu_WinForm();
                         m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                        m_SearchMenu.Disposed += M_SearchMenu_Disposed;
                     }
                     m_SearchMenu.SetParent(container);
                 }
@@ -95,6 +97,13 @@ namespace BH.UI.Global
         {
             if (request != null)
                 ItemSelected?.Invoke(sender, request);
+        }
+
+        /*************************************/
+
+        private static void M_SearchMenu_Disposed(object sender, EventArgs e)
+        {
+            m_SearchMenu = null;
         }
 
 
