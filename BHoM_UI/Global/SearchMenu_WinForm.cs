@@ -47,7 +47,7 @@ namespace BH.UI.Global
             if (container == null)
                 return false;
 
-            if (m_Popup == null)
+            if (m_Popup == null || m_Popup.IsDisposed)
             {
                 // Create the popup form
                 m_Popup = new Form()
@@ -65,10 +65,12 @@ namespace BH.UI.Global
                     BackColor = Color.White
                 };
                 m_Popup.SuspendLayout();
+                m_Popup.Disposed += M_Popup_Disposed;
 
 
                 //Add the search box
-                m_SearchTextBox = new TextBox() {
+                m_SearchTextBox = new TextBox()
+                {
                     BorderStyle = BorderStyle.FixedSingle,
                     Dock = DockStyle.Top,
                     Font = new Font("Microsoft Sans Serif", 9.75f, System.Drawing.FontStyle.Regular, GraphicsUnit.Point, 0),
@@ -109,6 +111,7 @@ namespace BH.UI.Global
 
             m_Popup.ResumeLayout(false);
             m_Popup.PerformLayout();
+            m_Popup.Visible = false; // Make sure it is not visible before asking to show (otherwise, causes crash)
             m_Popup.Show(container);
             m_SearchTextBox.Focus();
 
@@ -117,6 +120,17 @@ namespace BH.UI.Global
 
             return true;
         }
+
+        /*************************************/
+
+        private void M_Popup_Disposed(object sender, EventArgs e)
+        {
+            m_Popup.Close();
+            m_Popup = null;
+            NotifyDispose();
+        }
+
+        /*************************************/
 
         private void M_Popup_KeyDown(object sender, KeyEventArgs e)
         {
@@ -135,7 +149,7 @@ namespace BH.UI.Global
                     if (m_selected < hits.Count)
                     {
                         m_Popup.Hide();
-                        NotifySelection(hits[m_selected]);
+                        NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_LastPosition.X, Y = m_LastPosition.Y });
                     }
                     return;
                 case Keys.Escape:
@@ -208,7 +222,7 @@ namespace BH.UI.Global
                 m_SearchResultPanel.Controls.Add(label);
                 yPos += label.Height;
             }
-            
+
             m_Popup.Width = maxWidth;
             foreach (Control row in m_SearchResultPanel.Controls) row.Width = maxWidth;
             m_SearchResultPanel.Size = new System.Drawing.Size(maxWidth, yPos);

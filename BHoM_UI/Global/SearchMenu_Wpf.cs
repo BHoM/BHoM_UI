@@ -81,8 +81,10 @@ namespace BH.UI.Global
                 grid.Children.Add(m_SearchResultGrid);
 
                 container.Children.Add(m_Popup);
-                m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown; 
+                m_SearchTextBox.PreviewKeyDown += M_SearchTextBox_PreviewKeyDown;
             }
+
+            m_Popup.Unloaded += M_Popup_Unloaded;
 
             m_SearchTextBox.Text = "";
             m_SearchResultGrid.Children.Clear();
@@ -91,6 +93,19 @@ namespace BH.UI.Global
 
             return true;
         }
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private void M_Popup_Unloaded(object sender, RoutedEventArgs e)
+        {
+            m_Popup = null;
+            NotifyDispose();
+
+        }
+
+        /*************************************/
 
         private void M_SearchTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
@@ -109,7 +124,7 @@ namespace BH.UI.Global
                     m_Popup.IsOpen = false;
                     if (m_selected < hits.Count)
                     {
-                        NotifySelection(hits[m_selected]);
+                        NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_Popup.PlacementRectangle.X, Y = m_Popup.PlacementRectangle.Y });
                     }
                     return;
                 case Key.Escape:
@@ -126,9 +141,6 @@ namespace BH.UI.Global
             }
         }
 
-
-        /*************************************/
-        /**** Private Methods             ****/
         /*************************************/
 
         private void M_SearchTextBox_Loaded(object sender, RoutedEventArgs e)

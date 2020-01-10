@@ -40,6 +40,8 @@ namespace BH.UI.Global
 
         public event EventHandler<ComponentRequest> ItemSelected;
 
+        public event EventHandler Disposed;
+
 
         /*************************************/
         /**** Properties                  ****/
@@ -78,6 +80,13 @@ namespace BH.UI.Global
         protected void NotifySelection(SearchItem item, BH.oM.Geometry.Point location)
         {
             ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
+        }
+
+        /*************************************/
+
+        protected void NotifyDispose()
+        {
+            Disposed?.Invoke(this, null);
         }
 
         /*************************************/
