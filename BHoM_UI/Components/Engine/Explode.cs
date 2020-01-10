@@ -115,6 +115,19 @@ namespace BH.UI.Components
 
         /*************************************/
 
+        public bool RemoveOutput(string name)
+        {
+            if (name == null)
+                return false;
+
+            bool success = OutputParams.RemoveAll(p => p.Name == name) > 0;
+            CompileOutputSetters();
+
+            return success;
+        }
+
+        /*************************************/
+
         public override bool Read(string json)
         {
             if (json == "")
