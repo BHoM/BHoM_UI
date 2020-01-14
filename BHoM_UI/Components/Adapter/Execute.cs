@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Reflection;
 
 namespace BH.UI.Components
 {
@@ -67,8 +68,9 @@ namespace BH.UI.Components
         [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
             "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the command")]
-        [Output("success", "Define if the execution was sucessful")]
-        public static bool Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null, bool active = false)
+        [MultiOutput(0, "output", "Output of the executed command.")]
+        [MultiOutput(1, "success", "True if the operation was successful.")]
+        public static Output<object, bool> Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null, bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
@@ -85,7 +87,7 @@ namespace BH.UI.Components
             if (active)
                 return adapter.Execute(command, parameters, actionConfig);
             else
-                return false;
+                return new Output<object, bool>() { Item1 = null, Item2 = false };
         }
 
         /*************************************/
