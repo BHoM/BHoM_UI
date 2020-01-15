@@ -70,13 +70,14 @@ namespace BH.UI.Components
         [Input("active", "Execute the command")]
         [MultiOutput(0, "output", "Output of the executed command.")]
         [MultiOutput(1, "success", "True if the operation was successful.")]
-        public static Output<object, bool> Execute(BHoMAdapter adapter, string command, Dictionary<string, object> parameters = null, ActionConfig actionConfig = null, bool active = false)
+        public static Output<object, bool> Execute(BHoMAdapter adapter, IExecuteCommand command, ActionConfig actionConfig = null, bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
             //----------------------------------------------//
             // The following are mandatory set-ups to be ALWAYS performed 
             // before the Adapter Action is called,
+
             // whether the Action is overrided at the Toolkit level or not.
 
             // If unset, set the actionConfig to a new ActionConfig.
@@ -85,7 +86,7 @@ namespace BH.UI.Components
             //----------------------------------------------//
 
             if (active)
-                return adapter.Execute(command, parameters, actionConfig);
+                return adapter.Execute(command, actionConfig);
             else
                 return new Output<object, bool>() { Item1 = null, Item2 = false };
         }
