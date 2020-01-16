@@ -70,7 +70,7 @@ namespace BH.UI.Components
         [Input("active", "Execute the command")]
         [MultiOutput(0, "output", "Output of the executed command.")]
         [MultiOutput(1, "success", "True if the operation was successful.")]
-        public static Output<object, bool> Execute(BHoMAdapter adapter, IExecuteCommand command, ActionConfig actionConfig = null, bool active = false)
+        public static Output<List<object>, bool> Execute(BHoMAdapter adapter, IExecuteCommand command, ActionConfig actionConfig = null, bool active = false)
         {
             // ---------------------------------------------//
             // Mandatory Adapter Action set-up              //
@@ -86,9 +86,12 @@ namespace BH.UI.Components
             //----------------------------------------------//
 
             if (active)
-                return adapter.Execute(command, actionConfig);
+            {
+                var result = adapter.Execute(command, actionConfig);
+                return result == null ? new Output<List<object>, bool>() { Item1 = null, Item2 = false } : result;
+            }
             else
-                return new Output<object, bool>() { Item1 = null, Item2 = false };
+                return new Output<List<object>, bool>() { Item1 = null, Item2 = false };
         }
 
         /*************************************/
