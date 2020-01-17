@@ -55,6 +55,8 @@ namespace BH.UI.Components
 
         public override int GroupIndex { get; protected set; } = 2;
 
+        public List<ParamInfo> PossibleOutputs { get; protected set; } = new List<ParamInfo>();
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -135,17 +137,20 @@ namespace BH.UI.Components
 
             try
             {
-                CustomObject info = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+                CustomObject component = BH.Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+                if (component == null)
+                    return true;
 
-                if (info != null && info.CustomData.ContainsKey("Outputs"))
+                object outputParams;
+                if (component.CustomData.TryGetValue("Outputs", out outputParams))
                 {
-                    IEnumerable outputs = info.CustomData["Outputs"] as IEnumerable;
-                    if (outputs != null)
-                    {
-                        OutputParams = outputs.OfType<ParamInfo>().ToList();
-                        CompileOutputSetters();
-                    }
+                    OutputParams = (outputParams as IEnumerable).OfType<ParamInfo>().ToList();
+                    CompileOutputSetters();
                 }
+
+                object possibleOutputs;
+                if (component.CustomData.TryGetValue("PossibleOutputs", out possibleOutputs))
+                    PossibleOutputs = (possibleOutputs as IEnumerable).OfType<ParamInfo>().ToList();
 
                 return true;
             }
@@ -161,7 +166,15 @@ namespace BH.UI.Components
         {
             CustomObject info = new CustomObject();
             info.CustomData["Outputs"] = OutputParams;
+            info.CustomData["PossibleOutputs"] = PossibleOutputs;
             return info.ToJson();
+        }
+
+        /*************************************/
+
+        public bool IsAllowedToUpdate()
+        {
+            return OutputParams.Count >= PossibleOutputs.Count;
         }
 
 
@@ -171,8 +184,8 @@ namespace BH.UI.Components
 
         public bool CollectOutputTypes(List<object> objects)
         {
-            // Do not update if the list of input is empty
-            if (objects.Count == 0)
+            // Do not update if the list of input is empty or if user has manually selected outputs
+            if (objects.Count == 0 || !IsAllowedToUpdate())
                 return false;
 
             // Group the objects by type
@@ -186,61 +199,11 @@ namespace BH.UI.Components
             foreach (var group in groups)
             {
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
-                {
-                    foreach (IDictionary dic in group)
-                    {
-                        Type[] types = dic.GetType().GetGenericArguments();
-                        if (types.Length != 2)
-                            continue;
-
-                        if (types[0] == typeof(string))
-                        {
-                            foreach (string key in dic.Keys.OfType<string>())
-                            {
-                                if (key != null & !properties.ContainsKey(key))
-                                    properties[key] = new List<Type>();
-
-                                if (dic[key] != null)
-                                    properties[key].Add(dic[key].GetType() ?? null);
-                            }
-                        }
-                        else
-                        {
-                            properties["Keys"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[0] }) };
-                            properties["Values"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[1] }) };
-                        }
-                    }
-                }
+                    CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
                 else if (group.Key == typeof(CustomObject))
-                {
-                    IEnumerable<CustomObject> objs = group.Cast<CustomObject>();
-                    foreach (KeyValuePair<string, object> prop in objs.SelectMany(x => x.CustomData).Distinct())
-                    {
-                        if (!properties.ContainsKey(prop.Key))
-                            properties[prop.Key] = new List<Type>();
-                        if (prop.Value != null)
-                            properties[prop.Key].Add(prop.Value.GetType() ?? null);
-                    }
-                    if (!properties.ContainsKey("Name"))
-                        properties["Name"] = new List<Type> { typeof(string) };
-                    if (!properties.ContainsKey("Tags"))
-                        properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
-                    if (!properties.ContainsKey("BHoM_Guid"))
-                        properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
-                }
+                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
                 else
-                {
-                    foreach (PropertyInfo prop in group.Key.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
-                    {
-                        if (properties.ContainsKey(prop.Name) && properties[prop.Name].Contains(prop.PropertyType))
-                        {
-                            BH.Engine.Reflection.Compute.RecordWarning($"The property with name {prop.Name} is present in more than one object with different types. Type will be set to System.Object");
-                            properties[prop.Name] = new List<Type> { typeof(object) };
-                        }
-                        else
-                            properties[prop.Name] = new List<Type> { prop.PropertyType };
-                    }
-                }
+                    CollectOutputTypes(group.Key, ref properties);
             }
 
             // Create the new output parameters
@@ -256,11 +219,79 @@ namespace BH.UI.Components
                     Kind = ParamKind.Output
                 });
             }
+            PossibleOutputs = OutputParams.ToList();
 
             // Compile the setters
             CompileOutputSetters();
 
             return true;
+        }
+
+
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
+
+        protected void CollectOutputTypes(IEnumerable<IDictionary> objects, ref Dictionary<string, List<Type>> properties)
+        {
+            foreach (IDictionary dic in objects)
+            {
+                Type[] types = dic.GetType().GetGenericArguments();
+                if (types.Length != 2)
+                    continue;
+
+                if (types[0] == typeof(string))
+                {
+                    foreach (string key in dic.Keys.OfType<string>())
+                    {
+                        if (key != null & !properties.ContainsKey(key))
+                            properties[key] = new List<Type>();
+
+                        if (dic[key] != null)
+                            properties[key].Add(dic[key].GetType() ?? null);
+                    }
+                }
+                else
+                {
+                    properties["Keys"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[0] }) };
+                    properties["Values"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[1] }) };
+                }
+            }
+        }
+
+        /*************************************/
+
+        protected void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties)
+        {
+            foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData).Distinct())
+            {
+                if (!properties.ContainsKey(prop.Key))
+                    properties[prop.Key] = new List<Type>();
+                if (prop.Value != null)
+                    properties[prop.Key].Add(prop.Value.GetType() ?? null);
+            }
+            if (!properties.ContainsKey("Name"))
+                properties["Name"] = new List<Type> { typeof(string) };
+            if (!properties.ContainsKey("Tags"))
+                properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
+            if (!properties.ContainsKey("BHoM_Guid"))
+                properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
+        }
+
+        /*************************************/
+
+        protected void CollectOutputTypes(Type type, ref Dictionary<string, List<Type>> properties)
+        {
+            foreach (PropertyInfo prop in type.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
+            {
+                if (properties.ContainsKey(prop.Name) && properties[prop.Name].Contains(prop.PropertyType))
+                {
+                    BH.Engine.Reflection.Compute.RecordWarning($"The property with name {prop.Name} is present in more than one object with different types. Type will be set to System.Object");
+                    properties[prop.Name] = new List<Type> { typeof(object) };
+                }
+                else
+                    properties[prop.Name] = new List<Type> { prop.PropertyType };
+            }
         }
 
         /*************************************/
