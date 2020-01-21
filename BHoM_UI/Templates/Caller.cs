@@ -32,7 +32,6 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
-using MongoDB.Bson;
 
 namespace BH.UI.Templates
 {
@@ -266,10 +265,14 @@ namespace BH.UI.Templates
                 {
                     if (backendElement == null)
                     {
-                        BsonDocument bson = Engine.Serialiser.Convert.ToBson(json);
-                        BsonValue item = bson["SelectedItem"];
-                        BsonDocument newVersion = Engine.Versioning.Convert.ToNewVersion(item.AsBsonDocument);
-                        backendElement = Engine.Serialiser.Convert.FromBson(newVersion);
+                        MongoDB.Bson.BsonDocument bson = Engine.Serialiser.Convert.ToBson(json);
+                        MongoDB.Bson.BsonValue item = bson["SelectedItem"];
+                        if (!item.IsBsonNull)
+                        {
+                            MongoDB.Bson.BsonDocument newVersion = Engine.Versioning.Convert.ToNewVersion(item.AsBsonDocument);
+                            if (newVersion != null)
+                                backendElement = Engine.Serialiser.Convert.FromBson(newVersion);
+                        }
                         SetItem(backendElement);
                         WasUpgraded = backendElement != null;
                     }
