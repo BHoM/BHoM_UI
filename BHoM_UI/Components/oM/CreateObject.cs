@@ -153,8 +153,8 @@ namespace BH.UI.Components
             object instance = Activator.CreateInstance(type);
             IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
 
-            m_InputSelector = new InputSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, selectedProperties.Contains(x.Name))).ToList());
-            m_InputSelector.InputToggled += M_InputSelector_InputToggled;
+            m_InputSelector = new ParamSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, selectedProperties.Contains(x.Name))).ToList());
+            m_InputSelector.ParamToggled += M_InputSelector_InputToggled;
         }
 
         /*************************************/
@@ -198,7 +198,7 @@ namespace BH.UI.Components
             CompileInputGetters();
 
             if (m_InputSelector != null)
-                m_InputSelector.SetInputCheck(name, false);
+                m_InputSelector.SetParamCheck(name, false);
 
             if (SelectedItem is Type)
                 m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
@@ -259,7 +259,7 @@ namespace BH.UI.Components
         public override void AddToMenu(ToolStripDropDown menu)
         {
             if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddInputList(menu);
+                m_InputSelector.AddParamList(menu);
             else
                 base.AddToMenu(menu);
         }
@@ -269,7 +269,7 @@ namespace BH.UI.Components
         public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
             if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddInputList(menu);
+                m_InputSelector.AddParamList(menu);
             else
                 base.AddToMenu(menu);
         }
@@ -279,7 +279,7 @@ namespace BH.UI.Components
         public override void AddToMenu(object menu)
         {
             if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddInputList(menu);
+                m_InputSelector.AddParamList(menu);
             else
                 base.AddToMenu(menu);
         }
@@ -289,7 +289,7 @@ namespace BH.UI.Components
         /**** Private Fields              ****/
         /*************************************/
 
-        InputSelectorMenu m_InputSelector;
+        ParamSelectorMenu m_InputSelector;
 
         /*************************************/
     }

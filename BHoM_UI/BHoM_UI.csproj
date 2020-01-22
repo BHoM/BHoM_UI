@@ -159,7 +159,7 @@
     <Compile Include="Global\SearchMenu_WinForm.cs" />
     <Compile Include="Global\SearchMenu_Wpf.cs" />
     <Compile Include="Templates\DataAccessor.cs" />
-    <Compile Include="Templates\InputSelectorMenu.cs" />
+    <Compile Include="Templates\ParamSelectorMenu.cs" />
     <Compile Include="Templates\IItemSelectorMenu.cs" />
     <Compile Include="Templates\IItemSelector.cs" />
     <Compile Include="Templates\MultiChoiceCaller.cs" />

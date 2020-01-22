@@ -40,6 +40,13 @@ namespace BH.UI.Components
     public class ExplodeCaller : Caller
     {
         /*************************************/
+        /**** Events                      ****/
+        /*************************************/
+
+        public event EventHandler<List<Tuple<ParamInfo, bool>>> OutputSelected;
+
+
+        /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
@@ -123,6 +130,7 @@ namespace BH.UI.Components
                 return false;
 
             bool success = OutputParams.RemoveAll(p => p.Name == name) > 0;
+            m_OutputSelector.SetParamCheck(name, false);
             CompileOutputSetters();
 
             return success;
@@ -150,8 +158,11 @@ namespace BH.UI.Components
 
                 object possibleOutputs;
                 if (component.CustomData.TryGetValue("PossibleOutputs", out possibleOutputs))
+                {
                     PossibleOutputs = (possibleOutputs as IEnumerable).OfType<ParamInfo>().ToList();
-
+                    SetOutputSelectionMenu();
+                }
+                    
                 return true;
             }
             catch
@@ -224,12 +235,45 @@ namespace BH.UI.Components
             // Compile the setters
             CompileOutputSetters();
 
+            // Create the output menu
+            SetOutputSelectionMenu();
+
             return true;
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(ToolStripDropDown menu)
+        {
+            if (m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
+            else
+                base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        { 
+            if (m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
+            else
+                base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(object menu)
+        {
+            if (SelectedItem != null && m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
+            else
+                base.AddToMenu(menu);
         }
 
 
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Private Methods             ****/
         /*************************************/
 
         protected void CollectOutputTypes(IEnumerable<IDictionary> objects, ref Dictionary<string, List<Type>> properties)
@@ -293,6 +337,27 @@ namespace BH.UI.Components
                     properties[prop.Name] = new List<Type> { prop.PropertyType };
             }
         }
+
+        /*************************************/
+
+        protected void SetOutputSelectionMenu()
+        {
+            List<string> outputNames = OutputParams.Select(x => x.Name).ToList();
+            m_OutputSelector = new ParamSelectorMenu(PossibleOutputs.Select(x => new Tuple<ParamInfo, bool>(x, outputNames.Contains(x.Name))).ToList());
+            m_OutputSelector.NewSelection += (object sender, List<Tuple<ParamInfo, bool>> selection) =>
+            {
+                OutputParams = selection.Where(x => x.Item2).Select(x => x.Item1).ToList();
+                CompileOutputSetters();
+                OutputSelected?.Invoke(this, selection);
+            };
+        }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        ParamSelectorMenu m_OutputSelector;
 
         /*************************************/
     }
