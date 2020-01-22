@@ -33,22 +33,24 @@ using System.Windows.Forms;
 
 namespace BH.UI.Templates
 {
-    public class InputSelectorMenu
+    public class ParamSelectorMenu
     {
         /*************************************/
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler<Tuple<ParamInfo, bool>> InputToggled;
+        public event EventHandler<Tuple<ParamInfo, bool>> ParamToggled;
+
+        public event EventHandler<List<Tuple<ParamInfo, bool>>> NewSelection;
 
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public InputSelectorMenu(List<Tuple<ParamInfo, bool>> inputs)
+        public ParamSelectorMenu(List<Tuple<ParamInfo, bool>> parameters)
         {
-            m_Inputs = inputs;
+            m_Params = parameters;
         }
 
 
@@ -56,41 +58,50 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public void AddInputList(ToolStripDropDown menu)
+        public void AddParamList(ToolStripDropDown menu)
         {
-            ToolStripMenuItem listMenu = AppendMenuItem(menu, "Add/Remove Inputs");
-            foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
-                AppendMenuItem(listMenu.DropDown, input.Item1.Name, input.Item2);
+            ToolStripMenuItem listMenu = AppendMenuItem(menu, "Add/Remove " + ParamLabel());
+            listMenu.DropDown.Closed += Menu_Closing;
+
+            listMenu.DropDown.Closing += (object sender, ToolStripDropDownClosingEventArgs e) => 
+            {
+                if (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked)
+                    e.Cancel = true;
+            };
+
+            foreach (Tuple<ParamInfo, bool> param in m_Params.OrderBy(x => x.Item1.Name))
+                AppendMenuItem(listMenu.DropDown, param.Item1.Name, param.Item2);
         }
 
         /*************************************/
 
-        public void AddInputList(System.Windows.Controls.ContextMenu menu)
+        public void AddParamList(System.Windows.Controls.ContextMenu menu)
         {
-            System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Add/Remove Inputs" };
+            System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Add/Remove "+ ParamLabel() };
+            listMenu.SubmenuClosed += Menu_Closing;
             menu.Items.Add(listMenu);
 
-            foreach (Tuple<ParamInfo, bool> input in m_Inputs.OrderBy(x => x.Item1.Name))
-                AppendMenuItem(listMenu, input.Item1.Name, input.Item2);
+            foreach (Tuple<ParamInfo, bool> param in m_Params.OrderBy(x => x.Item1.Name))
+                AppendMenuItem(listMenu, param.Item1.Name, param.Item2);
         }
 
         /*************************************/
 
-        public void AddInputList(object menu)
+        public void AddParamList(object menu)
         {
             if (menu is ToolStripDropDown)
-                AddInputList(menu as ToolStripDropDown);
+                AddParamList(menu as ToolStripDropDown);
             else if (menu is System.Windows.Controls.ContextMenu)
-                AddInputList(menu as System.Windows.Controls.ContextMenu);
+                AddParamList(menu as System.Windows.Controls.ContextMenu);
         }
 
         /*************************************/
 
-        public void SetInputCheck(string name, bool @checked)
+        public void SetParamCheck(string name, bool @checked)
         {
-            int index = m_Inputs.FindIndex(x => x.Item1.Name == name);
+            int index = m_Params.FindIndex(x => x.Item1.Name == name);
             if (index >= 0)
-                m_Inputs[index] = new Tuple<ParamInfo, bool>(m_Inputs[index].Item1, @checked);
+                m_Params[index] = new Tuple<ParamInfo, bool>(m_Params[index].Item1, @checked);
 
             if (m_MenuItems.ContainsKey(name))
             {
@@ -134,7 +145,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        private void Item_CheckedChanged(object sender, EventArgs e)
+        protected void Item_CheckedChanged(object sender, EventArgs e)
         {
             string text = "";
             bool @checked = false;
@@ -154,20 +165,49 @@ namespace BH.UI.Templates
                 item.IsChecked = @checked;
             }
 
-            int index = m_Inputs.FindIndex(x => x.Item1.Name == text);
+            int index = m_Params.FindIndex(x => x.Item1.Name == text);
             if (index >= 0)
             {
-                m_Inputs[index] = new Tuple<ParamInfo, bool>(m_Inputs[index].Item1, @checked);
-                InputToggled?.Invoke(this, m_Inputs[index]);
+                m_Params[index] = new Tuple<ParamInfo, bool>(m_Params[index].Item1, @checked);
+                ParamToggled?.Invoke(this, m_Params[index]);
+                m_SelectionChanged = true;
             }
+        }
+
+        /*************************************/
+
+        protected void Menu_Closing(object sender, EventArgs e)
+        {
+            if (m_SelectionChanged)
+                NewSelection?.Invoke(this, m_Params);
+            m_SelectionChanged = false;
+        }
+
+        /*************************************/
+
+        protected string ParamLabel()
+        {
+            var groups = m_Params.GroupBy(x => x.Item1.Kind);
+
+            if (groups.Count() == 1)
+            {
+                if (groups.First().Key == ParamKind.Input)
+                    return "Inputs";
+                else
+                    return "Outputs";
+            }
+            else
+                return "Params";
+            
         }
 
         /*************************************/
         /**** Protected Fields            ****/
         /*************************************/
 
-        List<Tuple<ParamInfo, bool>> m_Inputs = new List<Tuple<ParamInfo, bool>>();
+        List<Tuple<ParamInfo, bool>> m_Params = new List<Tuple<ParamInfo, bool>>();
         Dictionary<string, object> m_MenuItems = new Dictionary<string, object>();
+        bool m_SelectionChanged = false;
 
         /*************************************/
     }
