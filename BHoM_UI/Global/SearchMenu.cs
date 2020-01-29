@@ -69,9 +69,9 @@ namespace BH.UI.Global
 
         public abstract bool SetParent(object parent);
 
-        protected abstract void RefreshSearchResults(List<SearchItem> hits);
+        protected virtual void RefreshSearchResults(List<SearchItem> hits) { }
 
-        protected abstract void SetSearchText(string searchText);
+        protected virtual void SetSearchText(string searchText) { }
 
         /*************************************/
 
