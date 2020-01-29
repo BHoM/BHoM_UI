@@ -68,7 +68,7 @@ namespace BH.UI.Global
                 m_Popup.Child = grid;
 
                 m_SearchTextBox = new TextBox { MinWidth = m_MinWidth, MinHeight = 24, MaxLines = 1 };
-                m_SearchTextBox.TextChanged += TextBox_TextChanged;
+                m_SearchTextBox.TextChanged += (o, e) => RefreshSearchResults(PossibleItems.Hits(m_SearchTextBox.Text, NbHits, HitsOnEmptySearch));
                 m_SearchTextBox.LostFocus += M_SearchTextBox_LostFocus;
                 m_SearchTextBox.Loaded += M_SearchTextBox_Loaded;
                 m_SearchTextBox.Initialized += M_SearchTextBox_Initialized;
@@ -93,6 +93,7 @@ namespace BH.UI.Global
 
             return true;
         }
+
 
         /*************************************/
         /**** Private Methods             ****/
@@ -120,12 +121,10 @@ namespace BH.UI.Global
                     m_selected = (m_selected + 1) % m_hits;
                     break;
                 case Key.Enter:
-                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
-                    m_Popup.IsOpen = false;
+                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text, NbHits, HitsOnEmptySearch);
                     if (m_selected < hits.Count)
-                    {
                         NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_Popup.PlacementRectangle.X, Y = m_Popup.PlacementRectangle.Y });
-                    }
+                    m_Popup.IsOpen = false;
                     return;
                 case Key.Escape:
                     m_Popup.IsOpen = false;
@@ -160,14 +159,13 @@ namespace BH.UI.Global
         private void M_SearchTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             m_Popup.IsOpen = false;
+            NotifySelection(null);
         }
 
         /*************************************/
 
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        protected override void RefreshSearchResults(List<SearchItem> hits)
         {
-            List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
-
             m_selected = 0;
             m_hits = hits.Count;
 
@@ -199,14 +197,21 @@ namespace BH.UI.Global
                 if (i == m_selected) label.Background = System.Windows.SystemColors.HighlightBrush;
                 label.MouseUp += (a, b) =>
                 {
-                    m_Popup.IsOpen = false;
                     NotifySelection(hit, new BH.oM.Geometry.Point { X = m_Popup.PlacementRectangle.X, Y = m_Popup.PlacementRectangle.Y });
+                    m_Popup.IsOpen = false;
                 };
 
                 Grid.SetRow(label, i);
                 Grid.SetColumn(label, 1);
                 m_SearchResultGrid.Children.Add(label);
             }
+        }
+
+        /*************************************/
+
+        protected override void SetSearchText(string searchText)
+        {
+            m_SearchTextBox.Text = searchText;
         }
 
         /*************************************/

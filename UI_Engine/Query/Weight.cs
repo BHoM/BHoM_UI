@@ -94,6 +94,101 @@ namespace BH.Engine.UI
         }
 
         /*************************************/
+
+        public static double Weight(this SearchItem item, Type constraint, bool isReturnType = true)
+        {
+            constraint = constraint.UnderlyingType().Type;
+
+            if (isReturnType)
+            {
+                object target = item.Item;
+                Type returnType = typeof(object);
+
+                if (target is MethodInfo)
+                    returnType = ((MethodInfo)target).ReturnType;
+                else if (target is ConstructorInfo)
+                    returnType = ((ConstructorInfo)target).DeclaringType;
+                else if (target is Type)
+                {
+                    if (item.CallerType.Name == "CreateTypeCaller")
+                        returnType = typeof(Type);
+                    else
+                        returnType = target as Type;
+                }
+
+                double callerWeight = item.Text.StartsWith("BH.oM") ? 1.0 : 0.1;
+                return callerWeight * DistanceWeight(returnType.UnderlyingType().Type, constraint);
+            }
+            else
+            {
+                object target = item.Item;
+
+                if (target is MethodBase)
+                {
+                    ParameterInfo[] parameters = ((MethodBase)target).GetParameters();
+                    if (parameters.Length == 0)
+                        return 0;
+                    else
+                        return parameters.Max(x => DistanceWeight(constraint, x.ParameterType.UnderlyingType().Type));
+                }
+                else if (target is Type)
+                {
+                    if (item.CallerType.Name == "CreateTypeCaller")
+                        return constraint == typeof(Type) ? 1 : 0;
+                    else
+                    {
+                        PropertyInfo[] properties = ((Type)target).GetProperties();
+                        if (properties.Length == 0)
+                            return 0;
+                        else
+                            return properties.Max(x => DistanceWeight(constraint, x.PropertyType.UnderlyingType().Type));
+                    }    
+                }
+                else
+                    return 0;
+            }
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static double DistanceWeight(Type source, Type target)
+        {
+            if (source == target)
+                return 1;
+
+            if (target == typeof(object))
+                return 0.01;
+
+            if (!target.IsAssignableFrom(source))
+                return 0;
+
+            Type parent = source.BaseType;
+            IEnumerable<Type> toProcess = source.GetInterfaces();
+
+            for (int depth = 1; depth < 10; depth++)
+            {
+                List<Type> direct = toProcess.Except(toProcess.SelectMany(x => x.GetInterfaces()).Distinct()).ToList();
+                if (parent != null)
+                {
+                    direct = direct.Except(parent.GetInterfaces()).ToList();
+                    direct.Add(parent);
+                    parent = parent.BaseType;
+                }
+                if (direct.Contains(target))
+                    return 0.5 / depth;
+
+                toProcess = toProcess.Except(direct);
+                if (toProcess.Count() == 0)
+                    break;
+            }
+
+            return 0;
+        }
+
+        /*************************************/
     }
 }
 

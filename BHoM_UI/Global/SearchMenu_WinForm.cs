@@ -81,7 +81,7 @@ namespace BH.UI.Global
                     WordWrap = false,
                     Text = ""
                 };
-                m_SearchTextBox.TextChanged += TextBox_TextChanged;
+                m_SearchTextBox.TextChanged += (o, e) => RefreshSearchResults(PossibleItems.Hits(m_SearchTextBox.Text, NbHits, HitsOnEmptySearch));
                 m_SearchTextBox.LostFocus += M_SearchTextBox_LostFocus;
                 m_Popup.Controls.Add(m_SearchTextBox);
 
@@ -115,12 +115,21 @@ namespace BH.UI.Global
             m_Popup.Show(container);
             m_SearchTextBox.Focus();
 
-            TextBox_TextChanged(null, null);
-
+            RefreshSearchResults(new List<SearchItem>());
 
             return true;
         }
 
+        /*************************************/
+
+        protected override void SetSearchText(string searchText)
+        {
+            m_SearchTextBox.Text = searchText;
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
         /*************************************/
 
         private void M_Popup_Disposed(object sender, EventArgs e)
@@ -145,11 +154,11 @@ namespace BH.UI.Global
                     m_selected = (m_selected + 1) % m_SearchResultPanel.Controls.Count;
                     break;
                 case Keys.Enter:
-                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
+                    List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text, NbHits, HitsOnEmptySearch);
                     if (m_selected < hits.Count)
                     {
-                        m_Popup.Hide();
                         NotifySelection(hits[m_selected], new BH.oM.Geometry.Point { X = m_LastPosition.X, Y = m_LastPosition.Y });
+                        m_Popup.Hide();
                     }
                     return;
                 case Keys.Escape:
@@ -166,23 +175,19 @@ namespace BH.UI.Global
             }
         }
 
-
-        /*************************************/
-        /**** Private Methods             ****/
         /*************************************/
 
         private void M_SearchTextBox_LostFocus(object sender, EventArgs e)
         {
             m_Popup.Hide();
+            NotifySelection(null);
         }
 
         /*************************************/
 
-        private void TextBox_TextChanged(object sender, EventArgs e)
+        protected override void RefreshSearchResults(List<SearchItem> hits)
         {
             m_selected = 0;
-            List<SearchItem> hits = PossibleItems.Hits(m_SearchTextBox.Text);
-
             int yPos = 0;
             int maxWidth = m_MinWidth;
             m_SearchResultPanel.Controls.Clear();
@@ -199,8 +204,8 @@ namespace BH.UI.Global
                 label.Width = (int)Math.Ceiling(label.CreateGraphics().MeasureString(label.Text, label.Font).Width);
                 label.MouseUp += (a, b) =>
                 {
-                    m_Popup.Hide();
                     NotifySelection(hit, new BH.oM.Geometry.Point { X = m_LastPosition.X, Y = m_LastPosition.Y });
+                    m_Popup.Hide();
                 };
 
                 PictureBox icon = new PictureBox { Image = hit.Icon, Height = label.Height, Width = label.Height };

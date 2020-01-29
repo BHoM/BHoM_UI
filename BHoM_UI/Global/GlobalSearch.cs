@@ -22,6 +22,7 @@
 
 using BH.Adapter;
 using BH.Engine.Reflection;
+using BH.Engine.UI;
 using BH.oM.UI;
 using BH.UI.Components;
 using System;
@@ -54,15 +55,7 @@ namespace BH.UI.Global
             container.KeyDown += (sender, e) =>
             {
                 if (e.Key == Key.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-                {
-                    if (m_SearchMenu == null)
-                    {
-                        m_SearchMenu = new SearchMenu_Wpf();
-                        m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
-                        m_SearchMenu.Disposed += M_SearchMenu_Disposed;
-                    }
-                    m_SearchMenu.SetParent(container.Content);
-                }
+                    Open(container);
             };
 
             return true;
@@ -75,17 +68,41 @@ namespace BH.UI.Global
             container.KeyDown += (sender, e) =>
             {
                 if (e.KeyCode == System.Windows.Forms.Keys.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
-                {
-                    if (m_SearchMenu == null)
-                    {
-                        m_SearchMenu = new SearchMenu_WinForm();
-                        m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
-                        m_SearchMenu.Disposed += M_SearchMenu_Disposed;
-                    }
-                    m_SearchMenu.SetParent(container);
-                }
+                    Open(container);
             };
             return true;
+        }
+
+        /*************************************/
+
+        public static void Open(ContentControl container, Type constraint = null, bool isReturnType = true)
+        {
+            if (m_SearchMenu == null)
+            {
+                m_SearchMenu = new SearchMenu_Wpf();
+                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
+                m_PossibleItems = m_SearchMenu.PossibleItems;
+            }
+
+            m_SearchMenu.SetParent(container.Content);
+            ShowWithConstraint(constraint, isReturnType);
+        }
+
+        /*************************************/
+
+        public static void Open(System.Windows.Forms.ContainerControl container, Type constraint = null, bool isReturnType = true)
+        {
+            if (m_SearchMenu == null)
+            {
+                m_SearchMenu = new SearchMenu_WinForm();
+                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
+                m_PossibleItems = m_SearchMenu.PossibleItems;
+            }
+
+            m_SearchMenu.SetParent(container);
+            ShowWithConstraint(constraint, isReturnType);
         }
 
 
@@ -95,8 +112,7 @@ namespace BH.UI.Global
 
         private static void M_SearchMenu_ItemSelected(object sender, ComponentRequest request)
         {
-            if (request != null)
-                ItemSelected?.Invoke(sender, request);
+            ItemSelected?.Invoke(sender, request);
         }
 
         /*************************************/
@@ -106,12 +122,36 @@ namespace BH.UI.Global
             m_SearchMenu = null;
         }
 
+        /*************************************/
+
+        private static void ShowWithConstraint(Type constraint = null, bool isReturnType = true)
+        {
+            if(constraint != null)
+            {
+                m_SearchMenu.PossibleItems = m_PossibleItems.Select(x =>
+                {
+                    SearchItem withWeight = x.GetShallowClone() as SearchItem;
+                    withWeight.Weight = withWeight.Weight(constraint, isReturnType);
+                    return withWeight;
+                }).Where(x => x.Weight > 0).ToList();
+
+                m_SearchMenu.HitsOnEmptySearch = true;
+                m_SearchMenu.ShowResults("");
+            }
+            else
+            {
+                m_SearchMenu.HitsOnEmptySearch = false;
+                m_SearchMenu.PossibleItems = m_PossibleItems;
+            }  
+        }
+
 
         /*************************************/
         /**** Private Fields              ****/
         /*************************************/
 
         private static SearchMenu m_SearchMenu = null;
+        private static List<SearchItem> m_PossibleItems = new List<SearchItem>();
 
         /*************************************/
     }
