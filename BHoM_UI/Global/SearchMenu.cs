@@ -49,6 +49,10 @@ namespace BH.UI.Global
 
         public List<SearchItem> PossibleItems { get; set; } = new List<SearchItem>();
 
+        public int NbHits { get; set; } = 20;
+
+        public bool HitsOnEmptySearch { get; set; } = false;
+
 
         /*************************************/
         /**** Constructors                ****/
@@ -65,6 +69,18 @@ namespace BH.UI.Global
 
         public abstract bool SetParent(object parent);
 
+        protected abstract void RefreshSearchResults(List<SearchItem> hits);
+
+        protected abstract void SetSearchText(string searchText);
+
+        /*************************************/
+
+        public void ShowResults(string searchText)
+        {
+            SetSearchText(searchText);
+            RefreshSearchResults(PossibleItems.Hits(searchText, NbHits, HitsOnEmptySearch));
+        }
+
 
         /*************************************/
         /**** Protected Methods           ****/
@@ -79,7 +95,10 @@ namespace BH.UI.Global
 
         protected void NotifySelection(SearchItem item, BH.oM.Geometry.Point location)
         {
-            ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
+            if (item == null)
+                ItemSelected?.Invoke(this, null);
+            else
+                ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
         }
 
         /*************************************/

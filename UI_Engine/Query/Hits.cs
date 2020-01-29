@@ -36,14 +36,14 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static List<SearchItem> Hits(this List<SearchItem> items, string search, int nbMax = 20)
+        public static List<SearchItem> Hits(this List<SearchItem> items, string search, int nbMax = 20, bool hitsOnEmptySearch = false)
         {
             string text = search.Trim().ToLower();
             string[] parts = text.Split(' ');
 
             List<SearchItem> hits = new List<SearchItem>();
-            if (text.Length > 0)
-                hits = items.Select(x => new Tuple<SearchItem, double>(x, x.Weight(parts)))
+            if (hitsOnEmptySearch || text.Length > 0)
+                hits = items.Select(x => new Tuple<SearchItem, double>(x, x.Weight * x.Weight(parts)))
                                     .Where(x => x.Item2 > 0)
                                     .OrderByDescending(x => x.Item2)
                                     .ThenBy(x => x.Item1.Text)

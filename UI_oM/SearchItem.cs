@@ -44,6 +44,8 @@ namespace BH.oM.UI
 
         public string Text { get; set; } = "";
 
+        public double Weight { get; set; } = 1.0;
+
 
         /***************************************************/
     }
