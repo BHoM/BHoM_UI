@@ -111,7 +111,11 @@ namespace BH.UI.Components
                 }
 
                 for (int i = 0; i < m_CompiledSetters.Count; i++)
-                    m_CompiledSetters[i](DataAccessor, data[i]);
+                {
+                    if (data[i] != null || !OutputParams[i].DataType.UnderlyingType().Type.IsValueType)
+                        m_CompiledSetters[i](DataAccessor, data[i]);
+                }
+                    
             }
             catch (Exception e)
             {
