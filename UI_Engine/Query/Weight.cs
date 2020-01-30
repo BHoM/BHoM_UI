@@ -141,7 +141,7 @@ namespace BH.Engine.UI
                         if (properties.Length == 0)
                             return 0;
                         else
-                            return properties.Max(x => DistanceWeight(constraint, x.PropertyType.UnderlyingType().Type));
+                            return properties.Max(x => DistanceWeight(constraint, x.TryGetPropertyType().UnderlyingType().Type));
                     }    
                 }
                 else
@@ -186,6 +186,20 @@ namespace BH.Engine.UI
             }
 
             return 0;
+        }
+
+        /*************************************/
+
+        private static Type TryGetPropertyType(this PropertyInfo property)
+        {
+            try
+            {
+                return property.PropertyType;
+            }
+            catch
+            {
+                return typeof(object);
+            }
         }
 
         /*************************************/
