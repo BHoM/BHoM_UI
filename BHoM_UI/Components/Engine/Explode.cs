@@ -332,11 +332,8 @@ namespace BH.UI.Components
         {
             foreach (PropertyInfo prop in type.GetProperties().Where(x => x.CanRead && x.GetMethod.GetParameters().Count() == 0))
             {
-                if (properties.ContainsKey(prop.Name) && properties[prop.Name].Contains(prop.PropertyType))
-                {
-                    BH.Engine.Reflection.Compute.RecordWarning($"The property with name {prop.Name} is present in more than one object with different types. Type will be set to System.Object");
-                    properties[prop.Name] = new List<Type> { typeof(object) };
-                }
+                if (properties.ContainsKey(prop.Name))
+                    properties[prop.Name].Add(prop.PropertyType);
                 else
                     properties[prop.Name] = new List<Type> { prop.PropertyType };
             }
