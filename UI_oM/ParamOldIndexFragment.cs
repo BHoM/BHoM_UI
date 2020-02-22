@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class ParamOldIndexFragment : IBHoMFragment
+    public class ParamOldIndexFragment : IFragment
     {
         /***************************************************/
         /**** Properties                                ****/
