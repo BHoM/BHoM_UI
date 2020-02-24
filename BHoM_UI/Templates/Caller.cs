@@ -253,10 +253,14 @@ namespace BH.UI.Templates
                 CustomObject component = obj as CustomObject; // Old component, serialised only with the SelectedItem as object
                 if (component == null)
                 {
+                    //If component failed to de-serialise, try upgrade version.
                     if (obj == null)
+                    {
                         json = Engine.Versioning.Convert.ToNewVersion(json);
+                        obj = BH.Engine.Serialiser.Convert.FromJson(json);
+                    }
 
-                    SetItem(BH.Engine.Serialiser.Convert.FromJson(json));
+                    SetItem(obj);
                     if (SelectedItem != null)
                         ItemSelected?.Invoke(this, SelectedItem);
                     return true;
