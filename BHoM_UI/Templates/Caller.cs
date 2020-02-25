@@ -258,9 +258,24 @@ namespace BH.UI.Templates
                     {
                         json = Engine.Versioning.Convert.ToNewVersion(json);
                         obj = BH.Engine.Serialiser.Convert.FromJson(json);
+
+                        //If component was sucessfully upgraded, show the message to inform the user.
+                        //This will happen if: Was not serialised as CustomObject (current serialisation method), failed to de-serialised orginially and was able to be upgraded.
+                        if (obj != null && !m_upgradeMessageShown)
+                        {
+                            MessageBox.Show("BHoM 2.3 or earlier components found in this script." + Environment.NewLine +
+                                            "Automatic upgrade of components to 3.0 has been applied. Some wires may have been disconnected." + Environment.NewLine + Environment.NewLine +
+                                            "To preserve wire connectivity as well you could try upgrading to 2.4 first:" + Environment.NewLine +
+                                            "1. Close the script without saving" + Environment.NewLine +
+                                            "2. Downgrade to BHoM 2.4.beta" + Environment.NewLine +
+                                            "3. Open and save the script" + Environment.NewLine + 
+                                            "4. Upgrade back to current version of BHoM and open the script again.","BHoM auto versioning");
+                            m_upgradeMessageShown = true;
+                        }
                     }
 
                     SetItem(obj);
+
                     if (SelectedItem != null)
                         ItemSelected?.Invoke(this, SelectedItem);
                     return true;
@@ -492,6 +507,7 @@ namespace BH.UI.Templates
 
         protected List<Func<DataAccessor, object>> m_CompiledGetters = new List<Func<DataAccessor, object>>();
         protected List<Func<DataAccessor, object, bool>> m_CompiledSetters = new List<Func<DataAccessor, object, bool>>();
+        private static bool m_upgradeMessageShown = false;
 
         /*************************************/
     }
