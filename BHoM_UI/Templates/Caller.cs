@@ -268,8 +268,9 @@ namespace BH.UI.Templates
                                             "To preserve wire connectivity as well you could try upgrading to 2.4 first:" + Environment.NewLine +
                                             "1. Close the script without saving" + Environment.NewLine +
                                             "2. Downgrade to BHoM 2.4.beta" + Environment.NewLine +
-                                            "3. Open and save the script" + Environment.NewLine + 
-                                            "4. Upgrade back to current version of BHoM and open the script again.","BHoM auto versioning");
+                                            "3. Open and save the script" + Environment.NewLine +
+                                            "4. Upgrade back to current version of BHoM and open the script again." + Environment.NewLine + Environment.NewLine +
+                                            "Note that this message will only be shown once per session of the UI.", "BHoM auto versioning");
                             m_upgradeMessageShown = true;
                         }
                     }
