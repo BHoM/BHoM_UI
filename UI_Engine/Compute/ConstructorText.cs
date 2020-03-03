@@ -31,7 +31,7 @@ using System.Reflection;
 
 namespace BH.Engine.UI
 {
-    public static partial class Create
+    public static partial class Compute
     {
         /*************************************/
         /**** Public Methods              ****/

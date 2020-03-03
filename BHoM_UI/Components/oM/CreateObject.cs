@@ -91,7 +91,7 @@ namespace BH.UI.Components
                 AddInput(i, names[i], types[i]);
 
             if (SelectedItem is Type)
-                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
 
             CompileInputGetters();
             CompileOutputSetters();
@@ -109,7 +109,7 @@ namespace BH.UI.Components
             else if (SelectedItem is Type)
             {
                 if (m_CompiledFunc == null)
-                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
                 return m_CompiledFunc(inputs);
             }
             else
@@ -133,13 +133,13 @@ namespace BH.UI.Components
 
                 object instance = Activator.CreateInstance(type);  
                 string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
-                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
+                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
                 InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
                 OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
 
                 SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
 
-                m_CompiledFunc = Engine.UI.Create.Constructor(type, InputParams);
+                m_CompiledFunc = Engine.UI.Compute.Constructor(type, InputParams);
                 CompileInputGetters();
                 CompileOutputSetters();
             }
@@ -151,7 +151,7 @@ namespace BH.UI.Components
         private void SetInputSelectionMenu(Type type, IEnumerable<string> selectedProperties)
         {
             object instance = Activator.CreateInstance(type);
-            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.ToBHoM(instance));
+            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
 
             m_InputSelector = new ParamSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, selectedProperties.Contains(x.Name))).ToList());
             m_InputSelector.ParamToggled += M_InputSelector_InputToggled;
@@ -165,7 +165,7 @@ namespace BH.UI.Components
             {
                 AddInput(InputParams.Count, e.Item1.Name, e.Item1.DataType);
                 if (SelectedItem is Type)
-                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
             }   
             else
                 RemoveInput(e.Item1.Name);
@@ -201,7 +201,7 @@ namespace BH.UI.Components
                 m_InputSelector.SetParamCheck(name, false);
 
             if (SelectedItem is Type)
-                m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
             return success;
         }
 
@@ -244,7 +244,7 @@ namespace BH.UI.Components
                 }
 
                 if (SelectedItem is Type)
-                    m_CompiledFunc = Engine.UI.Create.Constructor((Type)SelectedItem, InputParams);
+                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
             }
             catch (Exception e)
             {
