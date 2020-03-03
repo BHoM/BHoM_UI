@@ -40,23 +40,23 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<T>> OrganiseItems<T>(this List<T> items)
+        public static Output<List<SearchItem>, Tree<T>> IOrganise<T>(this List<T> items)
         {
             Type type = typeof(T);
 
             if (type == typeof(MethodBase))
-                return OrganiseMethods(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+                return Organise(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else if (type == typeof(Type))
-                return OrganiseTypes(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+                return Organise(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else if (type == typeof(MemberInfo))
-                return OrganiseMembers(items.Cast<MemberInfo>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+                return Organise(items.Cast<MemberInfo>().ToList()) as Output<List<SearchItem>, Tree<T>>;
             else
-                return OrganiseOthers(items) as Output<List<SearchItem>, Tree<T>>;
+                return Organise(items) as Output<List<SearchItem>, Tree<T>>;
         }
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<MethodBase>> OrganiseMethods(this List<MethodBase> methods)
+        public static Output<List<SearchItem>, Tree<MethodBase>> Organise(this List<MethodBase> methods)
         {
             // Create method list
             IEnumerable<string> paths = methods.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
@@ -74,7 +74,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<Type>> OrganiseTypes(this List<Type> types)
+        public static Output<List<SearchItem>, Tree<Type>> Organise(this List<Type> types)
         {
             // Create type list
             IEnumerable<string> paths = types.Select(x => x.ToText(true));
@@ -90,7 +90,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<MemberInfo>> OrganiseMembers(this List<MemberInfo> members)
+        public static Output<List<SearchItem>, Tree<MemberInfo>> Organise(this List<MemberInfo> members)
         {
             // Create method list
             IEnumerable<string> paths = members.Select(x => x is Type ? ((Type)x).ConstructorText() : x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
@@ -106,9 +106,12 @@ namespace BH.Engine.UI
             return new Output<List<SearchItem>, Tree<MemberInfo>> { Item1 = list, Item2 = tree };
         }
 
+
+        /*************************************/
+        /**** Private Methods             ****/
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<T>> OrganiseOthers<T>(this List<T> items)
+        private static Output<List<SearchItem>, Tree<T>> Organise<T>(this List<T> items)
         {
             // Create item list
             IEnumerable<string> paths = items.Select(x => x.ToString());

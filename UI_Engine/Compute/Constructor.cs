@@ -20,38 +20,47 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
 using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace BH.Engine.UI
 {
-    public static partial class Convert
+    public static partial class Compute
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        [Input("property", "The system property to convert to bhom")]
-        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
-        public static oM.UI.ParamInfo ToBHoM(this PropertyInfo property, object instance = null)
+        [Input("type", "The type of object to create a constructor for")]
+        [Input("parameters", "The properties that should be used as parameters for the constructor")]
+        [Output("constructor", "The compiled constructor")]
+        public static Func<object[], object> Constructor(Type type, List<ParamInfo> parameters)
         {
-            ParamInfo info = new ParamInfo
-            {
-                Name = property.Name,
-                DataType = property.PropertyType,
-                Description = property.IDescription(),
-                Kind = ParamKind.Input
-            };
+            ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
+            Expression[] inputs = parameters.Select((x, i) => Expression.Convert(Expression.ArrayIndex(lambdaInput, Expression.Constant(i)), x.DataType)).ToArray();
 
-            if (instance != null)
+            ParameterExpression instance = Expression.Variable(type, "instance");
+            List<Expression> assignments = new List<Expression>();
+            assignments.Add(Expression.Assign(instance, Expression.New(type)));
+
+            for (int i = 0; i < parameters.Count; i++)
             {
-                info.HasDefaultValue = true;
-                info.DefaultValue = property.GetValue(instance);
+                ParamInfo param = parameters[i];
+                PropertyInfo property = type.GetProperty(param.Name);
+                MethodInfo setMethod = property.GetSetMethod();
+
+                MethodCallExpression methodCall = Expression.Call(instance, setMethod, inputs[i]);
+                assignments.Add(methodCall);
             }
+            assignments.Add(instance);
 
-            return info;
+            BlockExpression block = Expression.Block(new[] { instance }, assignments);
+            return Expression.Lambda<Func<object[], object>>(Expression.Convert(block, typeof(object)), lambdaInput).Compile();
         }
 
         /*************************************/
