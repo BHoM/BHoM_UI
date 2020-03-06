@@ -63,6 +63,8 @@ namespace BH.UI.Components
             // RemoveInput and UpdateInput methods are doing. 
             // Maybe it has something to do with generics, but I will leave this here, since it works.
             // see https://github.com/BHoM/BHoM_UI/commit/88838d91bbd698497f3898b1d526c10f5d1dead4 for more
+
+            // AD. See CompileInputGetters() for more details on why this is here
             object[] inputs = new object[] { };
             try
             {
@@ -94,6 +96,16 @@ namespace BH.UI.Components
             }
 
             return inputs;
+        }
+
+        /*************************************/
+
+        protected override void CompileInputGetters()
+        {
+            // Only run this when the component is created
+            // The compilation of the input getters will be done dynamically in CollectInputs based on the type of the first input
+            if (m_CompiledGetters.Count < 3)
+                base.CompileInputGetters();
         }
 
 
