@@ -89,6 +89,7 @@ namespace BH.UI.Components
 
             Choices = Enum.GetValues(EnumType).Cast<object>().ToList();
             Name = EnumType.Name;
+            Description = EnumType.Description();
             return true;
         }
 
