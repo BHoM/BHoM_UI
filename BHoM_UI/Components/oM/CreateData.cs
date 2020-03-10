@@ -94,6 +94,7 @@ namespace BH.UI.Components
 
             Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
             Name = FileName.Split(new char[] { '\\' }).Last();
+            Description = BH.Engine.Library.Query.SourceAndDisclaimer(FileName);
             return true;
         }
 
@@ -105,6 +106,7 @@ namespace BH.UI.Components
         }
 
         /*************************************/
+
     }
 }
 
