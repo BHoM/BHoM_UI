@@ -131,6 +131,9 @@ namespace BH.UI.Components
                 Name = type.Name;
                 Description = type.Description();
 
+                if (type.IsGenericTypeDefinition)
+                    type = type.MakeFromGeneric();
+
                 object instance = Activator.CreateInstance(type);  
                 string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
                 IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));

@@ -78,6 +78,13 @@ namespace BH.UI.Templates
             if (Method == null)
                 return false;
 
+            m_OriginalMethod = method as MethodInfo;
+            ParameterInfo[] parameters = m_OriginalMethod.GetParameters();
+            if (parameters.Count() > 0)
+                m_OriginalTypes = parameters.Select(x => x.ParameterType).ToList();
+            else
+                m_OriginalTypes = new List<Type>();
+
             if (Method is MethodInfo)
                 Method = ((MethodInfo)Method).MakeFromGeneric();
 
@@ -101,7 +108,22 @@ namespace BH.UI.Templates
         {
             if (m_CompiledFunc != null)
             {
-                return m_CompiledFunc(inputs);
+                try
+                {
+                    return m_CompiledFunc(inputs);
+                }
+                catch(InvalidCastException e)
+                {
+                    if (Method is MethodInfo && m_OriginalMethod != null && m_OriginalMethod.IsGenericMethod)
+                    {
+                        // Try to update the generic method to fit the input types
+                        Method = Compute.MakeGenericFromInputs(m_OriginalMethod, inputs.Select(x => x.GetType()).ToList());
+                        m_CompiledFunc = Method.ToFunc();
+                        return m_CompiledFunc(inputs);
+                    }
+                    else
+                        throw e;
+                }
             }
             else if (InputParams.Count <= 0)
             {
@@ -254,6 +276,7 @@ namespace BH.UI.Templates
         /*************************************/
 
         protected Func<object[], object> m_CompiledFunc = null;
+        protected MethodInfo m_OriginalMethod = null;
 
         /*************************************/
     }
