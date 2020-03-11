@@ -261,7 +261,7 @@ namespace BH.UI.Templates
 
                         //If component was sucessfully upgraded, show the message to inform the user.
                         //This will happen if: Was not serialised as CustomObject (current serialisation method), failed to de-serialised orginially and was able to be upgraded.
-                        if (obj != null && !m_upgradeMessageShown)
+                        if (obj != null && !m_UpgradeMessageShown)
                         {
                             MessageBox.Show("BHoM 2.3 or earlier components found in this script." + Environment.NewLine +
                                             "Automatic upgrade of components to 3.0 has been applied. Some wires may have been disconnected." + Environment.NewLine + Environment.NewLine +
@@ -271,7 +271,7 @@ namespace BH.UI.Templates
                                             "3. Open and save the script" + Environment.NewLine +
                                             "4. Upgrade back to current version of BHoM and open the script again." + Environment.NewLine + Environment.NewLine +
                                             "Note that this message will only be shown once per session of the UI.", "BHoM auto versioning");
-                            m_upgradeMessageShown = true;
+                            m_UpgradeMessageShown = true;
                         }
                     }
 
@@ -346,10 +346,30 @@ namespace BH.UI.Templates
 
         protected virtual object[] CollectInputs()
         {
-            object[] inputs = new object[] { };
+            List<object> inputs = new List<object>();
             try
             {
-                inputs = m_CompiledGetters.Select(x => x(DataAccessor)).ToArray();
+                for (int i = 0; i < m_CompiledGetters.Count; i++)
+                {
+                    object input = null;
+                    try
+                    {
+                        input = m_CompiledGetters[i](DataAccessor);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        if (m_OriginalTypes.Count > i && m_OriginalTypes[i].IsGenericType)
+                        {
+                            UpdateInputGenericType(i);
+                            input = m_CompiledGetters[i](DataAccessor);
+                        }
+                        else
+                        {
+                            throw e;
+                        }
+                    }
+                    inputs.Add(input);
+                }
             }
             catch (Exception e)
             {
@@ -357,7 +377,7 @@ namespace BH.UI.Templates
                 inputs = null;
             }
 
-            return inputs;
+            return inputs.ToArray();
         }
 
         /*************************************/
@@ -366,12 +386,27 @@ namespace BH.UI.Templates
         {
             try
             {
-                if (m_CompiledSetters.Count == 1)   // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
-                    m_CompiledSetters.First()(DataAccessor, result);
-                else if (m_CompiledSetters.Count > 0)
+                for (int i = 0; i < m_CompiledSetters.Count; i++)
                 {
-                    for (int i = 0; i < m_CompiledSetters.Count; i++)
-                        m_CompiledSetters[i](DataAccessor, BH.Engine.Reflection.Query.IItem(result, i));
+                    // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
+                    object output = (m_CompiledSetters.Count == 1) ? result : BH.Engine.Reflection.Query.IItem(result, i);
+
+                    try
+                    {
+                        m_CompiledSetters[i](DataAccessor, output);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        if (output != null && output.GetType().IsGenericType)
+                        {
+                            m_CompiledSetters[i] = CreateOutputAccessor(output.GetType(), 0);
+                            m_CompiledSetters[i](DataAccessor, output);
+                        }
+                        else
+                        {
+                            throw e;
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -412,18 +447,7 @@ namespace BH.UI.Templates
             for (int index = 0; index < OutputParams.Count; index++)
             {
                 ParamInfo param = OutputParams[index];
-                UnderlyingType subType = param.DataType.UnderlyingType();
-                string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
-                MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
-
-                ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
-                ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
-                ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2 };
-
-                Expression[] methodInputs = new Expression[] { Expression.Constant(index), Expression.Convert(lambdaInput2, method.GetParameters()[1].ParameterType) };
-                MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
-
-                Func<DataAccessor, object, bool> function = Expression.Lambda<Func<DataAccessor, object, bool>>(methodExpression, lambdaInputs).Compile();
+                Func<DataAccessor, object, bool> function = CreateOutputAccessor(param.DataType, index);
                 m_CompiledSetters.Add(function);
             }
         }
@@ -455,6 +479,24 @@ namespace BH.UI.Templates
             Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
 
             return (accessor) => { return castDelegate(lambda(accessor)); };
+        }
+
+        /*******************************************/
+
+        protected virtual Func<DataAccessor, object, bool> CreateOutputAccessor(Type dataType, int index)
+        {
+            UnderlyingType subType = dataType.UnderlyingType();
+            string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
+            MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
+
+            ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
+            ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
+            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2 };
+
+            Expression[] methodInputs = new Expression[] { Expression.Constant(index), Expression.Convert(lambdaInput2, method.GetParameters()[1].ParameterType) };
+            MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
+
+            return Expression.Lambda<Func<DataAccessor, object, bool>>(methodExpression, lambdaInputs).Compile();
         }
 
         /*******************************************/
@@ -501,6 +543,39 @@ namespace BH.UI.Templates
             }
         }
 
+        /*************************************/
+
+        protected void UpdateInputGenericType(int index)
+        {
+            Type rawType = typeof(object);
+            switch (m_OriginalTypes[index].UnderlyingType().Depth)
+            {
+                case 0:
+                    object raw = DataAccessor.GetDataItem<object>(index);
+                    rawType = raw.GetType();
+                    break;
+                case 1:
+                    List<object> list = DataAccessor.GetDataList<object>(index);
+                    if (list.Count == 0)
+                        rawType = typeof(List<object>);
+                    else
+                        rawType = typeof(List<>).MakeGenericType(new Type[] { list[0].GetType() });
+                    break;
+                default:
+                    List<List<object>> tree = DataAccessor.GetDataTree<object>(index);
+                    if (tree.Count == 0 || tree[0].Count == 0)
+                        rawType = typeof(List<List<object>>);
+                    else
+                    {
+                        Type inType = typeof(List<>).MakeGenericType(new Type[] { tree[0][0].GetType() });
+                        rawType = typeof(List<>).MakeGenericType(new Type[] { inType });
+                    }
+                    break;
+            }
+
+            m_CompiledGetters[index] = CreateInputAccessor(rawType, index);
+        }
+
 
         /*************************************/
         /**** Private Fields              ****/
@@ -508,7 +583,9 @@ namespace BH.UI.Templates
 
         protected List<Func<DataAccessor, object>> m_CompiledGetters = new List<Func<DataAccessor, object>>();
         protected List<Func<DataAccessor, object, bool>> m_CompiledSetters = new List<Func<DataAccessor, object, bool>>();
-        private static bool m_upgradeMessageShown = false;
+        protected List<Type> m_OriginalTypes = new List<Type>();
+
+        private static bool m_UpgradeMessageShown = false;
 
         /*************************************/
     }
