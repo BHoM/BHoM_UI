@@ -356,7 +356,7 @@ namespace BH.UI.Templates
                     {
                         input = m_CompiledGetters[i](DataAccessor);
                     }
-                    catch (InvalidCastException e)
+                    catch (Exception e)
                     {
                         if (m_OriginalTypes.Count > i && m_OriginalTypes[i].IsGenericType)
                         {
