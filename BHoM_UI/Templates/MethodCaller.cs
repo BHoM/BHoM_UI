@@ -79,11 +79,13 @@ namespace BH.UI.Templates
                 return false;
 
             m_OriginalMethod = method as MethodInfo;
-            ParameterInfo[] parameters = m_OriginalMethod.GetParameters();
-            if (parameters.Count() > 0)
-                m_OriginalTypes = parameters.Select(x => x.ParameterType).ToList();
-            else
-                m_OriginalTypes = new List<Type>();
+            m_OriginalTypes = new List<Type>();
+            if (m_OriginalMethod != null)
+            {
+                ParameterInfo[] parameters = m_OriginalMethod.GetParameters();
+                if (parameters.Count() > 0)
+                    m_OriginalTypes = parameters.Select(x => x.ParameterType).ToList();
+            }
 
             if (Method is MethodInfo)
                 Method = ((MethodInfo)Method).MakeFromGeneric();
