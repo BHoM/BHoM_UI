@@ -79,12 +79,19 @@ namespace BH.UI.Templates
                 return false;
 
             m_OriginalMethod = method as MethodInfo;
-            m_OriginalTypes = new List<Type>();
+            m_OriginalInputTypes = new List<Type>();
+            m_OriginalOutputTypes = new List<Type>();
             if (m_OriginalMethod != null)
             {
                 ParameterInfo[] parameters = m_OriginalMethod.GetParameters();
                 if (parameters.Count() > 0)
-                    m_OriginalTypes = parameters.Select(x => x.ParameterType).ToList();
+                    m_OriginalInputTypes = parameters.Select(x => x.ParameterType).ToList();
+
+                Type outputType = m_OriginalMethod.OutputType();
+                if (m_OriginalMethod.IsMultipleOutputs())
+                    m_OriginalOutputTypes = outputType.GetGenericArguments().ToList();
+                else
+                    m_OriginalOutputTypes = new List<Type> { outputType };
             }
 
             if (Method is MethodInfo)

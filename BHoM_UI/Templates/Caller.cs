@@ -358,7 +358,7 @@ namespace BH.UI.Templates
                     }
                     catch (Exception e)
                     {
-                        if (m_OriginalTypes.Count > i && m_OriginalTypes[i].IsGenericType)
+                        if (m_OriginalInputTypes.Count > i && m_OriginalInputTypes[i].IsGenericType)
                         {
                             UpdateInputGenericType(i);
                             input = m_CompiledGetters[i](DataAccessor);
@@ -395,9 +395,9 @@ namespace BH.UI.Templates
                     {
                         m_CompiledSetters[i](DataAccessor, output);
                     }
-                    catch (InvalidCastException e)
+                    catch (Exception e)
                     {
-                        if (output != null && output.GetType().IsGenericType)
+                        if (m_OriginalOutputTypes.Count > i && m_OriginalOutputTypes[i].IsGenericType)
                         {
                             m_CompiledSetters[i] = CreateOutputAccessor(output.GetType(), 0);
                             m_CompiledSetters[i](DataAccessor, output);
@@ -548,7 +548,7 @@ namespace BH.UI.Templates
         protected void UpdateInputGenericType(int index)
         {
             Type rawType = typeof(object);
-            switch (m_OriginalTypes[index].UnderlyingType().Depth)
+            switch (m_OriginalInputTypes[index].UnderlyingType().Depth)
             {
                 case 0:
                     object raw = DataAccessor.GetDataItem<object>(index);
@@ -583,7 +583,8 @@ namespace BH.UI.Templates
 
         protected List<Func<DataAccessor, object>> m_CompiledGetters = new List<Func<DataAccessor, object>>();
         protected List<Func<DataAccessor, object, bool>> m_CompiledSetters = new List<Func<DataAccessor, object, bool>>();
-        protected List<Type> m_OriginalTypes = new List<Type>();
+        protected List<Type> m_OriginalInputTypes = new List<Type>();
+        protected List<Type> m_OriginalOutputTypes = new List<Type>();
 
         private static bool m_UpgradeMessageShown = false;
 
