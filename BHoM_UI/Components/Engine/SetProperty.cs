@@ -26,6 +26,7 @@ using BH.UI.Templates;
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using BH.Engine.Base;
 
 namespace BH.UI.Components
 {
@@ -108,6 +109,16 @@ namespace BH.UI.Components
                 base.CompileInputGetters();
         }
 
+        /*************************************/
+
+        public override object Run(object[] inputs)
+        {
+            if (inputs != null && inputs.Length >= 1 && inputs[0] != null)
+            {
+                inputs[0] = inputs[0].DeepClone();
+            }
+            return base.Run(inputs);
+        }
 
         /*************************************/
         /**** Private Fields              ****/
