@@ -115,6 +115,7 @@ namespace BH.UI.Components
         {
             if (inputs != null && inputs.Length >= 1 && inputs[0] != null)
             {
+                // Deepclone must be done before the properties are set to ensure immutability
                 inputs[0] = inputs[0].DeepClone();
             }
             return base.Run(inputs);
