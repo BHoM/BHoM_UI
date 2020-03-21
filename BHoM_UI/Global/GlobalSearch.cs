@@ -52,6 +52,14 @@ namespace BH.UI.Global
 
         public static bool Activate(ContentControl container)
         {
+            if (m_SearchMenu == null)
+            {
+                m_SearchMenu = new SearchMenu_Wpf();
+                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
+                m_PossibleItems = m_SearchMenu.PossibleItems;
+            }
+
             container.KeyDown += (sender, e) =>
             {
                 if (e.Key == Key.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
@@ -65,6 +73,14 @@ namespace BH.UI.Global
 
         public static bool Activate(System.Windows.Forms.ContainerControl container)
         {
+            if (m_SearchMenu == null)
+            {
+                m_SearchMenu = new SearchMenu_WinForm();
+                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
+                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
+                m_PossibleItems = m_SearchMenu.PossibleItems;
+            }
+
             container.KeyDown += (sender, e) =>
             {
                 if (e.KeyCode == System.Windows.Forms.Keys.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
@@ -78,12 +94,7 @@ namespace BH.UI.Global
         public static void Open(ContentControl container, Type constraint = null, bool isReturnType = true)
         {
             if (m_SearchMenu == null)
-            {
-                m_SearchMenu = new SearchMenu_Wpf();
-                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
-                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
-                m_PossibleItems = m_SearchMenu.PossibleItems;
-            }
+                return;
 
             m_SearchMenu.SetParent(container.Content);
             ShowWithConstraint(constraint, isReturnType);
@@ -94,15 +105,18 @@ namespace BH.UI.Global
         public static void Open(System.Windows.Forms.ContainerControl container, Type constraint = null, bool isReturnType = true)
         {
             if (m_SearchMenu == null)
-            {
-                m_SearchMenu = new SearchMenu_WinForm();
-                m_SearchMenu.ItemSelected += M_SearchMenu_ItemSelected;
-                m_SearchMenu.Disposed += M_SearchMenu_Disposed;
-                m_PossibleItems = m_SearchMenu.PossibleItems;
-            }
+                return;
 
             m_SearchMenu.SetParent(container);
             ShowWithConstraint(constraint, isReturnType);
+        }
+
+        /*************************************/
+
+        public static void AddPossibleItems(List<SearchItem> items)
+        {
+            if (m_SearchMenu != null)
+                m_SearchMenu.PossibleItems.AddRange(items);
         }
 
 
