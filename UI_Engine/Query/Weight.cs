@@ -115,6 +115,15 @@ namespace BH.Engine.UI
                     else
                         returnType = target as Type;
                 }
+                else if (target is CustomItem)
+                {
+                    CustomItem ci = target as CustomItem;
+                    List<Type> types = ci.OutputTypes.Where(x => x != null).ToList();
+                    if (types.Count > 0)
+                        return types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
+                    else
+                        return 0;
+                }
 
                 double callerWeight = item.Text.StartsWith("BH.oM") ? 1.0 : 0.1;
                 return callerWeight * DistanceWeight(returnType.UnderlyingType().Type, constraint);
@@ -143,6 +152,15 @@ namespace BH.Engine.UI
                         else
                             return properties.Max(x => DistanceWeight(constraint, x.TryGetPropertyType().UnderlyingType().Type));
                     }    
+                }
+                else if (target is CustomItem)
+                {
+                    CustomItem ci = target as CustomItem;
+                    List<Type> types = ci.InputTypes.Where(x => x != null).ToList();
+                    if (types.Count > 0)
+                        return types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
+                    else
+                        return 0;
                 }
                 else
                     return 0;
