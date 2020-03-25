@@ -91,24 +91,24 @@ namespace BH.UI.Global
 
         /*************************************/
 
-        public static void Open(ContentControl container, Type constraint = null, bool isReturnType = true)
+        public static void Open(ContentControl container, SearchConfig config = null)
         {
             if (m_SearchMenu == null)
                 return;
 
             m_SearchMenu.SetParent(container.Content);
-            ShowWithConstraint(constraint, isReturnType);
+            ShowWithConstraint(config);
         }
 
         /*************************************/
 
-        public static void Open(System.Windows.Forms.ContainerControl container, Type constraint = null, bool isReturnType = true)
+        public static void Open(System.Windows.Forms.ContainerControl container, SearchConfig config = null)
         {
             if (m_SearchMenu == null)
                 return;
 
             m_SearchMenu.SetParent(container);
-            ShowWithConstraint(constraint, isReturnType);
+            ShowWithConstraint(config);
         }
 
         /*************************************/
@@ -138,25 +138,24 @@ namespace BH.UI.Global
 
         /*************************************/
 
-        private static void ShowWithConstraint(Type constraint = null, bool isReturnType = true)
+        private static void ShowWithConstraint(SearchConfig config)
         {
-            if(constraint != null)
+            if (config != null)
             {
                 m_SearchMenu.PossibleItems = m_PossibleItems.Select(x =>
                 {
                     SearchItem withWeight = x.GetShallowClone() as SearchItem;
-                    withWeight.Weight = withWeight.Weight(constraint, isReturnType);
+                    withWeight.Weight = withWeight.Weight(config);
                     return withWeight;
                 }).Where(x => x.Weight > 0).ToList();
-
-                m_SearchMenu.HitsOnEmptySearch = true;
-                m_SearchMenu.ShowResults("");
             }
             else
             {
-                m_SearchMenu.HitsOnEmptySearch = false;
                 m_SearchMenu.PossibleItems = m_PossibleItems;
-            }  
+            }
+
+            m_SearchMenu.HitsOnEmptySearch = config != null;
+            m_SearchMenu.ShowResults("");
         }
 
 
