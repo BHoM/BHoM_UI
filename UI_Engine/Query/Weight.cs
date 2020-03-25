@@ -95,9 +95,15 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static double Weight(this SearchItem item, Type constraint, bool isReturnType = true)
+        public static double Weight(this SearchItem item, SearchConfig config)
         {
-            constraint = constraint.UnderlyingType().Type;
+            if (config == null)
+                return 0;
+
+            Type constraint = config.TypeConstraint;
+            if (constraint != null)
+                constraint = constraint.UnderlyingType().Type;
+            bool isReturnType = config.IsReturnType;
 
             if (isReturnType)
             {
@@ -119,10 +125,15 @@ namespace BH.Engine.UI
                 {
                     CustomItem ci = target as CustomItem;
                     List<Type> types = ci.OutputTypes.Where(x => x != null).ToList();
+
+                    double weight = 0;
                     if (types.Count > 0)
-                        return types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
-                    else
-                        return 0;
+                        weight = types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
+
+                    if (ci.Tags.Count > 0 && config.Tags.Count > 0)
+                        weight *= 1 + ci.Tags.Intersect(config.Tags).Count();
+
+                    return weight;
                 }
 
                 double callerWeight = item.Text.StartsWith("BH.oM") ? 1.0 : 0.1;
@@ -157,10 +168,14 @@ namespace BH.Engine.UI
                 {
                     CustomItem ci = target as CustomItem;
                     List<Type> types = ci.InputTypes.Where(x => x != null).ToList();
+                    double weight = 0;
                     if (types.Count > 0)
-                        return types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
-                    else
-                        return 0;
+                        weight = types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
+
+                    if (ci.Tags.Count > 0 && config.Tags.Count > 0)
+                        weight *= 1 + ci.Tags.Intersect(config.Tags).Count();
+
+                    return weight;
                 }
                 else
                     return 0;
@@ -174,7 +189,7 @@ namespace BH.Engine.UI
 
         private static double DistanceWeight(Type source, Type target)
         {
-            if (source == target)
+            if (source == target || source == null || target == null)
                 return 1;
 
             if (target == typeof(object))
