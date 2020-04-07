@@ -35,7 +35,7 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public int OldIndex { get; set; } = 0;
+        public virtual int OldIndex { get; set; } = 0;
 
 
         /***************************************************/

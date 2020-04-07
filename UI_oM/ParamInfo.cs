@@ -35,15 +35,15 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public Type DataType { get; set; } = null;
+        public virtual Type DataType { get; set; } = null;
 
-        public string Description { get; set; } = "";
+        public virtual string Description { get; set; } = "";
 
-        public ParamKind Kind { get; set; } = ParamKind.Unknown;
+        public virtual ParamKind Kind { get; set; } = ParamKind.Unknown;
 
-        public bool HasDefaultValue { get; set; } = false;
+        public virtual bool HasDefaultValue { get; set; } = false;
 
-        public object DefaultValue { get; set; } = null;
+        public virtual object DefaultValue { get; set; } = null;
 
 
         /***************************************************/

@@ -36,11 +36,11 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public Type CallerType { get; set; } = null;
+        public virtual Type CallerType { get; set; } = null;
 
-        public object SelectedItem { get; set; } = null;
+        public virtual object SelectedItem { get; set; } = null;
 
-        public Point Location { get; set; } = new Point();
+        public virtual Point Location { get; set; } = new Point();
 
         /***************************************************/
     }

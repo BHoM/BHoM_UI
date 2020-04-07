@@ -36,15 +36,15 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public Type CallerType { get; set; } = null;
+        public virtual Type CallerType { get; set; } = null;
 
-        public object Item { get; set; } = "";
+        public virtual object Item { get; set; } = "";
 
-        public Bitmap Icon { get; set; } = null;
+        public virtual Bitmap Icon { get; set; } = null;
 
-        public string Text { get; set; } = "";
+        public virtual string Text { get; set; } = "";
 
-        public double Weight { get; set; } = 1.0;
+        public virtual double Weight { get; set; } = 1.0;
 
 
         /***************************************************/
