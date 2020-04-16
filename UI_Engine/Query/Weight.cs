@@ -192,7 +192,7 @@ namespace BH.Engine.UI
             if (source == target || source == null || target == null)
                 return 1;
 
-            if (target == typeof(object))
+            if (target == typeof(object) || source == typeof(object))
                 return 0.01;
 
             if (!target.IsAssignableFrom(source))
