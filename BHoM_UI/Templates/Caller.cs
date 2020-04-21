@@ -539,6 +539,8 @@ namespace BH.UI.Templates
             {
                 ParamInfo parameter = newList[i];
                 int oldIndex = oldList.FindIndex(x => x.Name == parameter.Name);
+                if (oldIndex < 0)
+                    oldIndex = i;
                 parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
             }
         }
