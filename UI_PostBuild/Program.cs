@@ -56,6 +56,9 @@ namespace BHoM_UI
             // Copy Datasets
             string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets");
             CopyDatasets(sourceFolder, targetDatasetsFolder);
+
+            // Create Upgrades file
+            CopyUpgrades(sourceFolder, targetFolder);
         }
     }
 }
