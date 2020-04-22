@@ -97,7 +97,7 @@ namespace BH.Engine.UI
             List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
-            List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
+            List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "Modify", "Query" };
             Tree<MemberInfo> tree = Data.Create.Tree(members, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
