@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -31,32 +31,43 @@ namespace BHoM_UI
 {
     partial class Program
     {
-        static void Main(string[] args)
-        {
-            // Get programs arguments
-            if (args.Length < 2)
-            {
-                Console.Write("UI PostBuild reqires at least 2 arguments: the source folder and the target folder where the files will be copied.");
-                return;
-            }
-            string sourceFolder = args[0];
-            string targetFolder = args[1];
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
 
-            //Make sure the source and target folders exists
-            if (!Directory.Exists(sourceFolder))
-                throw new DirectoryNotFoundException("The source folder does not exists: " + sourceFolder);
+        private static void CopyDatasets(string sourceFolder, string targetFolder)
+        {
+            foreach (string path in Directory.GetDirectories(sourceFolder).Where((x => x.EndsWith(@"_Datasets") || x.EndsWith(@"_Toolkit"))))
+            {
+                string datasetPath = Path.Combine(path, "DataSets");
+
+                if (Directory.Exists(datasetPath))
+                    CopyJsonInFoldersRecursively(datasetPath, targetFolder);
+            }
+        }
+
+
+        /***************************************************/
+        /**** Helper Methods                            ****/
+        /***************************************************/
+
+        private static void CopyJsonInFoldersRecursively(string sourceFolder, string targetFolder)
+        {
             if (!Directory.Exists(targetFolder))
                 Directory.CreateDirectory(targetFolder);
-            else
-                CleanDirectory(targetFolder);
 
-            // Copy Assemblies 
-            CopyAssemblies(sourceFolder, targetFolder);
+            //Copy all files
+            string[] files = Directory.GetFiles(sourceFolder, "*.json");
+            foreach (string file in files)
+                File.Copy(file, Path.Combine(targetFolder, Path.GetFileName(file)), true);
 
-            // Copy Datasets
-            string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets");
-            CopyDatasets(sourceFolder, targetDatasetsFolder);
+            //Copy all sub folders
+            string[] folders = Directory.GetDirectories(sourceFolder);
+            foreach (string folder in folders)
+                CopyJsonInFoldersRecursively(folder, Path.Combine(targetFolder, Path.GetFileName(folder)));
+
         }
+
+        /***************************************************/
     }
 }
-

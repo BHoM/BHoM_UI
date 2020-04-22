@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -31,32 +31,23 @@ namespace BHoM_UI
 {
     partial class Program
     {
-        static void Main(string[] args)
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        private static void CleanDirectory(string folder)
         {
-            // Get programs arguments
-            if (args.Length < 2)
+            DirectoryInfo di = new DirectoryInfo(folder);
+            List<string> skipThese = new List<string> { ".gha", ".xll", ".dna", ".Addin" };
+            foreach (FileInfo file in di.GetFiles())
             {
-                Console.Write("UI PostBuild reqires at least 2 arguments: the source folder and the target folder where the files will be copied.");
-                return;
+                if (!skipThese.Contains(file.Extension))
+                    file.Delete();
             }
-            string sourceFolder = args[0];
-            string targetFolder = args[1];
-
-            //Make sure the source and target folders exists
-            if (!Directory.Exists(sourceFolder))
-                throw new DirectoryNotFoundException("The source folder does not exists: " + sourceFolder);
-            if (!Directory.Exists(targetFolder))
-                Directory.CreateDirectory(targetFolder);
-            else
-                CleanDirectory(targetFolder);
-
-            // Copy Assemblies 
-            CopyAssemblies(sourceFolder, targetFolder);
-
-            // Copy Datasets
-            string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets");
-            CopyDatasets(sourceFolder, targetDatasetsFolder);
+            foreach (DirectoryInfo dir in di.GetDirectories())
+                dir.Delete(true);
         }
+
+        /***************************************************/
     }
 }
-
