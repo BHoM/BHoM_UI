@@ -36,6 +36,15 @@
     <Reference Include="MongoDB.Bson, Version=2.10.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.10.3\lib\net452\MongoDB.Bson.dll</HintPath>
     </Reference>
+    <Reference Include="Reflection_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Reflection_oM">
+      <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
+    </Reference>
+    <Reference Include="Serialiser_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

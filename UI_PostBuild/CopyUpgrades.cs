@@ -25,8 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BH.Engine.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using BH.oM.Reflection.Attributes;
+using System.Diagnostics;
 
 namespace BHoM_UI
 {
@@ -52,9 +56,14 @@ namespace BHoM_UI
             // Create intial dictionaries
             BsonDocument versioning = CreateEmptyUpgradeDocument();
 
+            // Collect Versioning files
             string[] versioningFiles = Directory.GetFiles(sourceFolder, "Versioning.json", SearchOption.AllDirectories);
             foreach (string file in versioningFiles)
                 ReadVersioningFile(file, versioning);
+
+            // Get versioning from attributes
+            Compute.LoadAllAssemblies(Query.BHoMFolder());
+            CollectMethodVersioning(versioning["Method"] as BsonDocument);
 
             // return upgrade document
             return versioning;
@@ -157,6 +166,24 @@ namespace BHoM_UI
             File.WriteAllText(upgraderFile, json);
 
             Console.WriteLine("Adding versioning file to " + upgraderFolder);
+        }
+
+        /***************************************************/
+
+        private static void CollectMethodVersioning(BsonDocument content)
+        {
+            // Get the current version of the BHoM
+            string version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+            version = version.Split('.').Take(2).Aggregate((a, b) => a + '.' + b);
+
+            // Get PreviousVersionAttributes for the current BHoM version
+            BsonDocument toNewContent = content["ToNew"] as BsonDocument;
+            foreach (MethodBase method in Query.AllMethodList())
+            {
+                PreviousVersionAttribute attribute = method.GetCustomAttribute<PreviousVersionAttribute>();
+                if (attribute != null && attribute.FromVersion == version)
+                    toNewContent.Add(new BsonElement(attribute.PreviousVersionAsText, BH.Engine.Serialiser.Convert.ToBson(method)));
+            }
         }
 
         /***************************************************/
