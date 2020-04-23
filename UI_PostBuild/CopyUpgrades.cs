@@ -53,11 +53,16 @@ namespace BHoM_UI
 
         private static BsonDocument CollectUpgrades(string sourceFolder)
         {
+            // Get name of versioning file for current version of the BHoM
+            string version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
+            version = version.Split('.').Take(2).Aggregate((a, b) => a + b);
+            string versionFileName = "Versioning_" + version + ".json";
+
             // Create intial dictionaries
             BsonDocument versioning = CreateEmptyUpgradeDocument();
 
             // Collect Versioning files
-            string[] versioningFiles = Directory.GetFiles(sourceFolder, "Versioning.json", SearchOption.AllDirectories);
+            string[] versioningFiles = Directory.GetFiles(sourceFolder, versionFileName, SearchOption.AllDirectories);
             foreach (string file in versioningFiles)
                 ReadVersioningFile(file, versioning);
 
