@@ -536,11 +536,58 @@ namespace BH.UI.Templates
 
         protected void FindOldIndex(List<ParamInfo> newList, List<ParamInfo> oldList)
         {
+            List<int> newToMatch = Enumerable.Range(0, newList.Count).ToList();
+            List<int> oldToMatch = Enumerable.Range(0, oldList.Count).ToList();
+
+            // First match using names
             for (int i = 0; i < newList.Count; i++)
             {
                 ParamInfo parameter = newList[i];
                 int oldIndex = oldList.FindIndex(x => x.Name == parameter.Name);
+                if (oldIndex >= 0)
+                {
+                    newToMatch.Remove(i);
+                    oldToMatch.Remove(oldIndex);
+                }
                 parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
+            }
+
+            // Then match using types on the remaining params (Only allowed when a single matching type is found)
+            List<int> newToMatchCopy = newToMatch.ToList();
+            foreach (int i in newToMatchCopy)
+            {
+                ParamInfo parameter = newList[i];
+                IEnumerable<int> matches = oldToMatch.Where(x => parameter.DataType == oldList[x].DataType);
+                if (matches.Count() == 1) 
+                {
+                    int oldIndex = matches.First();
+                    newToMatch.Remove(i);
+                    oldToMatch.Remove(oldIndex);
+                    parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
+                }
+            }
+
+            // Then match using indices (Only allowed when number of parameters are equal for new and old)
+            if (newToMatch.Count == oldToMatch.Count) 
+            {
+                newToMatchCopy = newToMatch.ToList();
+                foreach (int i in newToMatchCopy)
+                {
+                    if (oldToMatch.Contains(i))
+                    {
+                        newToMatch.Remove(i);
+                        oldToMatch.Remove(i);
+                        newList[i].Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = i });
+                    }
+                }
+            }
+
+            // Provide a warning message if not all parameters where matched successfully
+            if (newToMatch.Count > 0 && oldToMatch.Count > 0)
+            {
+                string message = "This component was upgraded but the following parameters could not be matched with existing ones:\n";
+                message += newToMatch.Select(i => " - " + newList[i].Name).Aggregate((a, b) => a + "\n" + b);
+                Engine.Reflection.Compute.RecordWarning(message);
             }
         }
 
