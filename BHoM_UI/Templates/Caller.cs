@@ -321,8 +321,9 @@ namespace BH.UI.Templates
                     FindOldIndex(OutputParams, outputParams);
                     ItemSelected?.Invoke(this, SelectedItem);
                 }
-                else
+                else if (backendElement == null)
                 {
+                    // If the method is not found, we need to make sure that the component keeps its old inputs and outputs
                     InputParams = inputParams;
                     CompileInputGetters();
 
