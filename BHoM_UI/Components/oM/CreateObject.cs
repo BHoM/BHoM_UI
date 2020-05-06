@@ -33,6 +33,7 @@ using BH.oM.UI;
 using BH.Engine.UI;
 using System.Windows.Forms;
 using BH.oM.Base;
+using System.Collections;
 
 namespace BH.UI.Components
 {
@@ -241,13 +242,31 @@ namespace BH.UI.Components
                                 SelectedItem = type;
                                 SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
                             }
-
                         }
                     }
+
+                    if (SelectedItem is Type)
+                        m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
                 }
 
-                if (SelectedItem is Type)
-                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
+                else if (SelectedItem is Type)
+                {
+                    CustomObject component = Engine.Serialiser.Convert.FromJson(json) as CustomObject;
+                    if (component != null && component.CustomData.ContainsKey("InputParams"))
+                    {
+                        object inputParamsRecord;
+                        List<ParamInfo> inputParams = new List<ParamInfo>();
+                        if (component.CustomData.TryGetValue("InputParams", out inputParamsRecord))
+                            InputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+
+                        Type type = SelectedItem as Type;
+                        SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
+
+                        m_CompiledFunc = Engine.UI.Compute.Constructor(type, InputParams);
+                        CompileInputGetters();
+                    }
+                }
+                
             }
             catch (Exception e)
             {
