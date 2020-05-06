@@ -299,7 +299,8 @@ namespace BH.UI.Templates
                         SetItem(backendElement);
                         WasUpgraded = backendElement != null;
                     }
-                    SetItem(backendElement);
+                    else
+                        SetItem(backendElement);
                 }
 
                 // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
@@ -469,17 +470,41 @@ namespace BH.UI.Templates
             MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, DataAccessor.GetType()), method, methodInputs);
             Func<DataAccessor, object> lambda = Expression.Lambda<Func<DataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
 
-            if (!dataType.IsArray)
+            if (dataType.IsArray)
+            {
+                // If dataType is an array type, the underlying method asks for an array type
+                // Thus, we add a new node to the syntax tree that casts the List to an Array
+                MethodInfo castMethod = typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(subType.Type);
+                ParameterExpression lambdaResult = Expression.Parameter(typeof(object), "lambdaResult");
+                MethodCallExpression castExpression = Expression.Call(null, castMethod, Expression.Convert(lambdaResult, typeof(IEnumerable<>).MakeGenericType(subType.Type)));
+                Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
+
+                return (accessor) => { return castDelegate(lambda(accessor)); };
+            }
+            else if (subType.Depth == 1 && dataType.Name != "List`1" && dataType.Name != "IEnumerable`1")
+            {
+                // If we have a `DataList` that isn't actually a list, lets try to create it from teh list through the appropriate constructor
+                foreach (ConstructorInfo constructor in dataType.GetConstructors())
+                {
+                    ParameterInfo[] parameters = constructor.GetParameters();
+                    if (parameters.Count() == 1)
+                    {
+                        string paramType = parameters[0].ParameterType.Name;
+                        if (paramType == "List`1" || paramType == "IEnumerable`1")
+                        {
+                            ParameterExpression lambdaResult = Expression.Parameter(typeof(object), "lambdaResult");
+                            NewExpression castExpression = Expression.New(constructor, Expression.Convert(lambdaResult, parameters[0].ParameterType));
+                            Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
+                            return (accessor) => { return castDelegate(lambda(accessor)); };
+                        }
+                    }
+                }
+                return lambda;
+            }
+            else
                 return lambda;
             
-            // If dataType is an array type, the underlying method asks for an array type
-            // Thus, we add a new node to the syntax tree that casts the List to an Array
-            MethodInfo castMethod = typeof(Enumerable).GetMethod("ToArray").MakeGenericMethod(subType.Type);
-            ParameterExpression lambdaResult = Expression.Parameter(typeof(object), "lambdaResult");
-            MethodCallExpression castExpression = Expression.Call(null, castMethod, Expression.Convert(lambdaResult, typeof(IEnumerable<>).MakeGenericType(subType.Type)));
-            Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
-
-            return (accessor) => { return castDelegate(lambda(accessor)); };
+            
         }
 
         /*******************************************/
