@@ -376,7 +376,7 @@ namespace BH.UI.Templates
             catch (Exception e)
             {
                 RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
-                inputs = null;
+                return null;
             }
 
             return inputs.ToArray();
