@@ -62,7 +62,7 @@ namespace BHoM_UI
             BsonDocument versioning = CreateEmptyUpgradeDocument();
 
             // Collect Versioning files
-            string[] versioningFiles = Directory.GetFiles(sourceFolder, versionFileName, SearchOption.AllDirectories);
+            List<string> versioningFiles = GetVersionFiles(sourceFolder, versionFileName);
             foreach (string file in versioningFiles)
                 ReadVersioningFile(file, versioning);
 
@@ -106,6 +106,16 @@ namespace BHoM_UI
 
         /***************************************************/
 
+        private static List<string> GetVersionFiles(string sourceFolder, string versionFileName)
+        {
+            return Directory.GetDirectories(sourceFolder)
+                .SelectMany(x => Directory.GetDirectories(x))
+                .SelectMany(x => Directory.GetFiles(x, versionFileName))
+                .ToList();
+        }
+
+        /***************************************************/
+
         private static bool ReadVersioningFile(string file, BsonDocument versioning)
         {
             string json = File.ReadAllText(file);
@@ -127,6 +137,8 @@ namespace BHoM_UI
 
             if (upgrades.Contains("Property"))
                 CopyAccross(upgrades["Property"] as BsonDocument, versioning["Property"] as BsonDocument);
+
+            Console.WriteLine("Read the versioning file : " + file);
 
             return true;
         }
