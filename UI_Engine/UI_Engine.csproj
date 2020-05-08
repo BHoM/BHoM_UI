@@ -34,7 +34,7 @@
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BHoM_Adapter, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="BHoM_Adapter">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
@@ -51,7 +51,7 @@
       <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Library_Engine, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Library_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
