@@ -72,10 +72,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="UI_oM">
-      <HintPath>..\Build\UI_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\LoadAssemblies.cs" />
@@ -91,7 +87,12 @@
     <Compile Include="Query\SubType.cs" />
     <Compile Include="Query\Depth.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\UI_oM\UI_oM.csproj">
+      <Project>{50d4c1ed-c16c-4365-a742-938bf49ec4b0}</Project>
+      <Name>UI_oM</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
