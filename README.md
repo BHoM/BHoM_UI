@@ -1,55 +1,31 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-# BHoM
+[![Build status](https://ci.appveyor.com/api/projects/status/f4lrwf0x1uclsort/branch/master?svg=true)](https://ci.appveyor.com/api/projects/status/bhom_ui/branch/master)
+[![Build Status](https://dev.azure.com/BHoMBot/BHoM/_apis/build/status/BHoM_UI/BHoM_UI.CheckCore?branchName=master)](https://dev.azure.com/BHoMBot/BHoM/_build/latest?definitionId=17&branchName=master)
 
-A great place to start is reading our Wiki [here](https://github.com/BHoM/documentation/wiki) including pages like the [Structure of the BHoM](https://github.com/BHoM/documentation/wiki/Structure-of-the-BHoM) and [Using the BHoM](https://github.com/BHoM/documentation/wiki/Using-the-BHoM).
+# Core BHoM_UI Repo
 
-## Quick start ##
+This repo is part of the Buildings and Habitats object Model. 
+If you are new (_welcome!_  👋 😄)  a great place to start is on [bhom.xyz](https://bhom.xyz) or reading our [wiki here](https://github.com/BHoM/documentation/wiki) including pages like the [Structure of the BHoM](https://github.com/BHoM/documentation/wiki/Structure-of-the-BHoM) and [Using the BHoM](https://github.com/BHoM/documentation/wiki/Using-the-BHoM).
 
-Try the [installer](http://bhom.xyz/assets/installers/v2.1/BHoM%20Alpha%20v2.1.0.5%20Installer.exe) and a selection of [sample scripts](https://github.com/BHoM/samples).
+This particular repo contains the parent _BHoM UI_ defining all the base functionality necessary to expose the BHoM functionality through user interfaces.
 
-
-
-## Building the BHoM and the Toolkits from Source ##
-You will need the following to build BHoM:
-
-- Microsoft Visual Studio 2013 or higher
-- Microsoft .NET Framework 4.0 and above (included with Visual Studio 2013)
-- Note that there are no software - specific dependencies (only operating system relevant), this is specific: BHoM is a software agnostic object model.
+The BHoM UI provides a central definition of the way the BHoM is exposed to the user. This includes the list of available components (icons, names,...), the way they are saved/loaded, as well as the various menus to create/interact with them. This guarantees that the learning curve of using the BHoM from one software to another is as minimal as possible. See [BH.UI ‐ Expose Your Code to UIs](https://github.com/BHoM/documentation/wiki/BH.UI-%E2%80%90-Expose-Your-Code-to-UIs) for more details.
 
 
-### Clone and build the Foundational Core BHoM Repos
+Along with the rest of the core repositories - [BHoM](https://github.com/BHoM/BHoM), [BHoM_Engine](https://github.com/BHoM/BHoM_Engine) and [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter) – this is the basis on which all of the BHoM Toolkits are built.
 
-In the following build order:
-- [BHoM](https://github.com/BHoM/BHoM)
-- [BHoM_Datasets](https://github.com/BHoM/BHoM_Datasets)
-- [BHoM_Engine](https://github.com/BHoM/BHoM_Engine)
-- [BHoM_Adapter](https://github.com/BHoM/BHoM_Adapter)
-- [Socket_Toolkit](https://github.com/BHoM/Socket_Toolkit)
-- [Mongo_Toolkit](https://github.com/BHoM/Mongo_Toolkit)
+## Quick Start 🚀 
+
+Grab the [latest installer](https://bhom.xyz/) and a selection of [sample scripts](https://github.com/BHoM/samples).
 
 
+## Getting Started for Developers 🤖 
 
-Build as many as you like of your chosen Interop Toolkits:
-- [Revit_Toolkit](https://github.com/BHoM/Revit_Toolkit)
-- [Robot_Toolkit](https://github.com/BHoM/Robot_Toolkit)
-- [ETABS_Toolkit](https://github.com/BHoM/ETABS_Toolkit)
-- [Lusas_Toolkit](https://github.com/BHoM/Lusas_Toolkit)
-- [GSA_Toolkit](https://github.com/BHoM/GSA_Toolkit)
-- [TAS_Toolkit](https://github.com/BHoM/TAS_Toolkit)
-- [XML_Toolkit](https://github.com/BHoM/XML_Toolkit)
-
-Then build as many User Interface Repositories as you like:
-- [BHoM_UI](https://github.com/BHoM/BHoM_UI)
-- [Rhinoceros_Toolkit](https://github.com/BHoM/Rhinoceros_Toolkit) & [Grasshopper_Toolkit](https://github.com/BHoM/Grasshopper_Toolkit) (you need both)
-- [Dynamo_Toolkit](https://github.com/BHoM/Dynamo_Toolkit)
-- [Excel_Toolkit](https://github.com/BHoM/Excel_Toolkit)
+If you want to build the BHoM and the Toolkits from source, it's hopefully easy! 😄 
+Do take a look at our specific wiki pages here: [Getting Started for Developers](https://github.com/BHoM/documentation/wiki/Getting-started-for-developers)
 
 
-You are good to go! 
-
-
-
-## Want to contribute? ##
+## Want to Contribute? ##
 
 BHoM is an open-source project and would be nothing without its community. Take a look at our contributing guidelines and tips [here](https://github.com/BHoM/BHoM/blob/master/CONTRIBUTING.md).
 
