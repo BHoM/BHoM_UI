@@ -119,6 +119,20 @@ namespace BH.UI.Global
                 m_SearchMenu.PossibleItems.AddRange(items);
         }
 
+        /*************************************/
+
+        public static void RemoveHandler(string declaringType)
+        {
+            if (ItemSelected != null)
+            {
+                foreach (EventHandler<ComponentRequest> d in ItemSelected.GetInvocationList())
+                {
+                    if (d.Method.DeclaringType.FullName == declaringType)
+                        ItemSelected -= d;
+                }
+            }
+        }
+
 
         /*************************************/
         /**** Private Methods             ****/
