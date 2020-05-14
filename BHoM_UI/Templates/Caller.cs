@@ -249,32 +249,11 @@ namespace BH.UI.Templates
             try
             {
                 object obj = BH.Engine.Serialiser.Convert.FromJson(json);
-
-                CustomObject component = obj as CustomObject; // Old component, serialised only with the SelectedItem as object
+                CustomObject component = obj as CustomObject; 
+                
+                // Old component, serialised only with the SelectedItem as object
                 if (component == null)
-                {
-                    //If component failed to de-serialise, try upgrade version.
-                    if (obj == null)
-                    {
-                        json = Engine.Versioning.Convert.ToNewVersion(json);
-                        obj = BH.Engine.Serialiser.Convert.FromJson(json);
-
-                        //If component was sucessfully upgraded, show the message to inform the user.
-                        //This will happen if: Was not serialised as CustomObject (current serialisation method), failed to de-serialised orginially and was able to be upgraded.
-                        if (obj != null && !m_UpgradeMessageShown)
-                        {
-                            MessageBox.Show("BHoM 2.3 or earlier components found in this script." + Environment.NewLine +
-                                            "Automatic upgrade of components to 3.0 has been applied. Some wires may have been disconnected." + Environment.NewLine + Environment.NewLine +
-                                            "To preserve wire connectivity as well you could try upgrading to 2.4 first:" + Environment.NewLine +
-                                            "1. Close the script without saving" + Environment.NewLine +
-                                            "2. Downgrade to BHoM 2.4.beta" + Environment.NewLine +
-                                            "3. Open and save the script" + Environment.NewLine +
-                                            "4. Upgrade back to current version of BHoM and open the script again." + Environment.NewLine + Environment.NewLine +
-                                            "Note that this message will only be shown once per session of the UI.", "BHoM auto versioning");
-                            m_UpgradeMessageShown = true;
-                        }
-                    }
-
+                { 
                     SetItem(obj);
 
                     if (SelectedItem != null)
@@ -285,23 +264,7 @@ namespace BH.UI.Templates
                 // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
                 object backendElement;
                 if (component.CustomData.TryGetValue("SelectedItem", out backendElement))
-                {
-                    if (backendElement == null)
-                    {
-                        MongoDB.Bson.BsonDocument bson = Engine.Serialiser.Convert.ToBson(json);
-                        MongoDB.Bson.BsonValue item = bson["SelectedItem"];
-                        if (!item.IsBsonNull)
-                        {
-                            MongoDB.Bson.BsonDocument newVersion = Engine.Versioning.Convert.ToNewVersion(item.AsBsonDocument);
-                            if (newVersion != null)
-                                backendElement = Engine.Serialiser.Convert.FromBson(newVersion);
-                        }
-                        SetItem(backendElement);
-                        WasUpgraded = backendElement != null;
-                    }
-                    else
-                        SetItem(backendElement);
-                }
+                    SetItem(backendElement);
 
                 // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
                 // Also, if SelectedItem is null, the component will still have its input and outputs
@@ -316,13 +279,7 @@ namespace BH.UI.Templates
                     outputParams = (outputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
 
 
-                if (WasUpgraded)
-                {
-                    FindOldIndex(InputParams, inputParams);
-                    FindOldIndex(OutputParams, outputParams);
-                    ItemSelected?.Invoke(this, SelectedItem);
-                }
-                else if (backendElement == null)
+                if (backendElement == null)
                 {
                     // If the method is not found, we need to make sure that the component keeps its old inputs and outputs
                     InputParams = inputParams;
@@ -330,6 +287,13 @@ namespace BH.UI.Templates
 
                     OutputParams = outputParams;
                     CompileOutputSetters();
+                }
+                else if (!AreMatching(InputParams, inputParams) || !AreMatching(OutputParams, outputParams))
+                {
+                    FindOldIndex(InputParams, inputParams);
+                    FindOldIndex(OutputParams, outputParams);
+                    WasUpgraded = true;
+                    ItemSelected?.Invoke(this, SelectedItem);
                 }
                 
                 return true;
@@ -555,6 +519,17 @@ namespace BH.UI.Templates
         {
             if (SolutionExpired != null)
                 SolutionExpired?.Invoke(this, new EventArgs());
+        }
+
+        /*************************************/
+
+        protected bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList)
+        {
+            if (newList.Count != oldList.Count)
+                return false;
+            else
+                return newList.Zip(oldList, (a, b) => a.Name == b.Name).All(x => x); 
+
         }
 
         /*************************************/
