@@ -21,6 +21,8 @@
  */
 
 using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
@@ -126,7 +128,7 @@ namespace BH.UI.Templates
                     if (Method is MethodInfo && m_OriginalMethod != null && m_OriginalMethod.IsGenericMethod)
                     {
                         // Try to update the generic method to fit the input types
-                        Method = Compute.MakeGenericFromInputs(m_OriginalMethod, inputs.Select(x => x.GetType()).ToList());
+                        Method = Engine.Reflection.Compute.MakeGenericFromInputs(m_OriginalMethod, inputs.Select(x => x.GetType()).ToList());
                         m_CompiledFunc = Method.ToFunc();
                         return m_CompiledFunc(inputs);
                     }
@@ -143,6 +145,25 @@ namespace BH.UI.Templates
             {
                 BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
                 return null;
+            }
+        }
+
+        /*************************************/
+
+        public override string Write()
+        {
+            try
+            {
+                CustomObject component = new CustomObject();
+                component.CustomData["SelectedItem"] = (m_OriginalMethod == null) ? SelectedItem : m_OriginalMethod;
+                component.CustomData["InputParams"] = InputParams;
+                component.CustomData["OutputParams"] = OutputParams;
+                return component.ToJson();
+            }
+            catch
+            {
+                BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
+                return "";
             }
         }
 
