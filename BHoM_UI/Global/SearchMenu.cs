@@ -113,27 +113,7 @@ namespace BH.UI.Global
         protected virtual List<SearchItem> GetAllPossibleItems()
         {
             // All methods defined from the BHoM_UI
-            // Reflection is pretty slow on this one so better to just do it manually even if less elegant
-            List<SearchItem> items = new List<SearchItem>
-            {
-                new SearchItem { Item = typeof(RemoveCaller).GetMethod("Delete"), CallerType = typeof(RemoveCaller), Icon = Properties.Resources.Delete },
-                new SearchItem { Item = typeof(ExecuteCaller).GetMethod("Execute"), CallerType = typeof(ExecuteCaller), Icon = Properties.Resources.Execute },
-                new SearchItem { Item = typeof(MoveCaller).GetMethod("Move"), CallerType = typeof(MoveCaller), Icon = Properties.Resources.Move },
-                new SearchItem { Item = typeof(PullCaller).GetMethod("Pull"), CallerType = typeof(PullCaller), Icon = Properties.Resources.Pull },
-                new SearchItem { Item = typeof(PushCaller).GetMethod("Push"), CallerType = typeof(PushCaller), Icon = Properties.Resources.Push },
-                new SearchItem { Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("FromJson"), CallerType = typeof(FromJsonCaller), Icon = Properties.Resources.FromJson },
-                new SearchItem { Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("ToJson"), CallerType = typeof(ToJsonCaller), Icon = Properties.Resources.ToJson },
-                new SearchItem { Item = null, CallerType = typeof(ExplodeCaller), Icon = Properties.Resources.Explode, Text = "BH.UI.Components.ExplodeCaller.Explode" },
-                new SearchItem { Item = null, CallerType = typeof(GetPropertyCaller), Icon = Properties.Resources.BHoM_GetProperty, Text = "BH.UI.Components.GetPropertyCaller.GetProperty" },
-                new SearchItem { Item = null, CallerType = typeof(SetPropertyCaller), Icon = Properties.Resources.BHoM_SetProperty, Text = "BH.UI.Components.SetPropertyCaller.SetProperty" },
-                new SearchItem { Item = null, CallerType = typeof(CreateCustomCaller), Icon = Properties.Resources.CustomObject, Text = "BH.UI.Components.CreateCustomCaller.CreateCustom" },
-                new SearchItem { Item = typeof(CreateDictionaryCaller).GetMethod("CreateDictionary"), CallerType = typeof(CreateDictionaryCaller), Icon = Properties.Resources.Dictionary }
-            };
-            foreach (SearchItem item in items)
-            {
-                if (string.IsNullOrEmpty(item.Text) && item.Item != null)
-                    item.Text = ((MethodInfo)item.Item).ToText(true);
-            }
+            List<SearchItem> items = GetComponentItems();
 
             // All constructors for the BHoM objects
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
@@ -215,6 +195,94 @@ namespace BH.UI.Global
             }
             else
                 return null;
+        }
+
+        /*************************************/
+
+        protected List<SearchItem> GetComponentItems()
+        {
+            // Reflection is pretty slow on this one so better to just do it manually even if less elegant
+            return new List<SearchItem>
+            {
+                new SearchItem {
+                    Item = typeof(RemoveCaller).GetMethod("Remove"),
+                    CallerType = typeof(RemoveCaller),
+                    Icon = Properties.Resources.Delete,
+                    Text = "BH.Adapter.Remove"
+                },
+                new SearchItem {
+                    Item = typeof(ExecuteCaller).GetMethod("Execute"),
+                    CallerType = typeof(ExecuteCaller),
+                    Icon = Properties.Resources.Execute,
+                    Text = "BH.Adapter.Execute"
+                },
+                new SearchItem {
+                    Item = typeof(MoveCaller).GetMethod("Move"),
+                    CallerType = typeof(MoveCaller),
+                    Icon = Properties.Resources.Move,
+                    Text = "BH.Adapter.Move"
+                },
+                new SearchItem {
+                    Item = typeof(PullCaller).GetMethod("Pull"),
+                    CallerType = typeof(PullCaller),
+                    Icon = Properties.Resources.Pull,
+                    Text = "BH.Adapter.Pull"
+                },
+                new SearchItem {
+                    Item = typeof(PushCaller).GetMethod("Push"),
+                    CallerType = typeof(PushCaller),
+                    Icon = Properties.Resources.Push,
+                    Text = "BH.Adapter.Push"
+                },
+                new SearchItem {
+                    Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("FromJson"),
+                    CallerType = typeof(FromJsonCaller),
+                    Icon = Properties.Resources.FromJson,
+                    Text = "BH.Engine.FromJson"
+                },
+                new SearchItem {
+                    Item = typeof(BH.Engine.Serialiser.Convert).GetMethod("ToJson"),
+                    CallerType = typeof(ToJsonCaller),
+                    Icon = Properties.Resources.ToJson,
+                    Text = "BH.Engine.ToJson"
+                },
+                new SearchItem {
+                    Item = null,
+                    CallerType = typeof(ExplodeCaller),
+                    Icon = Properties.Resources.Explode,
+                    Text = "BH.Engine.Explode"
+                },
+                new SearchItem {
+                    Item = null,
+                    CallerType = typeof(GetPropertyCaller),
+                    Icon = Properties.Resources.BHoM_GetProperty,
+                    Text = "BH.Engine.GetProperty"
+                },
+                new SearchItem {
+                    Item = null,
+                    CallerType = typeof(SetPropertyCaller),
+                    Icon = Properties.Resources.BHoM_SetProperty,
+                    Text = "BH.Engine.SetProperty"
+                },
+                new SearchItem {
+                    Item = null,
+                    CallerType = typeof(GetInfoCaller),
+                    Icon = Properties.Resources.GetInfo,
+                    Text = "BH.Engine.GetInfo"
+                },
+                new SearchItem {
+                    Item = null,
+                    CallerType = typeof(CreateCustomCaller),
+                    Icon = Properties.Resources.CustomObject,
+                    Text = "BH.oM.CreateCustom"
+                },
+                new SearchItem {
+                    Item = typeof(CreateDictionaryCaller).GetMethod("CreateDictionary"),
+                    CallerType = typeof(CreateDictionaryCaller),
+                    Icon = Properties.Resources.Dictionary,
+                    Text = "BH.oM.CreateDictionary"
+                }
+            };
         }
 
         /*************************************/
