@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using BH.oM.Reflection.Interface;
 
 namespace BH.Engine.UI
 {
@@ -111,7 +112,7 @@ namespace BH.Engine.UI
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),
                     typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),})
-                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
+                .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && !typeof(IOutputObject).IsAssignableFrom(x));
         }
 
         /***************************************************/
@@ -119,7 +120,7 @@ namespace BH.Engine.UI
         public static IEnumerable<Type> ConstructableTypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()
-                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && !x.IsEnum && !x.IsAbstract)
+                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && !x.IsEnum && !x.IsAbstract && !typeof(IOutputObject).IsAssignableFrom(x))
                 .Where(x => x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
         }
 
