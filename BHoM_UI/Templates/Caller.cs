@@ -22,6 +22,7 @@
 
 using BH.Engine.Reflection;
 using BH.oM.Reflection;
+using BH.oM.Reflection.Interface;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+
 
 namespace BH.UI.Templates
 {
@@ -352,25 +354,36 @@ namespace BH.UI.Templates
         {
             try
             {
-                for (int i = 0; i < m_CompiledSetters.Count; i++)
+                if (result is IOutputObject)
                 {
-                    // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
-                    object output = (m_CompiledSetters.Count == 1) ? result : BH.Engine.Reflection.Query.IItem(result, i);
-
-                    try
+                    for (int i = 0; i < m_CompiledSetters.Count; i++)
                     {
-                        m_CompiledSetters[i](DataAccessor, output);
+                        m_CompiledSetters[i](DataAccessor, result.PropertyValue(OutputParams[i].Name));
                     }
-                    catch (Exception e)
+                }
+                else
+                {
+                    for (int i = 0; i < m_CompiledSetters.Count; i++)
                     {
-                        if (m_OriginalOutputTypes.Count > i && m_OriginalOutputTypes[i].IsGenericType)
+
+                        // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
+                        object output = (m_CompiledSetters.Count == 1) ? result : BH.Engine.Reflection.Query.IItem(result, i);
+
+                        try
                         {
-                            m_CompiledSetters[i] = CreateOutputAccessor(output.GetType(), 0);
                             m_CompiledSetters[i](DataAccessor, output);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            throw e;
+                            if (m_OriginalOutputTypes.Count > i && m_OriginalOutputTypes[i].IsGenericType)
+                            {
+                                m_CompiledSetters[i] = CreateOutputAccessor(output.GetType(), 0);
+                                m_CompiledSetters[i](DataAccessor, output);
+                            }
+                            else
+                            {
+                                throw e;
+                            }
                         }
                     }
                 }

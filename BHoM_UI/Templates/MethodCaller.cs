@@ -281,6 +281,18 @@ namespace BH.UI.Templates
                         }).ToList();
                     }
                 }
+                else if (Method.IsAutoExplode())
+                {
+                    PropertyInfo[] properties = ((MethodInfo)Method).ReturnType.GetProperties();
+
+                    OutputParams = properties.Select(x => new ParamInfo
+                    {
+                        Name = x.Name,
+                        DataType = x.PropertyType,
+                        Description = x.Description(),
+                        Kind = ParamKind.Output
+                    }).ToList();
+                }
                 else
                 {
                     Type nameType = Method.OutputType().UnderlyingType().Type;
