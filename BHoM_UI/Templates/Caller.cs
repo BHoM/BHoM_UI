@@ -477,7 +477,7 @@ namespace BH.UI.Templates
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
-            MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type);
+            MethodInfo method = DataAccessor.GetType().GetMethod(methodName).MakeGenericMethod(subType.Type.IsByRef ? subType.Type.GetElementType() : subType.Type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(DataAccessor), "accessor");
             ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
@@ -637,6 +637,7 @@ namespace BH.UI.Templates
         private static bool m_UpgradeMessageShown = false;
 
         /*************************************/
+
     }
 }
 
