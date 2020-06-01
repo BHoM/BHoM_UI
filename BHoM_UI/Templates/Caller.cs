@@ -55,7 +55,7 @@ namespace BH.UI.Templates
         public virtual Guid Id { get; protected set; }
 
         public virtual string Name { get; protected set; } = "Undefined";
-
+        
         public virtual string Category { get; protected set; } = "Undefined";
 
         public virtual string Description { get; protected set; } = "";
@@ -305,6 +305,12 @@ namespace BH.UI.Templates
             }
         }
 
+        /*************************************/
+
+        public virtual string GetFullName()
+        {
+           return "BH." + Category + "." + Name;
+        }
 
         /*************************************/
         /**** Private Methods             ****/
