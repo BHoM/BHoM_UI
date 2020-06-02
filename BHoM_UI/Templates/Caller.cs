@@ -305,6 +305,12 @@ namespace BH.UI.Templates
             }
         }
 
+        /*************************************/
+
+        public virtual string GetFullName()
+        {
+            return "BH." + Category + "." + Name;
+        }
 
         /*************************************/
         /**** Private Methods             ****/
