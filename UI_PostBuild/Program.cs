@@ -41,6 +41,7 @@ namespace BHoM_UI
             }
             string sourceFolder = args[0];
             string targetFolder = args[1];
+            bool onlyUpgrades = args.Any(x => x == "--onlyUpgrades");
 
             //Make sure the source and target folders exists
             if (!Directory.Exists(sourceFolder))
@@ -50,13 +51,16 @@ namespace BHoM_UI
             else
                 CleanDirectory(targetFolder);
 
-            // Copy Assemblies 
-            CopyAssemblies(sourceFolder, targetFolder);
+            if (!onlyUpgrades)
+            {
+                // Copy Assemblies 
+                CopyAssemblies(sourceFolder, targetFolder);
 
-            // Copy Datasets
-            string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets");
-            CopyDatasets(sourceFolder, targetDatasetsFolder);
-
+                // Copy Datasets
+                string targetDatasetsFolder = targetFolder.Replace(@"Assemblies", @"DataSets");
+                CopyDatasets(sourceFolder, targetDatasetsFolder);
+            }
+            
             // Create Upgrades file
             CopyUpgrades(sourceFolder, targetFolder);
         }
