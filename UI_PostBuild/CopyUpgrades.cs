@@ -126,18 +126,7 @@ namespace BHoM_UI
                 return false;
             }
 
-            if (upgrades.Contains("Namespace"))
-                CopyAccross(upgrades["Namespace"] as BsonDocument, versioning["Namespace"] as BsonDocument);
-
-            if (upgrades.Contains("Type"))
-                CopyAccross(upgrades["Type"] as BsonDocument, versioning["Type"] as BsonDocument);
-
-            if (upgrades.Contains("Method"))
-                CopyAccross(upgrades["Method"] as BsonDocument, versioning["Method"] as BsonDocument);
-
-            if (upgrades.Contains("Property"))
-                CopyAccross(upgrades["Property"] as BsonDocument, versioning["Property"] as BsonDocument);
-
+            CopyDocumentAccross(upgrades, versioning);
             Console.WriteLine("Read the versioning file : " + file);
 
             return true;
@@ -145,20 +134,45 @@ namespace BHoM_UI
 
         /***************************************************/
 
-        private static void CopyAccross(BsonDocument source, BsonDocument target)
+        private static void CopyDocumentAccross(BsonDocument source, BsonDocument target)
+        {
+            if (source.Contains("Namespace"))
+                CopySectionAccross(source["Namespace"] as BsonDocument, target["Namespace"] as BsonDocument);
+
+            if (source.Contains("Type"))
+                CopySectionAccross(source["Type"] as BsonDocument, target["Type"] as BsonDocument);
+
+            if (source.Contains("Method"))
+                CopySectionAccross(source["Method"] as BsonDocument, target["Method"] as BsonDocument);
+
+            if (source.Contains("Property"))
+                CopySectionAccross(source["Property"] as BsonDocument, target["Property"] as BsonDocument);
+        }
+
+        /***************************************************/
+
+        private static void CopySectionAccross(BsonDocument source, BsonDocument target)
         {
             if (source.Contains("ToNew"))
             {
-                BsonDocument toNew = source["ToNew"] as BsonDocument;
-                foreach (BsonElement element in toNew.Elements)
-                    ((BsonDocument)target["ToNew"]).Add(element);
+                BsonDocument toNewSource = source["ToNew"] as BsonDocument;
+                BsonDocument toNewTarget = target["ToNew"] as BsonDocument;
+                foreach (BsonElement element in toNewSource.Elements)
+                {
+                    if (!toNewTarget.Contains(element.Name))
+                        toNewTarget.Add(element);
+                }   
             }
 
             if (source.Contains("ToOld"))
             {
-                BsonDocument toOld = source["ToOld"] as BsonDocument;
-                foreach (BsonElement element in toOld.Elements)
-                    ((BsonDocument)target["ToOld"]).Add(element);
+                BsonDocument toOldSource = source["ToOld"] as BsonDocument;
+                BsonDocument toOldTarget = target["ToOld"] as BsonDocument;
+                foreach (BsonElement element in toOldSource.Elements)
+                {
+                    if (!toOldTarget.Contains(element.Name))
+                        toOldTarget.Add(element);
+                }
             }
         }
 
