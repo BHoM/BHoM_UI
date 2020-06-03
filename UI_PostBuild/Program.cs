@@ -42,13 +42,14 @@ namespace BHoM_UI
             string sourceFolder = args[0];
             string targetFolder = args[1];
             bool onlyUpgrades = args.Any(x => x == "--onlyUpgrades");
+            bool cleanTargetDir = args.Any(x => x == "--cleanTargetDir");
 
             //Make sure the source and target folders exists
             if (!Directory.Exists(sourceFolder))
                 throw new DirectoryNotFoundException("The source folder does not exists: " + sourceFolder);
             if (!Directory.Exists(targetFolder))
                 Directory.CreateDirectory(targetFolder);
-            else
+            else if (cleanTargetDir)
                 CleanDirectory(targetFolder);
 
             if (!onlyUpgrades)
