@@ -191,8 +191,15 @@ namespace BHoM_UI
 
             string upgraderFolder = upgraderFolders.OrderBy(x => x).Last();
 
-            // Save the content
+            // Get target file
             string upgraderFile = Path.Combine(upgraderFolder, "Upgrades.json");
+
+            // target file exists -> copy content accross 
+            // (only adds what is not in content already given how CopySectionAccross works)
+            if (File.Exists(upgraderFile))
+                ReadVersioningFile(upgraderFile, content);
+            
+            // Save the content
             string json = FormatJson(content.ToJson());
             File.WriteAllText(upgraderFile, json);
 
