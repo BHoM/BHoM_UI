@@ -180,14 +180,19 @@ namespace BHoM_UI
 
         private static void CreateUpgradeFile(string targetFolder, BsonDocument content)
         {
-            // Get target folder
-            string folder = Path.Combine(targetFolder, "bin");
-            if (!Directory.Exists(folder))
+            if (!Directory.Exists(targetFolder))
+            {
+                Console.WriteLine("Target folder for upgrades doesn't exist: " + targetFolder);
                 return;
+            }
+                
 
-            IEnumerable<string> upgraderFolders = Directory.GetDirectories(folder).Where(x => x.Contains(@"BHoMUpgrader"));
+            IEnumerable<string> upgraderFolders = Directory.GetDirectories(targetFolder).Where(x => x.Contains(@"BHoMUpgrader"));
             if (upgraderFolders.Count() == 0)
+            {
+                Console.WriteLine("Upgrades folder doesn't contain upgrader: " + targetFolder);
                 return;
+            }
 
             string upgraderFolder = upgraderFolders.OrderBy(x => x).Last();
 
