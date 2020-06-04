@@ -31,40 +31,40 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Adapter_oM">
-      <HintPath>..\..\BHoM_Adapter\Build\Adapter_oM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM">
-      <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Adapter">
-      <HintPath>..\..\BHoM_Adapter\Build\BHoM_Adapter.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Adapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="BHoM_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Data_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Data_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Data_oM">
-      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Geometry_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Geometry_oM, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Geometry_oM">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Library_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
@@ -74,15 +74,15 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_oM">
-      <HintPath>..\..\BHoM\Build\Reflection_oM.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Serialiser_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System">
@@ -119,7 +119,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Versioning_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Versioning_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Versioning_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase">
@@ -231,7 +231,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>call "$(TargetDir)UI_PostBuild.exe" ..\..\ "C:\ProgramData\BHoM\Assemblies" --onlyUpgrades</PostBuildEvent>
+    <PostBuildEvent>call "$(TargetDir)UI_PostBuild.exe" ..\..\ "C:\ProgramData\BHoM\Assemblies" --onlyUpgrades
+
+xcopy \"$(TargetDir)$(TargetFileName)\"  \"C:\\ProgramData\\BHoM\\Assemblies\" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
