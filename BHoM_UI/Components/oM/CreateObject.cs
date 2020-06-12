@@ -306,6 +306,22 @@ namespace BH.UI.Components
                 base.AddToMenu(menu);
         }
 
+        /*************************************/
+
+        protected override bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList, bool isInput)
+        {
+            if (isInput && SelectedItem is Type)
+            {
+                Type type = SelectedItem as Type;
+                List<PropertyInfo> props = type.GetProperties().ToList();
+                return oldList.All(x => props.Exists(p => p.Name == x.Name && p.PropertyType == x.DataType));
+            }
+            else
+            {
+                return base.AreMatching(newList, oldList, isInput);
+            }
+        }
+
 
         /*************************************/
         /**** Private Fields              ****/
