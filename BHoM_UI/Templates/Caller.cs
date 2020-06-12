@@ -288,7 +288,7 @@ namespace BH.UI.Templates
                     OutputParams = outputParams;
                     CompileOutputSetters();
                 }
-                else if (!AreMatching(InputParams, inputParams) || !AreMatching(OutputParams, outputParams))
+                else if (!AreMatching(InputParams, inputParams, true) || !AreMatching(OutputParams, outputParams, false))
                 {
                     FindOldIndex(InputParams, inputParams);
                     FindOldIndex(OutputParams, outputParams);
@@ -529,7 +529,7 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList)
+        protected virtual bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList, bool isInput)
         {
             if (newList.Count != oldList.Count)
                 return false;
