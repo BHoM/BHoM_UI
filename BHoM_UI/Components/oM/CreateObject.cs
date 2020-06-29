@@ -128,6 +128,7 @@ namespace BH.UI.Components
             else if (item is Type)
             {
                 SelectedItem = item;
+                m_OriginalMethod = null;
                 Type type = item as Type;
                 Name = type.Name;
                 Description = type.Description();
