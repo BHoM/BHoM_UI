@@ -64,9 +64,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Serialiser_Engine, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Serialiser_Engine">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
