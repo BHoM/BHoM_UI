@@ -23,6 +23,7 @@
 using BH.Engine.Serialiser;
 using BH.oM.Base;
 using BH.oM.Reflection.Debugging;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -45,14 +46,14 @@ namespace BH.Engine.UI
             try
             {
                 // Create the log item
-                CustomObject info = Engine.Base.Create.CustomObject(new Dictionary<string, object>
+                UsageLogEntry info = new UsageLogEntry
                 {
-                    { "Time", DateTime.UtcNow },
-                    { "UI", uiName },
-                    { "ComponentId", componentId.ToString() },
-                    { "Item", selectedItem },
-                    { "Events", events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error) }
-                });
+                    UI = uiName,
+                    ComponentId = componentId,
+                    SelectedItem = selectedItem,
+                    Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
+                };
+
                 string json = info.ToJson();
 
                 // Write to the log file
