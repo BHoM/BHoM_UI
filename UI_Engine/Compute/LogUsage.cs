@@ -72,19 +72,49 @@ namespace BH.Engine.UI
         {
             if (m_UsageLog == null)
             {
+                // Make sure teh folder exists
                 string logFolder = @"C:\ProgramData\BHoM\Logs";
                 if (!Directory.Exists(logFolder))
                     Directory.CreateDirectory(logFolder);
 
+                // Get rid of log files old enough to be deleted
+                RemoveDeprecatedLogs(logFolder);
+
+                // Create the new log file
                 string filePath = Path.Combine(logFolder, "Usage_" + uiName + "_" + DateTime.UtcNow.Ticks + ".log");
                 FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read);
                 m_UsageLog = new StreamWriter(stream);
 
+                // Be ready to close the file when the UI is closed
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             }
 
             return m_UsageLog;
         }
+
+        /*************************************/
+
+        private static void RemoveDeprecatedLogs(string logFolder)
+        {
+            long currentTicks = DateTime.UtcNow.Ticks;
+            List<string> logFiles = Directory.GetFiles(logFolder).Where(x => x.Contains("Usage_")).ToList(); 
+
+            foreach( string file in logFiles)
+            {
+                string[] parts = file.Split(new char[] { '_', '.' });
+                if (parts.Length >= 4)
+                {
+                    long ticks = 0;
+                    if (long.TryParse(parts.Reverse().ToList()[1], out ticks))
+                    {
+                        if (currentTicks - ticks >= m_DeprecationPeriod)
+                            File.Delete(file);
+                    }
+                }
+            }
+                
+        }
+
 
         /*************************************/
 
@@ -101,6 +131,8 @@ namespace BH.Engine.UI
         /*************************************/
 
         private static StreamWriter m_UsageLog = null;
+
+        private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
 
         /*************************************/
     }
