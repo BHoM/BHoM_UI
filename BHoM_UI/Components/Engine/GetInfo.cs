@@ -76,7 +76,7 @@ namespace BH.UI.Components
         [MultiOutput(9, "wiki", "Need more details on how to use the BHoM or how to contribute? This is the place to go.")]
         public static Output<string, string, string, List<string>, List<Type>, List<MethodInfo>, List<Type>, string, string, string> GetInfo()
         {
-            string description = "This the BHoM (Buildings and Habitats object Model), a collaborative computational development project for the built environment. "
+            string description = "This is the BHoM (Buildings and Habitats object Model), a collaborative computational development project for the built environment. "
                 + "It is a collective effort to share code and standardise the data that we use to design, everyday – across all activities and all disciplines.\n\n"
                 + "It is not an attempt to standardise exact processes – these must be flexible...\n\n"
                 + "It is also not an attempt to standardise the software we use...\n\n"
@@ -88,7 +88,7 @@ namespace BH.UI.Components
                 + "Much of the core code is written in C#. But we also have code in JavaScript, C++, Python and visual programming languages such as Grasshopper User Objects and Dynamo Custom Nodes all forming part of the BHoM.";
 
             string version = Engine.Reflection.Query.BHoMVersion();
-            string installer = "";
+            string installer = ""; //TODO: assign properly when that information is made available by the installer
 
             List<string> toolkits = Engine.Reflection.Query.BHoMAssemblyList()
                 .Select(x => x.GetName().Name.Split(new char[] { '_' }).First())
