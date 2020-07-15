@@ -204,35 +204,19 @@ namespace BH.UI.Components
                 return false;
 
             // Group the objects by type
-            Dictionary<string, List<Type>> properties = new Dictionary<string, List<Type>>();
-
             var groups = objects.Where(x => x != null).GroupBy(x => x.GetType());
-            if (groups.Count() == 0)
-                return false;
 
-            // Collect the properties types and names
-            foreach (var group in groups)
+            // Collect the output parameters
+            switch (groups.Count())
             {
-                if (typeof(IDictionary).IsAssignableFrom(group.Key))
-                    CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
-                else if (group.Key == typeof(CustomObject))
-                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
-                else
-                    CollectOutputTypes(group.Key, ref properties);
-            }
-
-            // Create the new output parameters
-            OutputParams = new List<ParamInfo>() { };
-            foreach (KeyValuePair<string, List<Type>> kvp in properties)
-            {
-                IEnumerable<Type> uniqueTypes = kvp.Value.Distinct();
-                Type commonType = uniqueTypes.Count() > 1 ? typeof(object) : uniqueTypes.FirstOrDefault();
-                OutputParams.Add(new ParamInfo
-                {
-                    DataType = commonType ?? typeof(object),
-                    Name = kvp.Key,
-                    Kind = ParamKind.Output
-                });
+                case 0:
+                    return false;
+                case 1:
+                    CollectOutputFromSingleGroup(groups.First());
+                    break;
+                default:
+                    CollectOutputFromMultipleGroups(groups);
+                    break;
             }
             PossibleOutputs = OutputParams.ToList();
 
@@ -278,6 +262,58 @@ namespace BH.UI.Components
 
         /*************************************/
         /**** Private Methods             ****/
+        /*************************************/
+
+        protected void CollectOutputFromSingleGroup(IGrouping<Type, object> group)
+        {
+            if (typeof(IDictionary).IsAssignableFrom(group.Key) || group.Key == typeof(CustomObject))
+            {
+                CollectOutputFromMultipleGroups(new List<IGrouping<Type, object>> { group });
+            }
+            else
+            {
+                OutputParams = group.Key.GetProperties().Select(property => new ParamInfo
+                {
+                    Name = property.Name,
+                    DataType = property.PropertyType,
+                    Description = property.IDescription(),
+                    Kind = ParamKind.Input
+                }).ToList();
+            }   
+        }
+
+        /*************************************/
+
+        protected void CollectOutputFromMultipleGroups(IEnumerable<IGrouping<Type, object>> groups)
+        {
+            Dictionary<string, List<Type>> properties = new Dictionary<string, List<Type>>();
+
+            // Collect the properties types and names
+            foreach (var group in groups)
+            {
+                if (typeof(IDictionary).IsAssignableFrom(group.Key))
+                    CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
+                else if (group.Key == typeof(CustomObject))
+                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
+                else
+                    CollectOutputTypes(group.Key, ref properties);
+            }
+
+            // Create the new output parameters
+            OutputParams = new List<ParamInfo>() { };
+            foreach (KeyValuePair<string, List<Type>> kvp in properties)
+            {
+                IEnumerable<Type> uniqueTypes = kvp.Value.Distinct();
+                Type commonType = uniqueTypes.Count() > 1 ? typeof(object) : uniqueTypes.FirstOrDefault();
+                OutputParams.Add(new ParamInfo
+                {
+                    DataType = commonType ?? typeof(object),
+                    Name = kvp.Key,
+                    Kind = ParamKind.Output
+                });
+            }
+        }
+
         /*************************************/
 
         protected void CollectOutputTypes(IEnumerable<IDictionary> objects, ref Dictionary<string, List<Type>> properties)
