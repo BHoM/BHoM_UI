@@ -67,7 +67,7 @@ namespace BH.UI.Components
         [MultiOutput(0, "description", "Introduction to what the BHoM is all about.")]
         [MultiOutput(1, "version", "Version of the BHoM currently running in this interface.")]
         [MultiOutput(2, "installer", "If you have used the BHoM installer, this gives you information about its exact version.")]
-        [MultiOutput(3, "toolkits", "List of toolkits available in this version of the BHoM.")]
+        [MultiOutput(3, "libraries", "List of libraries (dlls) available in this version of the BHoM.")]
         [MultiOutput(4, "types", "List of objects types available in this version of the BHoM.")]
         [MultiOutput(5, "methods", "List of methods available in this version of the BHoM.")]
         [MultiOutput(6, "adapters", "List of adapters available in this version of the BHoM.")]
@@ -77,15 +77,15 @@ namespace BH.UI.Components
         public static Output<string, string, string, List<string>, List<Type>, List<MethodInfo>, List<Type>, string, string, string> GetInfo()
         {
             string description = "This is the Buildings and Habitats object Model. A collaborative computational development project for the built environment.\n\n"
-            + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n"
+                + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n\n"
                 + "To find out more about our collective experiment go to https://bhom.xyz";
 
             string version = Engine.Reflection.Query.BHoMVersion();
             string installer = ""; //TODO: assign properly when that information is made available by the installer
 
-            List<string> toolkits = Engine.Reflection.Query.BHoMAssemblyList()
-                .Select(x => x.GetName().Name.Split(new char[] { '_' }).First())
-                .Distinct().ToList();
+            List<string> libraries = Engine.Reflection.Query.BHoMAssemblyList()
+                .Select(x => x.GetName().Name)
+                .OrderBy(x => x).ToList();
 
             List<Type> types = Engine.Reflection.Query.BHoMTypeList();
             List<MethodInfo> methods = Engine.Reflection.Query.BHoMMethodList();
@@ -100,7 +100,7 @@ namespace BH.UI.Components
                 description,
                 version,
                 installer,
-                toolkits,
+                libraries,
                 types,
                 methods,
                 adapters,
