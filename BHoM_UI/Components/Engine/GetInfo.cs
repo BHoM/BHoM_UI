@@ -76,16 +76,9 @@ namespace BH.UI.Components
         [MultiOutput(9, "wiki", "Need more details on how to use the BHoM or how to contribute? This is the place to go.")]
         public static Output<string, string, string, List<string>, List<Type>, List<MethodInfo>, List<Type>, string, string, string> GetInfo()
         {
-            string description = "This is the BHoM (Buildings and Habitats object Model), a collaborative computational development project for the built environment. "
-                + "It is a collective effort to share code and standardise the data that we use to design, everyday – across all activities and all disciplines.\n\n"
-                + "It is not an attempt to standardise exact processes – these must be flexible...\n\n"
-                + "It is also not an attempt to standardise the software we use...\n\n"
-                + "But in standardising the data but not the data-base, we provide great opportunities for efficiencies, for collaboration and most of all, to change the way we work.\n\n"
-                + "It is crafted as transdisciplinary, software-agnostic and office/region/country-invariant, and therefore would be nothing without our active community and wide range of contributors.\n\n"
-                + "The whole BHoM project uses an open-source model for project architecture, co-creation and planning. So explore, experiment and contribute to both the source code and the wiki. "
-                + "Sharing and building our code together in this open-source type approach means we can feed off and pool our disparate knowledge, experience and expertise towards a common goal – better design.\n\n"
-                + "Also, as well as creating a common language of BHoM objects - the large number of repositories contain a variety of different plugins and code to operate on BHoM objects and link the BHoM with our favourite software and tools. "
-                + "Much of the core code is written in C#. But we also have code in JavaScript, C++, Python and visual programming languages such as Grasshopper User Objects and Dynamo Custom Nodes all forming part of the BHoM.";
+            string description = "This is the Buildings and Habitats object Model. A collaborative computational development project for the built environment.\n\n"
+            + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n"
+                + "To find out more about our collective experiment go to https://bhom.xyz";
 
             string version = Engine.Reflection.Query.BHoMVersion();
             string installer = ""; //TODO: assign properly when that information is made available by the installer
@@ -120,4 +113,3 @@ namespace BH.UI.Components
         /*************************************/
     }
 }
-
