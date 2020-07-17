@@ -79,6 +79,9 @@ namespace BH.Engine.UI
                 if (!Directory.Exists(logFolder))
                     Directory.CreateDirectory(logFolder);
 
+                // Send the previous logs to the central database
+                SendLogsToDatabase();
+
                 // Get rid of log files old enough to be deleted
                 RemoveDeprecatedLogs(logFolder);
 
@@ -117,6 +120,14 @@ namespace BH.Engine.UI
                 
         }
 
+        /*************************************/
+
+        private static void SendLogsToDatabase()
+        {
+            List<Type> candidates = Reflection.Query.AdapterTypeList().Where(x => x.Name == "BHoMAnalyticsAdapter").ToList();
+            if (candidates.Count == 1)
+                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(candidates.First().TypeHandle);
+        }
 
         /*************************************/
 
