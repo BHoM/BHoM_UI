@@ -40,6 +40,8 @@ namespace BH.oM.UI
 
         public virtual string UI { get; set; } = "";
 
+        public virtual string BHoMVersion { get; set; } = "";
+
         public virtual Guid ComponentId { get; set; } = Guid.Empty;
 
         public virtual object SelectedItem { get; set; } = null;

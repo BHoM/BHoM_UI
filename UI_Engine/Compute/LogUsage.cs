@@ -49,6 +49,7 @@ namespace BH.Engine.UI
                 UsageLogEntry info = new UsageLogEntry
                 {
                     UI = uiName,
+                    BHoMVersion = BHoMVersion(),
                     ComponentId = componentId,
                     SelectedItem = selectedItem,
                     Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
@@ -126,12 +127,24 @@ namespace BH.Engine.UI
                 m_UsageLog.Close();
         }
 
+        /*************************************/
+
+        public static string BHoMVersion()
+        {
+            if (m_BHoMVersion == null)
+                m_BHoMVersion = Engine.Reflection.Query.BHoMVersion();
+
+            return m_BHoMVersion;
+        }
+
 
         /*************************************/
         /**** Static Fields               ****/
         /*************************************/
 
         private static StreamWriter m_UsageLog = null;
+
+        private static string m_BHoMVersion = null;
 
         private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
 
