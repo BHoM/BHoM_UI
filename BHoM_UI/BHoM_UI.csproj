@@ -151,6 +151,7 @@
     <Compile Include="Components\oM\CreateType.cs" />
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
+    <Compile Include="Global\Initialisation.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
     <Compile Include="Global\SearchMenu.cs" />
     <Compile Include="Global\SearchMenu_WinForm.cs" />

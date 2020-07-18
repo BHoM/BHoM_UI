@@ -81,7 +81,12 @@ namespace BH.UI.Templates
 
         public Caller()
         {
-            Engine.UI.Compute.LoadAssemblies();
+            if (!m_Initialised)
+            {
+                m_Initialised = true;
+                Engine.UI.Compute.LoadAssemblies();
+                Global.Initialisation.Activate();
+            }
         }
 
 
@@ -641,6 +646,7 @@ namespace BH.UI.Templates
         protected List<Type> m_OriginalOutputTypes = new List<Type>();
 
         private static bool m_UpgradeMessageShown = false;
+        private static bool m_Initialised = false;
 
         /*************************************/
 
