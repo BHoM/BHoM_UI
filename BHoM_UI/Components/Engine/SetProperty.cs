@@ -83,7 +83,7 @@ namespace BH.UI.Components
                         {
                             PropertyInfo propInfo = objType.GetProperty(propName);
                             if (propInfo != null)
-                                m_CompiledGetters[2] = CreateInputAccessor(propInfo.PropertyType, 2);
+                                m_CompiledGetters[2] = Engine.UI.Create.CreateInputAccessor(DataAccessor.GetType(), propInfo.PropertyType, 2);
                         }
                     }
 

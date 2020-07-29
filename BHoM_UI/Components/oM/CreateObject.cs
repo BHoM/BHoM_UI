@@ -76,30 +76,6 @@ namespace BH.UI.Components
 
 
         /*************************************/
-        /**** Public Methods              ****/
-        /*************************************/
-
-        public void SetInputs(List<string> names, List<Type> types = null)
-        {
-            if (types == null || names.Count != types.Count)
-            {
-                Engine.Reflection.Compute.RecordWarning("The list length for names and types does not match. Inputs are set, but <types> variable will be ignored.");
-                types = new List<Type>(new Type[names.Count]);
-            }
-
-            InputParams = new List<ParamInfo>();
-            for (int i = 0; i < names.Count; i++)
-                AddInput(i, names[i], types[i]);
-
-            if (SelectedItem is Type)
-                m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
-
-            CompileInputGetters();
-            CompileOutputSetters();
-        }
-
-
-        /*************************************/
         /**** Override Methods            ****/
         /*************************************/
 
@@ -305,22 +281,6 @@ namespace BH.UI.Components
                 m_InputSelector.AddParamList(menu);
             else
                 base.AddToMenu(menu);
-        }
-
-        /*************************************/
-
-        protected override bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList, bool isInput)
-        {
-            if (isInput && SelectedItem is Type)
-            {
-                Type type = SelectedItem as Type;
-                List<PropertyInfo> props = type.GetProperties().ToList();
-                return oldList.All(x => props.Exists(p => p.Name == x.Name && p.PropertyType == x.DataType));
-            }
-            else
-            {
-                return base.AreMatching(newList, oldList, isInput);
-            }
         }
 
 

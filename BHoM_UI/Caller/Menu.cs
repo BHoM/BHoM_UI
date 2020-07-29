@@ -20,44 +20,48 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.Reflection;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.Reflection;
+using BH.Engine.Serialiser;
+using System.Windows.Forms;
+using BH.oM.Base;
+using System.Collections;
 
 namespace BH.UI.Templates
 {
-    public abstract class DataAccessor
+    public abstract partial class Caller
     {
         /*************************************/
-        /**** Input Getter Methods        ****/
+        /**** Public Methods              ****/
         /*************************************/
 
-        public abstract T GetDataItem<T>(int index);
-
-        /*************************************/
-
-        public abstract List<T> GetDataList<T>(int index);
-
-        /*************************************/
-
-        public abstract List<List<T>> GetDataTree<T>(int index);
-
-
-        /*************************************/
-        /**** Output Setter Methods       ****/
-        /*************************************/
-
-        public abstract bool SetDataItem<T>(int index, T data);
+        public virtual void AddToMenu(ToolStripDropDown menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
 
         /*************************************/
 
-        public abstract bool SetDataList<T>(int index, IEnumerable<T> data);
+        public virtual void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
 
         /*************************************/
 
-        public abstract bool SetDataTree<T>(int index, IEnumerable<IEnumerable<T>> data);
+        public virtual void AddToMenu(object menu)
+        {
+            if (Selector != null && SelectedItem == null)
+                Selector.AddToMenu(menu);
+        }
 
         /*************************************/
     }
