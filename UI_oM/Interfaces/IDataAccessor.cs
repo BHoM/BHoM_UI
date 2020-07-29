@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,27 +28,38 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class ParamInfo : BHoMObject
+    public interface IDataAccessor
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        /*************************************/
+        /**** Input Getter Methods        ****/
+        /*************************************/
 
-        public virtual Type DataType { get; set; } = null;
+        T GetDataItem<T>(int index);
 
-        public virtual string Description { get; set; } = "";
+        /*************************************/
 
-        public virtual ParamKind Kind { get; set; } = ParamKind.Unknown;
+        List<T> GetDataList<T>(int index);
 
-        public virtual bool HasDefaultValue { get; set; } = false;
+        /*************************************/
 
-        public virtual object DefaultValue { get; set; } = null;
+        List<List<T>> GetDataTree<T>(int index);
 
-        public virtual bool IsRequired { get; set; } = false;
 
-        public virtual bool IsSelected { get; set; } = true;
+        /*************************************/
+        /**** Output Setter Methods       ****/
+        /*************************************/
 
-        /***************************************************/
+        bool SetDataItem<T>(int index, T data);
+
+        /*************************************/
+
+        bool SetDataList<T>(int index, IEnumerable<T> data);
+
+        /*************************************/
+
+        bool SetDataTree<T>(int index, IEnumerable<IEnumerable<T>> data);
+
+        /*************************************/
     }
 }
 

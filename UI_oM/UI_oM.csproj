@@ -57,6 +57,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentRequest.cs" />
+    <Compile Include="Interfaces\IDataAccessor.cs" />
+    <Compile Include="Updates\OutputsUpdate.cs" />
+    <Compile Include="Updates\InputsUpdate.cs" />
+    <Compile Include="Updates\ParamReplaced.cs" />
+    <Compile Include="Updates\ParamMoved.cs" />
+    <Compile Include="Updates\ParamRemoved.cs" />
+    <Compile Include="Updates\ParamAdded.cs" />
+    <Compile Include="Interfaces\IParamUpdate.cs" />
+    <Compile Include="Interfaces\IUpdate.cs" />
+    <Compile Include="Updates\ComponentUpdate.cs" />
+    <Compile Include="Updates\CallerUpdate.cs" />
+    <Compile Include="Updates\CallerUpdateCause.cs" />
     <Compile Include="Interfaces\IInitialisationSettings.cs" />
     <Compile Include="Interfaces\ISettings.cs" />
     <Compile Include="UsageLogEntry.cs" />
