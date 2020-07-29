@@ -23,33 +23,16 @@
 using BH.oM.Base;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class ParamInfo : BHoMObject
+    public interface IUpdate
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
 
-        public virtual Type DataType { get; set; } = null;
-
-        public virtual string Description { get; set; } = "";
-
-        public virtual ParamKind Kind { get; set; } = ParamKind.Unknown;
-
-        public virtual bool HasDefaultValue { get; set; } = false;
-
-        public virtual object DefaultValue { get; set; } = null;
-
-        public virtual bool IsRequired { get; set; } = false;
-
-        public virtual bool IsSelected { get; set; } = true;
-
-        /***************************************************/
     }
 }
 
