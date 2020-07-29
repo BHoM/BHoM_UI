@@ -69,7 +69,7 @@ namespace BH.UI.Components
                 if (id != m_AdapterId)
                 {
                     m_AdapterId = id;
-                    adapter.DataUpdated += (sender, e) => OnDataUpdated();
+                    adapter.DataUpdated += (sender, e) => ExpireSolution();
                 }
             }
 

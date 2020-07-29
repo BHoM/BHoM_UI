@@ -262,7 +262,7 @@ namespace BH.UI.Templates
                     List<OutputAttribute> attributes = Method.OutputAttributes();
                     if (subTypes.Length == attributes.Count)
                     {
-                        OutputParams = Method.OutputAttributes().Select((x, i) => new ParamInfo
+                        OutputParams = attributes.Select((x, i) => new ParamInfo
                         {
                             Name = x.Name,
                             DataType = subTypes[i],
