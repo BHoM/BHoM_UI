@@ -85,7 +85,8 @@ namespace BH.UI.Templates
                     }
                     catch (Exception e)
                     {
-                        if (m_OriginalInputTypes.Count > i && m_OriginalInputTypes[i].IsGenericType)
+                        Type originalInputType = InputType(m_OriginalItem, i);
+                        if (originalInputType != null && originalInputType.IsGenericType)
                         {
                             UpdateInputGenericType(i);
                             input = m_CompiledGetters[i](DataAccessor);
@@ -124,9 +125,10 @@ namespace BH.UI.Templates
                     }
                     catch (Exception e)
                     {
-                        if (m_OriginalOutputTypes.Count > i && m_OriginalOutputTypes[i].IsGenericType)
+                        Type originalOutputType = OutputType(m_OriginalItem, i);
+                        if (originalOutputType != null && originalOutputType.IsGenericType)
                         {
-                            m_CompiledSetters[i] = Engine.UI.Create.CreateOutputAccessor(DataAccessor.GetType(), output.GetType(), 0);
+                            m_CompiledSetters[i] = Engine.UI.Create.OutputAccessor(DataAccessor.GetType(), output.GetType(), 0);
                             m_CompiledSetters[i](DataAccessor, output);
                         }
                         else
@@ -150,7 +152,7 @@ namespace BH.UI.Templates
         protected void UpdateInputGenericType(int index)
         {
             Type rawType = typeof(object);
-            switch (m_OriginalInputTypes[index].UnderlyingType().Depth)
+            switch (InputType(m_OriginalItem, index).UnderlyingType().Depth)
             {
                 case 0:
                     object raw = DataAccessor.GetDataItem<object>(index);
@@ -175,7 +177,48 @@ namespace BH.UI.Templates
                     break;
             }
 
-            m_CompiledGetters[index] = Engine.UI.Create.CreateInputAccessor(DataAccessor.GetType(), rawType, index);
+            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(DataAccessor.GetType(), rawType, index);
+        }
+
+        /*************************************/
+
+        protected Type InputType(object item, int index)
+        {
+            if (item is MethodBase)
+            {
+                ParameterInfo[] parameters = ((MethodBase)item).GetParameters();
+                if (parameters.Count() > index)
+                    return parameters[index].ParameterType;
+            }
+            else if (item is Type)
+            {
+                PropertyInfo[] properties = ((Type)item).GetProperties();
+                if (properties.Count() > index)
+                    return properties[index].PropertyType;
+            }
+
+            return null;
+        }
+
+        /*************************************/
+
+        protected Type OutputType(object item, int index)
+        {
+            if (item is MethodBase)
+            {
+                MethodBase method = item as MethodBase;
+                if (method.IsMultipleOutputs())
+                {
+                    Type[] types = method.OutputType().GenericTypeArguments;
+                    return (types.Count() > index) ? null : types[index];
+                }
+                else
+                    return method.OutputType();
+            }
+            else if (item is Type)
+                return item as Type;
+            else
+                return null;
         }
 
         /*************************************/

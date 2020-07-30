@@ -132,6 +132,10 @@
     <Compile Include="Caller\Read.cs" />
     <Compile Include="Caller\Compile.cs" />
     <Compile Include="Caller\RecordError.cs" />
+    <Compile Include="Caller\SetParamSelectionMenu.cs" />
+    <Compile Include="Caller\SetOutputs.cs" />
+    <Compile Include="Caller\SetInputs.cs" />
+    <Compile Include="Caller\SetComponentDetails.cs" />
     <Compile Include="Caller\Write.cs" />
     <Compile Include="Caller\SetItem.cs" />
     <Compile Include="Caller\Run.cs" />

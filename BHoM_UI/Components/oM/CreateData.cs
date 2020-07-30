@@ -84,18 +84,14 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        public override bool SetItem(object item)
+        protected override void SetComponentDetails()
         {
-            if (!base.SetItem(item))
-                return false;
-
-            if (FileName == null)
-                return false;
-
-            Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
-            Name = FileName.Split(new char[] { '\\' }).Last();
-            Description = BH.Engine.Library.Query.SourceAndDisclaimer(FileName);
-            return true;
+            if (FileName != null)
+            {
+                Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
+                Name = FileName.Split(new char[] { '\\' }).Last();
+                Description = BH.Engine.Library.Query.SourceAndDisclaimer(FileName);
+            }
         }
 
         /*************************************/

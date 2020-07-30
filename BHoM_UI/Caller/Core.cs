@@ -140,10 +140,11 @@ namespace BH.UI.Templates
         /**** Private Fields              ****/
         /*************************************/
 
+        protected Func<object[], object> m_CompiledFunc = null;
         protected List<Func<IDataAccessor, object>> m_CompiledGetters = new List<Func<IDataAccessor, object>>();
         protected List<Func<IDataAccessor, object, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
-        protected List<Type> m_OriginalInputTypes = new List<Type>();
-        protected List<Type> m_OriginalOutputTypes = new List<Type>();
+
+        protected object m_OriginalItem = null;
 
         private static bool m_Initialised = false;
 

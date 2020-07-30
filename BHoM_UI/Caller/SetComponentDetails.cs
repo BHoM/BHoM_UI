@@ -38,53 +38,56 @@ namespace BH.UI.Templates
     public abstract partial class Caller
     {
         /*************************************/
-        /**** Private Methods             ****/
+        /**** Protected Methods           ****/
         /*************************************/
 
-        protected virtual void CompileInputGetters()
+        protected virtual void SetComponentDetails()
         {
-            if (DataAccessor == null)
-                return;
-
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledGetters = new List<Func<IDataAccessor, object>>();
-
-            for (int index = 0; index < InputParams.Count; index++)
-            {
-                ParamInfo param = InputParams[index];
-                Func<IDataAccessor, object> func = Engine.UI.Create.InputAccessor(accessorType, param.DataType, index);
-                m_CompiledGetters.Add(func);
-            }
+            SetComponentDetails(SelectedItem as dynamic);
         }
 
         /*************************************/
-
-        protected virtual void CompileOutputSetters()
-        {
-            if (DataAccessor == null)
-                return;
-
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
-
-            for (int index = 0; index < OutputParams.Count; index++)
-            {
-                ParamInfo param = OutputParams[index];
-                Func<IDataAccessor, object, bool> function = Engine.UI.Create.OutputAccessor(accessorType, param.DataType, index);
-                m_CompiledSetters.Add(function);
-            }
-        }
-
+        /**** Targeted Methods            ****/
         /*************************************/
 
-        protected virtual Func<object[], object> CompileMethod()
+        protected virtual void SetComponentDetails(MethodBase method)
         {
-            if (SelectedItem is MethodBase)
-                return ((MethodBase)SelectedItem).ToFunc();
-            else if (SelectedItem is Type)
-                return Engine.UI.Compute.Constructor(SelectedItem as Type, InputParams);
+            if (method == null)
+                return;
+
+            // Set component name
+            if (method is MethodInfo)
+                Name = method.Name;
+            else if (method is ConstructorInfo)
+                Name = method.DeclaringType.Name;
             else
-                return null;
+                Name = "UnknownMethod";
+
+            // Set description
+            Description = method.Description();
+
+            // Set Category
+            Category = "Other";
+            string nameSpace = method.DeclaringType.Namespace;
+            if (nameSpace != null)
+                Category = "Global";
+            if (nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
+                Category = nameSpace.Split('.')[1];
+        }
+
+        /*************************************/
+
+        protected virtual void SetComponentDetails(Type type)
+        {
+            Name = type.Name;
+            Description = type.Description();
+        }
+
+        /*************************************/
+
+        protected virtual void SetComponentDetails(object item)
+        {
+            // Nothing to do
         }
 
         /*************************************/

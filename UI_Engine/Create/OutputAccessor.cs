@@ -38,7 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Func<IDataAccessor, object, bool> CreateOutputAccessor(Type accessorType, Type dataType, int index)
+        public static Func<IDataAccessor, object, bool> OutputAccessor(Type accessorType, Type dataType, int index)
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";

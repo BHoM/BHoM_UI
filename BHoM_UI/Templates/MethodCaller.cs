@@ -72,49 +72,6 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public override bool SetItem(object method)
-        {
-            if (!base.SetItem(method))
-                return false;
-
-            if (Method == null)
-                return false;
-
-            m_OriginalMethod = method as MethodInfo;
-            m_OriginalInputTypes = new List<Type>();
-            m_OriginalOutputTypes = new List<Type>();
-            if (m_OriginalMethod != null)
-            {
-                ParameterInfo[] parameters = m_OriginalMethod.GetParameters();
-                if (parameters.Count() > 0)
-                    m_OriginalInputTypes = parameters.Select(x => x.ParameterType).ToList();
-
-                Type outputType = m_OriginalMethod.OutputType();
-                if (m_OriginalMethod.IsMultipleOutputs())
-                    m_OriginalOutputTypes = outputType.GetGenericArguments().ToList();
-                else
-                    m_OriginalOutputTypes = new List<Type> { outputType };
-            }
-
-            if (Method is MethodInfo)
-                Method = ((MethodInfo)Method).MakeFromGeneric();
-
-            SetName();
-            SetCategory();
-            SetDescription();
-
-            SetInputParams();
-            SetOutputParams();
-
-            SetDelegate();
-            CompileInputGetters();
-            CompileOutputSetters();
-
-            return true;
-        }
-
-        /*************************************/
-
         public override object Run(object[] inputs)
         {
             if (m_CompiledFunc != null)
@@ -125,10 +82,11 @@ namespace BH.UI.Templates
                 }
                 catch(InvalidCastException e)
                 {
-                    if (Method is MethodInfo && m_OriginalMethod != null && m_OriginalMethod.IsGenericMethod)
+                    MethodInfo originalMethod = m_OriginalItem as MethodInfo;
+                    if (Method is MethodInfo && originalMethod != null && originalMethod.IsGenericMethod)
                     {
                         // Try to update the generic method to fit the input types
-                        Method = Engine.Reflection.Compute.MakeGenericFromInputs(m_OriginalMethod, inputs.Select(x => x.GetType()).ToList());
+                        Method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
                         m_CompiledFunc = Method.ToFunc();
                         return m_CompiledFunc(inputs);
                     }
@@ -154,8 +112,10 @@ namespace BH.UI.Templates
         {
             try
             {
+                MethodInfo originalMethod = m_OriginalItem as MethodInfo;
+
                 CustomObject component = new CustomObject();
-                component.CustomData["SelectedItem"] = (m_OriginalMethod == null) ? SelectedItem : m_OriginalMethod;
+                component.CustomData["SelectedItem"] = (originalMethod == null) ? SelectedItem : originalMethod;
                 component.CustomData["InputParams"] = InputParams;
                 component.CustomData["OutputParams"] = OutputParams;
                 return component.ToJson();
@@ -172,141 +132,12 @@ namespace BH.UI.Templates
         /**** Private Methods             ****/
         /*************************************/
 
-        protected virtual void SetName()
-        {
-            if (Method == null)
-                return;
-
-            if (Method is MethodInfo)
-                Name = Method.Name;
-            else if (Method is ConstructorInfo)
-                Name = Method.DeclaringType.Name;
-            else
-                Name = "UnknownMethod";
-        }
-
-        /*************************************/
-
-        protected virtual void SetDescription()
-        {
-            if (Method != null)
-                Description = Method.Description();
-        }
-
-        /*************************************/
-
-        protected virtual void SetCategory()
-        {
-            if (Method != null && Category == "Undefined")
-            {
-                Category = "Other";
-                string nameSpace = Method.DeclaringType.Namespace;
-                if (nameSpace != null)
-                    Category = "Global";
-                if (nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
-                    Category = nameSpace.Split('.')[1];
-            }
-        }
-
-        /*************************************/
-
-        public virtual void SetInputParams()
-        {
-            if (Method == null)
-                InputParams = new List<ParamInfo>();
-            else
-            {
-                Dictionary<string, string> descriptions = Method.InputDescriptions();
-                InputParams = Method.GetParameters().Select(x => new ParamInfo
-                {
-                    Name = x.Name,
-                    DataType = x.ParameterType,
-                    Description = descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "",
-                    Kind = ParamKind.Input,
-                    HasDefaultValue = x.HasDefaultValue,
-                    DefaultValue = x.DefaultValue
-                }).ToList();
-                if (Method is MethodInfo && !Method.IsStatic)
-                {
-                    InputParams.Insert(0, new ParamInfo
-                    {
-                        Name = Method.DeclaringType.Name.ToLower(),
-                        DataType = Method.DeclaringType,
-                        Description = "",
-                        Kind = ParamKind.Input,
-                        HasDefaultValue = false,
-                        DefaultValue = System.DBNull.Value
-                    });
-                }
-            }
-        }
-
-        /*************************************/
-
-        public virtual void SetDelegate()
-        {
-            m_CompiledFunc = Method.ToFunc();
-        }
-
-        /*************************************/
-
-        public virtual void SetOutputParams()
-        {
-            if (Method == null)
-                OutputParams = new List<ParamInfo>();
-            else
-            {
-                if (Method.IsMultipleOutputs())
-                {
-                    Type[] subTypes = Method.OutputType().GenericTypeArguments;
-                    List<OutputAttribute> attributes = Method.OutputAttributes();
-                    if (subTypes.Length == attributes.Count)
-                    {
-                        OutputParams = attributes.Select((x, i) => new ParamInfo
-                        {
-                            Name = x.Name,
-                            DataType = subTypes[i],
-                            Description = x.Description,
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
-                    else
-                    {
-                        OutputParams = subTypes.Select(x => new ParamInfo
-                        {
-                            Name = x.UnderlyingType().Type.Name.Substring(0, 1),
-                            DataType = x,
-                            Description = "",
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
-                }
-                else
-                {
-                    Type nameType = Method.OutputType().UnderlyingType().Type;
-                    if (nameType == typeof(void))
-                        return;
-                    string name = Method.OutputName();
-                    OutputParams = new List<ParamInfo> {
-                        new ParamInfo
-                        {
-                            Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
-                            DataType = Method.OutputType(),
-                            Description = Method.OutputDescription(),
-                            Kind = ParamKind.Output
-                        }
-                    };
-                }
-            }
-        }
-
 
         /*************************************/
         /**** Private Fields              ****/
         /*************************************/
 
-        protected Func<object[], object> m_CompiledFunc = null;
-        protected MethodInfo m_OriginalMethod = null;
+        
 
         /*************************************/
     }

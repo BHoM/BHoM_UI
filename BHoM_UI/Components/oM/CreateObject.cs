@@ -95,40 +95,6 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        public override bool SetItem(object item)
-        {
-            if (item is MethodBase)
-            {
-                return base.SetItem(item);
-            }
-            else if (item is Type)
-            {
-                SelectedItem = item;
-                m_OriginalMethod = null;
-                Type type = item as Type;
-                Name = type.Name;
-                Description = type.Description();
-
-                if (type.IsGenericTypeDefinition)
-                    type = type.MakeFromGeneric();
-
-                object instance = Activator.CreateInstance(type);  
-                string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
-                IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
-                InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
-                OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
-
-                SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
-
-                m_CompiledFunc = Engine.UI.Compute.Constructor(type, InputParams);
-                CompileInputGetters();
-                CompileOutputSetters();
-            }
-            return true;
-        }
-
-        /*************************************/
-
         private void SetInputSelectionMenu(Type type, IEnumerable<string> selectedProperties)
         {
             object instance = Activator.CreateInstance(type);
