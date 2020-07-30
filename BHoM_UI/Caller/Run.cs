@@ -81,7 +81,10 @@ namespace BH.UI.Templates
                     object input = null;
                     try
                     {
-                        input = m_CompiledGetters[i](DataAccessor);
+                        if (InputParams[i].IsSelected)
+                            input = m_CompiledGetters[i](DataAccessor);
+                        else
+                            input = InputParams[i].DefaultValue;
                     }
                     catch (Exception e)
                     {

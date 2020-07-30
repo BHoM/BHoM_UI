@@ -128,7 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caller\Input_CRUD.cs" />
-    <Compile Include="Caller\Menu.cs" />
+    <Compile Include="Caller\AddToMenu.cs" />
     <Compile Include="Caller\Read.cs" />
     <Compile Include="Caller\Compile.cs" />
     <Compile Include="Caller\RecordError.cs" />

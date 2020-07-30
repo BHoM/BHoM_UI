@@ -40,13 +40,6 @@ namespace BH.UI.Components
     public class CreateObjectCaller : Caller
     {
         /*************************************/
-        /**** Public Events               ****/
-        /*************************************/
-
-        public event EventHandler<Tuple<ParamInfo, bool>> InputToggled;
-
-
-        /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
@@ -77,33 +70,6 @@ namespace BH.UI.Components
 
         /*************************************/
         /**** Override Methods            ****/
-        /*************************************/
-
-        private void SetInputSelectionMenu(Type type, IEnumerable<string> selectedProperties)
-        {
-            object instance = Activator.CreateInstance(type);
-            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
-
-            m_InputSelector = new ParamSelectorMenu(properties.Select(x => new Tuple<ParamInfo, bool>(x, selectedProperties.Contains(x.Name))).ToList());
-            m_InputSelector.ParamToggled += M_InputSelector_InputToggled;
-        }
-
-        /*************************************/
-
-        private void M_InputSelector_InputToggled(object sender, Tuple<ParamInfo, bool> e)
-        {
-            if (e.Item2)
-            {
-                AddInput(InputParams.Count, e.Item1.Name, e.Item1.DataType);
-                if (SelectedItem is Type)
-                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
-            }   
-            else
-                RemoveInput(e.Item1.Name);
-
-            InputToggled?.Invoke(this, e);
-        }
-
         /*************************************/
 
         public override bool AddInput(int index, string name, Type type = null)
@@ -167,7 +133,7 @@ namespace BH.UI.Components
 
                                 // Set the type item and the selection menu
                                 SelectedItem = type;
-                                SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
+                                SetInputSelectionMenu();
                             }
                         }
                     }
@@ -187,7 +153,7 @@ namespace BH.UI.Components
                             InputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
 
                         Type type = SelectedItem as Type;
-                        SetInputSelectionMenu(type, InputParams.Select(x => x.Name));
+                        SetInputSelectionMenu();
 
                         m_CompiledFunc = Engine.UI.Compute.Constructor(type, InputParams);
                         CompileInputGetters();
@@ -204,41 +170,8 @@ namespace BH.UI.Components
         }
 
         /*************************************/
-
-        public override void AddToMenu(ToolStripDropDown menu)
-        {
-            if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
-        /*************************************/
-
-        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
-        {
-            if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
-        /*************************************/
-
-        public override void AddToMenu(object menu)
-        {
-            if (SelectedItem != null && m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
-
-        /*************************************/
         /**** Private Fields              ****/
         /*************************************/
-
-        ParamSelectorMenu m_InputSelector;
 
         /*************************************/
     }

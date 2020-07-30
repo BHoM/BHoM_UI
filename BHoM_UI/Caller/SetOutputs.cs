@@ -44,7 +44,7 @@ namespace BH.UI.Templates
 
         protected virtual void SetOutputs()
         {
-            SetInputs(SelectedItem as dynamic);
+            SetOutputs(SelectedItem as dynamic);
         }
 
 

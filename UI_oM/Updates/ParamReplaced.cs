@@ -38,7 +38,7 @@ namespace BH.oM.UI
 
         public int Index { get; set; } = 0;
 
-        public ParamInfo NewParam { get; set; } = null;
+        public ParamInfo Param { get; set; } = null;
 
         public ParamInfo OldParam { get; set; } = null;
 

@@ -38,7 +38,11 @@ namespace BH.oM.UI
 
         public CallerUpdateCause Cause { get; set; } = CallerUpdateCause.Unknown;
 
-        public List<IUpdate> OutputTypes { get; set; } = new List<IUpdate>();
+        public ComponentUpdate ComponentUpdate { get; set; } = null;
+
+        public List<IParamUpdate> InputUpdates { get; set; } = new List<IParamUpdate>();
+
+        public List<IParamUpdate> OutputUpdates { get; set; } = new List<IParamUpdate>();
 
         /***************************************************/
     }

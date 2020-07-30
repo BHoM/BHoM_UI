@@ -37,7 +37,9 @@ namespace BH.oM.UI
         Unknown = 0,
         ItemSelected,
         ReadFromSave,
-        ParamSelection
+        InputSelection,
+        OutputSelection,
+        UpgradedVersion
     }
 }
 

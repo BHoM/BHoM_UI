@@ -44,14 +44,28 @@ namespace BH.UI.Templates
 
         protected virtual void SetInputSelectionMenu()
         {
-            
+            m_InputSelector = new ParamSelectorMenu(InputParams);
+            m_InputSelector.SelectionChanged += (sender, e) =>
+            {
+                Modified?.Invoke(this, new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.InputSelection
+                });
+            };
         }
 
         /*************************************/
 
         protected virtual void SetOutputSelectionMenu()
         {
-
+            m_OutputSelector = new ParamSelectorMenu(OutputParams);
+            m_OutputSelector.SelectionChanged += (sender, e) =>
+            {
+                Modified?.Invoke(this, new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.OutputSelection
+                });
+            };
         }
 
         /*************************************/

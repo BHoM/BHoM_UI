@@ -30,13 +30,15 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public interface IParamUpdate: IUpdate
+    public interface IParamUpdate : IUpdate
     {
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
 
         int Index { get; set; }
+
+        ParamInfo Param { get; set; }
 
         /***************************************************/
     }

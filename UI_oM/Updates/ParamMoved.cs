@@ -40,7 +40,7 @@ namespace BH.oM.UI
 
         public int OldIndex { get; set; } = 0;
 
-        public override string Name { get; set; } = "";
+        public ParamInfo Param { get; set; } = null;
 
         /***************************************************/
     }
