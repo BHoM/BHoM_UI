@@ -30,7 +30,7 @@ using BH.Engine.Base;
 
 namespace BH.UI.Components
 {
-    public class SetPropertyCaller : MethodCaller
+    public class SetPropertyCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

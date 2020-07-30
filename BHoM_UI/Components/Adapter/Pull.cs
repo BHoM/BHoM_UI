@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class PullCaller : MethodCaller
+    public class PullCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

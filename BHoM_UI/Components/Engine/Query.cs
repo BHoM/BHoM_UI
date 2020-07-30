@@ -30,7 +30,7 @@ using System.Reflection;
 
 namespace BH.UI.Components
 {
-    public class QueryCaller : MethodCaller
+    public class QueryCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

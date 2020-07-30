@@ -110,6 +110,42 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public virtual object Run(object[] inputs)
+        {
+            if (m_CompiledFunc != null)
+            {
+                try
+                {
+                    return m_CompiledFunc(inputs);
+                }
+                catch (InvalidCastException e)
+                {
+                    MethodInfo originalMethod = m_OriginalItem as MethodInfo;
+                    if (originalMethod != null && originalMethod.IsGenericMethod)
+                    {
+                        // Try to update the generic method to fit the input types
+                        MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
+                        m_CompiledFunc = method.ToFunc();
+                        return m_CompiledFunc(inputs);
+                    }
+                    else
+                        throw e;
+                }
+            }
+            else if (InputParams.Count <= 0)
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
+                return null;
+            }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
+                return null;
+            }
+        }
+
+        /*************************************/
+
         protected virtual bool PushOutputs(object result)
         {
             try

@@ -174,7 +174,6 @@
     <Compile Include="Templates\MultiChoiceCaller.cs" />
     <Compile Include="Templates\ItemSelector.cs" />
     <Compile Include="Caller\Core.cs" />
-    <Compile Include="Templates\MethodCaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Templates\ItemSelectorMenu.cs" />

@@ -46,7 +46,7 @@ namespace BH.UI.Templates
             try
             {
                 CustomObject component = new CustomObject();
-                component.CustomData["SelectedItem"] = SelectedItem;
+                component.CustomData["SelectedItem"] = (m_OriginalItem != null) ? m_OriginalItem : SelectedItem;
                 component.CustomData["InputParams"] = InputParams;
                 component.CustomData["OutputParams"] = OutputParams;
                 return component.ToJson();

@@ -31,7 +31,7 @@ using BH.Adapter;
 
 namespace BH.UI.Components
 {
-    public class ExternalCaller : MethodCaller
+    public class ExternalCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

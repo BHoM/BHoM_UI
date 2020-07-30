@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class RemoveCaller : MethodCaller
+    public class RemoveCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

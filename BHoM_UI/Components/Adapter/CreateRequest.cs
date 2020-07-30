@@ -31,7 +31,7 @@ using BH.Engine.Reflection;
 
 namespace BH.UI.Components
 {
-    public class CreateRequestCaller : MethodCaller
+    public class CreateRequestCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/
