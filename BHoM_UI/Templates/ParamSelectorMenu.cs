@@ -39,18 +39,16 @@ namespace BH.UI.Templates
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler<Tuple<ParamInfo, bool>> ParamToggled;
-
-        public event EventHandler<List<Tuple<ParamInfo, bool>>> NewSelection;
+        public event EventHandler SelectionChanged;
 
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public ParamSelectorMenu(List<Tuple<ParamInfo, bool>> parameters)
+        public ParamSelectorMenu(List<ParamInfo> parameters)
         {
-            m_Params = parameters;
+            m_Params = parameters.OrderBy(x => x.Name).ToList();
         }
 
 
@@ -69,8 +67,8 @@ namespace BH.UI.Templates
                     e.Cancel = true;
             };
 
-            foreach (Tuple<ParamInfo, bool> param in m_Params.OrderBy(x => x.Item1.Name))
-                AppendMenuItem(listMenu.DropDown, param.Item1.Name, param.Item2);
+            foreach (ParamInfo param in m_Params)
+                AppendMenuItem(listMenu.DropDown, param.Name, param.IsSelected);
         }
 
         /*************************************/
@@ -81,8 +79,8 @@ namespace BH.UI.Templates
             listMenu.SubmenuClosed += Menu_Closing;
             menu.Items.Add(listMenu);
 
-            foreach (Tuple<ParamInfo, bool> param in m_Params.OrderBy(x => x.Item1.Name))
-                AppendMenuItem(listMenu, param.Item1.Name, param.Item2);
+            foreach (ParamInfo param in m_Params)
+                AppendMenuItem(listMenu, param.Name, param.IsSelected);
         }
 
         /*************************************/
@@ -99,9 +97,9 @@ namespace BH.UI.Templates
 
         public void SetParamCheck(string name, bool @checked)
         {
-            int index = m_Params.FindIndex(x => x.Item1.Name == name);
+            int index = m_Params.FindIndex(x => x.Name == name);
             if (index >= 0)
-                m_Params[index] = new Tuple<ParamInfo, bool>(m_Params[index].Item1, @checked);
+                m_Params[index].IsSelected = @checked;
 
             if (m_MenuItems.ContainsKey(name))
             {
@@ -165,11 +163,10 @@ namespace BH.UI.Templates
                 item.IsChecked = @checked;
             }
 
-            int index = m_Params.FindIndex(x => x.Item1.Name == text);
+            int index = m_Params.FindIndex(x => x.Name == text);
             if (index >= 0)
             {
-                m_Params[index] = new Tuple<ParamInfo, bool>(m_Params[index].Item1, @checked);
-                ParamToggled?.Invoke(this, m_Params[index]);
+                m_Params[index].IsSelected = @checked;
                 m_SelectionChanged = true;
             }
         }
@@ -179,7 +176,7 @@ namespace BH.UI.Templates
         protected void Menu_Closing(object sender, EventArgs e)
         {
             if (m_SelectionChanged)
-                NewSelection?.Invoke(this, m_Params);
+                SelectionChanged?.Invoke(this, null);
             m_SelectionChanged = false;
         }
 
@@ -187,7 +184,7 @@ namespace BH.UI.Templates
 
         protected string ParamLabel()
         {
-            var groups = m_Params.GroupBy(x => x.Item1.Kind);
+            var groups = m_Params.GroupBy(x => x.Kind);
 
             if (groups.Count() == 1)
             {
@@ -205,7 +202,7 @@ namespace BH.UI.Templates
         /**** Protected Fields            ****/
         /*************************************/
 
-        List<Tuple<ParamInfo, bool>> m_Params = new List<Tuple<ParamInfo, bool>>();
+        List<ParamInfo> m_Params = new List<ParamInfo>();
         Dictionary<string, object> m_MenuItems = new Dictionary<string, object>();
         bool m_SelectionChanged = false;
 

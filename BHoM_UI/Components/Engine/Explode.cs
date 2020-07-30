@@ -40,13 +40,6 @@ namespace BH.UI.Components
     public class ExplodeCaller : Caller
     {
         /*************************************/
-        /**** Events                      ****/
-        /*************************************/
-
-        public event EventHandler<List<Tuple<ParamInfo, bool>>> OutputSelected;
-
-
-        /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
@@ -229,36 +222,6 @@ namespace BH.UI.Components
             return true;
         }
 
-        /*************************************/
-
-        public override void AddToMenu(ToolStripDropDown menu)
-        {
-            if (m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
-        /*************************************/
-
-        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
-        { 
-            if (m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
-        /*************************************/
-
-        public override void AddToMenu(object menu)
-        {
-            if (SelectedItem != null && m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
-            else
-                base.AddToMenu(menu);
-        }
-
 
         /*************************************/
         /**** Private Methods             ****/
@@ -375,26 +338,10 @@ namespace BH.UI.Components
             }
         }
 
-        /*************************************/
-
-        protected override void SetOutputSelectionMenu()
-        {
-            List<string> outputNames = OutputParams.Select(x => x.Name).ToList();
-            m_OutputSelector = new ParamSelectorMenu(PossibleOutputs.Select(x => new Tuple<ParamInfo, bool>(x, outputNames.Contains(x.Name))).ToList());
-            m_OutputSelector.NewSelection += (object sender, List<Tuple<ParamInfo, bool>> selection) =>
-            {
-                OutputParams = selection.Where(x => x.Item2).Select(x => x.Item1).ToList();
-                CompileOutputSetters();
-                OutputSelected?.Invoke(this, selection);
-            };
-        }
-
 
         /*************************************/
         /**** Private Fields              ****/
         /*************************************/
-
-        ParamSelectorMenu m_OutputSelector;
 
         /*************************************/
     }

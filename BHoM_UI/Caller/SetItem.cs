@@ -58,6 +58,11 @@ namespace BH.UI.Templates
             CompileMethod();
             CompileInputGetters();
             CompileOutputSetters();
+
+            Modified?.Invoke(this, new CallerUpdate
+            {
+                Cause = CallerUpdateCause.ItemSelected
+            });
         }
 
 

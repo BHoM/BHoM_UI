@@ -41,7 +41,7 @@ namespace BH.UI.Templates
         /**** Events                      ****/
         /*************************************/
 
-        public event EventHandler<object> ItemSelected;
+        public event EventHandler<CallerUpdate> Modified;
 
         public event EventHandler SolutionExpired;
 
@@ -122,12 +122,7 @@ namespace BH.UI.Templates
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
             Selector = new ItemSelector<T>(items, Name);
-            Selector.ItemSelected += (sender, e) =>
-            {
-                SetItem(e);
-                if (SelectedItem != null)
-                    ItemSelected?.Invoke(this, SelectedItem);
-            };
+            Selector.ItemSelected += (sender, e) => SetItem(e);
         }
 
         /*************************************/
@@ -154,9 +149,11 @@ namespace BH.UI.Templates
         protected List<Func<IDataAccessor, object>> m_CompiledGetters = new List<Func<IDataAccessor, object>>();
         protected List<Func<IDataAccessor, object, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
 
-        protected object m_OriginalItem = null;
+        protected ParamSelectorMenu m_InputSelector;
+        protected ParamSelectorMenu m_OutputSelector;
 
-        private static bool m_Initialised = false;
+        protected static bool m_Initialised = false;
+        protected object m_OriginalItem = null;
 
         /*************************************/
 

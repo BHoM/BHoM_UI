@@ -55,9 +55,6 @@ namespace BH.UI.Templates
                 if (component == null)
                 {
                     SetItem(obj);
-
-                    if (SelectedItem != null)
-                        ItemSelected?.Invoke(this, SelectedItem);
                     return true;
                 }
 
@@ -100,8 +97,12 @@ namespace BH.UI.Templates
                     {
                         FindOldIndex(InputParams, inputParams);
                         FindOldIndex(OutputParams, outputParams);
+
                         WasUpgraded = true;
-                        ItemSelected?.Invoke(this, SelectedItem);
+                        Modified?.Invoke(this, new CallerUpdate
+                        {
+                            Cause = CallerUpdateCause.UpgradedVersion
+                        });
                     }
                 }
 

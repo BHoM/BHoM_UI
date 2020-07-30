@@ -45,6 +45,15 @@ namespace BH.UI.Templates
         {
             if (Selector != null && SelectedItem == null)
                 Selector.AddToMenu(menu);
+
+            if (SelectedItem != null)
+            {
+                if (m_InputSelector != null)
+                    m_InputSelector.AddParamList(menu);
+
+                if (m_OutputSelector != null)
+                    m_OutputSelector.AddParamList(menu);
+            } 
         }
 
         /*************************************/
@@ -53,6 +62,15 @@ namespace BH.UI.Templates
         {
             if (Selector != null && SelectedItem == null)
                 Selector.AddToMenu(menu);
+
+            if (SelectedItem != null)
+            {
+                if (m_InputSelector != null)
+                    m_InputSelector.AddParamList(menu);
+
+                if (m_OutputSelector != null)
+                    m_OutputSelector.AddParamList(menu);
+            }
         }
 
         /*************************************/
@@ -61,6 +79,15 @@ namespace BH.UI.Templates
         {
             if (Selector != null && SelectedItem == null)
                 Selector.AddToMenu(menu);
+
+            if (SelectedItem != null)
+            {
+                if (m_InputSelector != null)
+                    m_InputSelector.AddParamList(menu);
+
+                if (m_OutputSelector != null)
+                    m_OutputSelector.AddParamList(menu);
+            }
         }
 
         /*************************************/

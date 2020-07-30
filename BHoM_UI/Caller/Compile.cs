@@ -77,14 +77,14 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected virtual Func<object[], object> CompileMethod()
+        protected virtual void CompileMethod()
         {
             if (SelectedItem is MethodBase)
-                return ((MethodBase)SelectedItem).ToFunc();
+                m_CompiledFunc = ((MethodBase)SelectedItem).ToFunc();
             else if (SelectedItem is Type)
-                return Engine.UI.Compute.Constructor(SelectedItem as Type, InputParams);
+                m_CompiledFunc = Engine.UI.Compute.Constructor(SelectedItem as Type, InputParams);
             else
-                return null;
+                m_CompiledFunc = null;
         }
 
         /*************************************/
