@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class CreateDictionaryCaller : MethodCaller
+    public class CreateDictionaryCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class PushCaller : MethodCaller
+    public class PushCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

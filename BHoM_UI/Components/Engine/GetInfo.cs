@@ -35,7 +35,7 @@ using BH.oM.Reflection;
 
 namespace BH.UI.Components
 {
-    public class GetInfoCaller : MethodCaller
+    public class GetInfoCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

@@ -79,7 +79,23 @@ namespace BH.UI.Templates
         /**** Constructors                ****/
         /*************************************/
 
-        public Caller()
+        public Caller() : base()
+        {
+            if (SelectedItem != null)
+                SetItem(SelectedItem);
+        }
+
+        /*************************************/
+
+        public Caller(object item) : base()
+        {
+            if (item != null)
+                SetItem(item);
+        }
+
+        /*************************************/
+
+        static Caller()
         {
             if (!m_Initialised)
             {
@@ -88,12 +104,6 @@ namespace BH.UI.Templates
                 Global.Initialisation.Activate();
             }
         }
-
-        /*************************************/
-        /**** Abstract Methods            ****/
-        /*************************************/
-
-        public abstract object Run(object[] inputs);
 
 
         /*************************************/

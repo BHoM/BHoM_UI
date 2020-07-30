@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Components
 {
-    public class ToJsonCaller : MethodCaller
+    public class ToJsonCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

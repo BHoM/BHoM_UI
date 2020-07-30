@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace BH.UI.Components
 {
-    public class GetPropertyCaller : MethodCaller
+    public class GetPropertyCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

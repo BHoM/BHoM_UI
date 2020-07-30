@@ -37,7 +37,7 @@ using System.Collections;
 
 namespace BH.UI.Components
 {
-    public class CreateObjectCaller : MethodCaller
+    public class CreateObjectCaller : Caller
     {
         /*************************************/
         /**** Public Events               ****/
@@ -77,22 +77,6 @@ namespace BH.UI.Components
 
         /*************************************/
         /**** Override Methods            ****/
-        /*************************************/
-
-        public override object Run(object[] inputs)
-        {
-            if (SelectedItem is MethodBase)
-                return base.Run(inputs);
-            else if (SelectedItem is Type)
-            {
-                if (m_CompiledFunc == null)
-                    m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
-                return m_CompiledFunc(inputs);
-            }
-            else
-                return null;
-        }
-
         /*************************************/
 
         private void SetInputSelectionMenu(Type type, IEnumerable<string> selectedProperties)

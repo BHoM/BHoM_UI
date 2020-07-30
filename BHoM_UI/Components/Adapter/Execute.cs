@@ -36,7 +36,7 @@ using BH.oM.Reflection;
 
 namespace BH.UI.Components
 {
-    public class ExecuteCaller : MethodCaller
+    public class ExecuteCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/
