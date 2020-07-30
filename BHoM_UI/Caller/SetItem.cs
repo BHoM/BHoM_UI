@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.Engine.UI;
 
 namespace BH.UI.Templates
 {
@@ -41,11 +42,58 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public virtual bool SetItem(object item)
+        public virtual void SetItem(object item)
         {
-            SelectedItem = item;
-            return true;
+            m_OriginalItem = item;
+            SelectedItem = FromGeneric(item as dynamic);
+
+            SetComponentDetails();
+
+            SetInputs();
+            SetOutputs();
+
+            SetInputSelectionMenu();
+            SetOutputSelectionMenu();
+
+            CompileMethod();
+            CompileInputGetters();
+            CompileOutputSetters();
         }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        protected virtual object FromGeneric(MethodInfo method)
+        {
+            if (method == null)
+                return null;
+            else if (method.IsGenericMethodDefinition)
+                return method.MakeFromGeneric();
+            else
+                return method;
+        }
+
+        /*************************************/
+
+        protected virtual object FromGeneric(Type type)
+        {
+            if (type == null)
+                return null;
+            if (type.IsGenericTypeDefinition)
+                return type.MakeFromGeneric();
+            else
+                return type;
+        }
+
+        /*************************************/
+
+        protected virtual object FromGeneric(object item)
+        {
+            return item;
+        }
+
 
         /*************************************/
     }

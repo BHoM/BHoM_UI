@@ -32,59 +32,26 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.Engine.UI;
 
 namespace BH.UI.Templates
 {
     public abstract partial class Caller
     {
         /*************************************/
-        /**** Private Methods             ****/
+        /**** Protected Methods           ****/
         /*************************************/
 
-        protected virtual void CompileInputGetters()
+        protected virtual void SetInputSelectionMenu()
         {
-            if (DataAccessor == null)
-                return;
-
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledGetters = new List<Func<IDataAccessor, object>>();
-
-            for (int index = 0; index < InputParams.Count; index++)
-            {
-                ParamInfo param = InputParams[index];
-                Func<IDataAccessor, object> func = Engine.UI.Create.InputAccessor(accessorType, param.DataType, index);
-                m_CompiledGetters.Add(func);
-            }
+            
         }
 
         /*************************************/
 
-        protected virtual void CompileOutputSetters()
+        protected virtual void SetOutputSelectionMenu()
         {
-            if (DataAccessor == null)
-                return;
 
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
-
-            for (int index = 0; index < OutputParams.Count; index++)
-            {
-                ParamInfo param = OutputParams[index];
-                Func<IDataAccessor, object, bool> function = Engine.UI.Create.OutputAccessor(accessorType, param.DataType, index);
-                m_CompiledSetters.Add(function);
-            }
-        }
-
-        /*************************************/
-
-        protected virtual Func<object[], object> CompileMethod()
-        {
-            if (SelectedItem is MethodBase)
-                return ((MethodBase)SelectedItem).ToFunc();
-            else if (SelectedItem is Type)
-                return Engine.UI.Compute.Constructor(SelectedItem as Type, InputParams);
-            else
-                return null;
         }
 
         /*************************************/

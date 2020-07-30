@@ -82,15 +82,14 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
-        public override bool SetItem(object item)
+        protected override void SetComponentDetails()
         {
-            if (!base.SetItem(item))
-                return false;
-
-            Choices = Enum.GetValues(EnumType).Cast<object>().ToList();
-            Name = EnumType.Name;
-            Description = EnumType.Description();
-            return true;
+            if (EnumType != null)
+            {
+                Choices = Enum.GetValues(EnumType).Cast<object>().ToList();
+                Name = EnumType.Name;
+                Description = EnumType.Description();
+            }
         }
 
         /*************************************/

@@ -32,59 +32,72 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.Engine.UI;
 
 namespace BH.UI.Templates
 {
     public abstract partial class Caller
     {
         /*************************************/
-        /**** Private Methods             ****/
+        /**** Protected Methods           ****/
         /*************************************/
 
-        protected virtual void CompileInputGetters()
+        protected virtual void SetInputs()
         {
-            if (DataAccessor == null)
-                return;
-
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledGetters = new List<Func<IDataAccessor, object>>();
-
-            for (int index = 0; index < InputParams.Count; index++)
-            {
-                ParamInfo param = InputParams[index];
-                Func<IDataAccessor, object> func = Engine.UI.Create.InputAccessor(accessorType, param.DataType, index);
-                m_CompiledGetters.Add(func);
-            }
+            SetInputs(SelectedItem as dynamic);
         }
 
-        /*************************************/
-
-        protected virtual void CompileOutputSetters()
-        {
-            if (DataAccessor == null)
-                return;
-
-            Type accessorType = DataAccessor.GetType();
-            m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
-
-            for (int index = 0; index < OutputParams.Count; index++)
-            {
-                ParamInfo param = OutputParams[index];
-                Func<IDataAccessor, object, bool> function = Engine.UI.Create.OutputAccessor(accessorType, param.DataType, index);
-                m_CompiledSetters.Add(function);
-            }
-        }
 
         /*************************************/
+        /**** Targeted Methods            ****/
+        /*************************************/
 
-        protected virtual Func<object[], object> CompileMethod()
+        protected virtual void SetInputs(MethodBase method)
         {
-            if (SelectedItem is MethodBase)
-                return ((MethodBase)SelectedItem).ToFunc();
-            else if (SelectedItem is Type)
-                return Engine.UI.Compute.Constructor(SelectedItem as Type, InputParams);
+            if (method == null)
+                InputParams = new List<ParamInfo>();
             else
-                return null;
+            {
+                Dictionary<string, string> descriptions = method.InputDescriptions();
+                InputParams = method.GetParameters().Select(x => new ParamInfo
+                {
+                    Name = x.Name,
+                    DataType = x.ParameterType,
+                    Description = descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "",
+                    Kind = ParamKind.Input,
+                    HasDefaultValue = x.HasDefaultValue,
+                    DefaultValue = x.DefaultValue
+                }).ToList();
+                if (method is MethodInfo && !method.IsStatic)
+                {
+                    InputParams.Insert(0, new ParamInfo
+                    {
+                        Name = method.DeclaringType.Name.ToLower(),
+                        DataType = method.DeclaringType,
+                        Description = "",
+                        Kind = ParamKind.Input,
+                        HasDefaultValue = false,
+                        DefaultValue = System.DBNull.Value
+                    });
+                }
+            }
+        }
+
+        /*************************************/
+
+        protected virtual void SetInputs(Type type)
+        {
+            object instance = Activator.CreateInstance(type);
+            string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
+            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
+            InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
+        }
+
+        /*************************************/
+
+        protected virtual void SetInputs(object item)
+        {
+            // Nothing to do
         }
 
         /*************************************/

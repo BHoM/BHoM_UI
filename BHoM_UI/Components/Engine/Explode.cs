@@ -377,7 +377,7 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        protected void SetOutputSelectionMenu()
+        protected override void SetOutputSelectionMenu()
         {
             List<string> outputNames = OutputParams.Select(x => x.Name).ToList();
             m_OutputSelector = new ParamSelectorMenu(PossibleOutputs.Select(x => new Tuple<ParamInfo, bool>(x, outputNames.Contains(x.Name))).ToList());
