@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentRequest.cs" />
+    <Compile Include="Interfaces\IMultiChoiceCaller.cs" />
     <Compile Include="Interfaces\IDataAccessor.cs" />
     <Compile Include="Updates\OutputsUpdate.cs" />
     <Compile Include="Updates\InputsUpdate.cs" />
