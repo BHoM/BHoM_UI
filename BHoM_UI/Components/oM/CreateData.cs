@@ -38,7 +38,7 @@ using BH.oM.Base;
 
 namespace BH.UI.Components
 {
-    public class CreateDataCaller : Caller, IMultiChoiceCaller
+    public class CreateDataCaller : MultiChoiceCaller
     {
         /*************************************/
         /**** Properties                  ****/
@@ -53,8 +53,6 @@ namespace BH.UI.Components
         public override string Name { get; protected set; } = "CreateData";
 
         public override string Description { get; protected set; } = "Creates a BhoM object from the reference datasets";
-
-        public List<object> Choices { get; protected set; } = new List<object>();
 
         public string FileName
         {
@@ -98,21 +96,7 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        public override object Run(object[] inputs)
-        {
-            if (inputs.Length != 1)
-                return null;
-
-            int index = (int)inputs[0];
-            if (index >= 0 && index < Choices.Count)
-                return Choices[index];
-            else
-                return null;
-        }
-
-        /*************************************/
-
-        public List<string> GetChoiceNames()
+        public override List<string> GetChoiceNames()
         {
             return Choices.Cast<IBHoMObject>().Select(x => x.Name).ToList();
         }

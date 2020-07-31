@@ -37,7 +37,7 @@ using System.Windows.Forms;
 
 namespace BH.UI.Components
 {
-    public class CreateEnumCaller : Caller, IMultiChoiceCaller
+    public class CreateEnumCaller : MultiChoiceCaller
     {
         /*************************************/
         /**** Properties                  ****/
@@ -52,8 +52,6 @@ namespace BH.UI.Components
         public override string Name { get; protected set; } = "CreateEnum";
 
         public override string Description { get; protected set; } = "Creates a selected enum value";
-
-        public List<object> Choices { get; protected set; } = new List<object>();
 
         public Type EnumType
         {
@@ -97,21 +95,7 @@ namespace BH.UI.Components
 
         /*************************************/
 
-        public override object Run(object[] inputs)
-        {
-            if (inputs.Length != 1)
-                return null;
-
-            int index = (int)inputs[0];
-            if (index >= 0 && index < Choices.Count)
-                return Choices[index];
-            else
-                return null;
-        }
-
-        /*************************************/
-
-        public List<string> GetChoiceNames()
+        public override List<string> GetChoiceNames()
         {
             if (EnumType != null)
                 return Enum.GetNames(EnumType).ToList();

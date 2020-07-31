@@ -50,6 +50,7 @@ namespace BH.UI.Components
 
         public GetPropertyCaller() : base(typeof(GetPropertyCaller).GetMethod("GetProperty")) { }
 
+
         /*************************************/
         /**** Override Method             ****/
         /*************************************/
@@ -57,7 +58,18 @@ namespace BH.UI.Components
         public override object Run(object[] inputs)
         {
             object result = base.Run(inputs);
-            SetOutputTypes(result);
+
+            // Set the output type
+            if (result != null && OutputParams.Count > 0)
+            {
+                Type type = result.GetType();
+                if (OutputParams[0].DataType != type)
+                {
+                    OutputParams[0].DataType = type;
+                    CompileOutputSetters();
+                }
+            }
+
             return result;
         }
 
@@ -75,26 +87,6 @@ namespace BH.UI.Components
         public static object GetProperty(object obj, string propName)
         {
             return Engine.Reflection.Query.PropertyValue(obj, propName);
-        }
-
-        /*************************************/
-
-        public bool SetOutputTypes(object result)
-        {
-            if (result == null)
-                return true;
-
-            if (OutputParams.Count < 1)
-                return true;
-
-            Type type = result.GetType();
-            if (OutputParams[0].DataType != type)
-            {
-                OutputParams[0].DataType = type;
-                CompileOutputSetters();
-            }
-            
-            return true;
         }
 
         /*************************************/

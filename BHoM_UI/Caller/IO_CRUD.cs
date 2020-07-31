@@ -41,13 +41,22 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
-        public virtual bool AddInput(int index, string name, Type type)
+        public virtual bool AddInput(int index, string name, Type type = null)
         {
             if (name == null)
                 return false;
 
-            InputParams.Insert(index, Engine.UI.Create.ParamInfo(name, type));
-            CompileInputGetters();
+            ParamInfo match = InputParams.Find(x => x.Name == name);
+            if (match != null)
+            {
+                match.IsSelected = true;
+            }
+            else
+            {
+                InputParams.Insert(index, Engine.UI.Create.ParamInfo(name, type));
+                CompileInputGetters();
+            }
+
             return true;
         }
 
@@ -58,9 +67,11 @@ namespace BH.UI.Templates
             if (name == null)
                 return false;
 
-            bool success = InputParams.RemoveAll(p => p.Name == name) > 0;
-            CompileInputGetters();
-            return success;
+            ParamInfo match = InputParams.Find(x => x.Name == name);
+            if (match != null)
+                match.IsSelected = false;
+
+            return true;
         }
 
         /*************************************/
@@ -78,6 +89,20 @@ namespace BH.UI.Templates
 
             CompileInputGetters();
             return true;
+        }
+
+        /*************************************/
+
+        public bool RemoveOutput(string name)
+        {
+            if (name == null)
+                return false;
+
+            bool success = OutputParams.RemoveAll(p => p.Name == name) > 0;
+            m_OutputSelector.SetParamCheck(name, false);
+            CompileOutputSetters();
+
+            return success;
         }
 
         /*************************************/
