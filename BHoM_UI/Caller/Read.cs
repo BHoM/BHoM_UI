@@ -59,7 +59,7 @@ namespace BH.UI.Templates
                 }
 
                 // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
-                object backendElement;
+                object backendElement = null;
                 if (component.CustomData.TryGetValue("SelectedItem", out backendElement))
                     SetItem(backendElement);
 
@@ -78,12 +78,20 @@ namespace BH.UI.Templates
 
                 if (backendElement == null)
                 {
-                    // If the method is not found, we need to make sure that the component keeps its old inputs and outputs
-                    InputParams = inputParams;
-                    CompileInputGetters();
+                    // Maybe this is an old Create method ?
+                    bool solved = false;
+                    if (outputParams.Count == 1)
+                        solved = OldCreateMethodToType(json);
 
-                    OutputParams = outputParams;
-                    CompileOutputSetters();
+                    // If the method is not found, we need to make sure that the component keeps its old inputs and outputs
+                    if (!solved)
+                    {
+                        InputParams = inputParams;
+                        CompileInputGetters();
+
+                        OutputParams = outputParams;
+                        CompileOutputSetters();
+                    }   
                 }
                 else
                 {
@@ -175,6 +183,45 @@ namespace BH.UI.Templates
                 message += newToMatch.Select(i => " - " + newList[i].Name).Aggregate((a, b) => a + "\n" + b);
                 Engine.Reflection.Compute.RecordWarning(message);
             }
+        }
+
+        /*************************************/
+
+        // This converts old create methods into their corresponding auto-generated constructor
+        protected bool OldCreateMethodToType(string json)
+        {
+            CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
+            if (component != null && component.CustomData.ContainsKey("SelectedItem"))
+            {
+                CustomObject itemData = component.CustomData["SelectedItem"] as CustomObject;
+                if (itemData != null && itemData.CustomData.ContainsKey("_refType") && (string)itemData.CustomData["_refType"] == "System.Reflection.MethodBase")
+                {
+                    Type type = OutputParams.First().DataType;
+                    if (!type.IsNotImplemented() && !type.IsDeprecated() && type?.GetInterface("IImmutable") == null && !type.IsEnum && !type.IsAbstract) // Is type constructable ?
+                    {
+                        // Translate from method param name to property name
+                        Dictionary<string, PropertyInfo> properties = type.GetProperties().ToDictionary(x => x.Name.ToLower(), x => x);
+                        foreach (ParamInfo parameter in InputParams)
+                        {
+                            string key = parameter.Name.ToLower();
+                            if (properties.ContainsKey(key) && parameter.DataType == properties[key].PropertyType)
+                                parameter.Name = properties[key].Name;
+                        }
+
+                        // Set the type item and the selection menu
+                        SelectedItem = type;
+                        SetInputSelectionMenu();
+
+                        if (SelectedItem is Type)
+                        {
+                            m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
+                            return true;
+                        }   
+                    }
+                }
+            }
+
+            return false;
         }
 
 

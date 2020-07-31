@@ -20,28 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.Reflection;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.Reflection;
+using BH.Engine.Serialiser;
+using System.Windows.Forms;
+using BH.oM.Base;
+using System.Collections;
 
-namespace BH.oM.UI
+namespace BH.UI.Templates
 {
-    public interface IMultiChoiceCaller
+    public abstract class MultiChoiceCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
 
-        List<object> Choices { get; } 
+        public List<object> Choices { get; protected set; } = new List<object>();
 
 
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        List<string> GetChoiceNames();
+        public override object Run(object[] inputs)
+        {
+            if (inputs.Length != 1)
+                return null;
+
+            int index = (int)inputs[0];
+            if (index >= 0 && index < Choices.Count)
+                return Choices[index];
+            else
+                return null;
+        }
+
+        /*************************************/
+
+        public abstract List<string> GetChoiceNames();
 
         /*************************************/
     }

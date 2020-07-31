@@ -127,7 +127,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Caller\Input_CRUD.cs" />
+    <Compile Include="Caller\IO_CRUD.cs" />
     <Compile Include="Caller\AddToMenu.cs" />
     <Compile Include="Caller\Read.cs" />
     <Compile Include="Caller\Compile.cs" />
@@ -136,6 +136,7 @@
     <Compile Include="Caller\SetOutputs.cs" />
     <Compile Include="Caller\SetInputs.cs" />
     <Compile Include="Caller\SetComponentDetails.cs" />
+    <Compile Include="Caller\MultiChoiceCaller.cs" />
     <Compile Include="Caller\Write.cs" />
     <Compile Include="Caller\SetItem.cs" />
     <Compile Include="Caller\Run.cs" />
@@ -171,7 +172,6 @@
     <Compile Include="Templates\ParamSelectorMenu.cs" />
     <Compile Include="Templates\IItemSelectorMenu.cs" />
     <Compile Include="Templates\IItemSelector.cs" />
-    <Compile Include="Templates\MultiChoiceCaller.cs" />
     <Compile Include="Templates\ItemSelector.cs" />
     <Compile Include="Caller\Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

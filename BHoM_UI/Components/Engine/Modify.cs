@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using BH.Engine.Base;
 
 namespace BH.UI.Components
 {
@@ -54,6 +55,21 @@ namespace BH.UI.Components
         public ModifyCaller() : base()
         {
             SetPossibleItems(Engine.UI.Query.ModifyItems());
+        }
+
+
+        /*************************************/
+        /**** Override Methods            ****/
+        /*************************************/
+
+        public override object Run(object[] inputs)
+        {
+            if (inputs != null && inputs.Length >= 1 && inputs[0] != null)
+            {
+                // Deepclone must be done before the properties are set to ensure immutability
+                inputs[0] = inputs[0].DeepClone();
+            }
+            return base.Run(inputs);
         }
 
         /*************************************/
