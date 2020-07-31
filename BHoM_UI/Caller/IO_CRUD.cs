@@ -48,15 +48,11 @@ namespace BH.UI.Templates
 
             ParamInfo match = InputParams.Find(x => x.Name == name);
             if (match != null)
-            {
                 match.IsSelected = true;
-            }
             else
-            {
                 InputParams.Insert(index, Engine.UI.Create.ParamInfo(name, type));
-                CompileInputGetters();
-            }
 
+            CompileInputGetters();
             return true;
         }
 
@@ -71,6 +67,7 @@ namespace BH.UI.Templates
             if (match != null)
                 match.IsSelected = false;
 
+            CompileInputGetters();
             return true;
         }
 
@@ -98,11 +95,12 @@ namespace BH.UI.Templates
             if (name == null)
                 return false;
 
-            bool success = OutputParams.RemoveAll(p => p.Name == name) > 0;
-            m_OutputSelector.SetParamCheck(name, false);
-            CompileOutputSetters();
+            ParamInfo match = OutputParams.Find(x => x.Name == name);
+            if (match != null)
+                match.IsSelected = false;
 
-            return success;
+            CompileOutputSetters();
+            return true;
         }
 
         /*************************************/

@@ -38,7 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Func<IDataAccessor, object> InputAccessor(Type accessorType, Type dataType, int index)
+        public static Func<IDataAccessor, int, object> InputAccessor(Type accessorType, Type dataType)
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
@@ -46,11 +46,12 @@ namespace BH.Engine.UI
             MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(subType.Type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");
-            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1 };
+            ParameterExpression lambdaInput2 = Expression.Parameter(typeof(int), "index");
+            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2 };
 
-            Expression[] methodInputs = new Expression[] { Expression.Constant(index) };
+            Expression[] methodInputs = new Expression[] { lambdaInput2 };
             MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, accessorType), method, methodInputs);
-            Func<IDataAccessor, object> lambda = Expression.Lambda<Func<IDataAccessor, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
+            Func<IDataAccessor, int, object> lambda = Expression.Lambda<Func<IDataAccessor, int, object>>(Expression.Convert(methodExpression, typeof(object)), lambdaInputs).Compile();
 
             if (dataType.IsArray)
             {
@@ -61,7 +62,7 @@ namespace BH.Engine.UI
                 MethodCallExpression castExpression = Expression.Call(null, castMethod, Expression.Convert(lambdaResult, typeof(IEnumerable<>).MakeGenericType(subType.Type)));
                 Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
 
-                return (accessor) => { return castDelegate(lambda(accessor)); };
+                return (accessor, index) => { return castDelegate(lambda(accessor, index)); };
             }
             else if (subType.Depth == 1 && dataType.Name != "List`1" && dataType.Name != "IEnumerable`1")
             {
@@ -77,7 +78,7 @@ namespace BH.Engine.UI
                             ParameterExpression lambdaResult = Expression.Parameter(typeof(object), "lambdaResult");
                             NewExpression castExpression = Expression.New(constructor, Expression.Convert(lambdaResult, parameters[0].ParameterType));
                             Func<object, object> castDelegate = Expression.Lambda<Func<object, object>>(castExpression, lambdaResult).Compile();
-                            return (accessor) => { return castDelegate(lambda(accessor)); };
+                            return (accessor, index) => { return castDelegate(lambda(accessor, index)); };
                         }
                     }
                 }

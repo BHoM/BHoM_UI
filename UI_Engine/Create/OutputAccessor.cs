@@ -38,7 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Func<IDataAccessor, object, bool> OutputAccessor(Type accessorType, Type dataType, int index)
+        public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType)
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
@@ -46,12 +46,13 @@ namespace BH.Engine.UI
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");
             ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
-            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2 };
+            ParameterExpression lambdaInput3 = Expression.Parameter(typeof(int), "index");
+            ParameterExpression[] lambdaInputs = new ParameterExpression[] { lambdaInput1, lambdaInput2, lambdaInput3 };
 
-            Expression[] methodInputs = new Expression[] { Expression.Constant(index), Expression.Convert(lambdaInput2, method.GetParameters()[1].ParameterType) };
+            Expression[] methodInputs = new Expression[] { lambdaInput3, Expression.Convert(lambdaInput2, method.GetParameters()[1].ParameterType) };
             MethodCallExpression methodExpression = Expression.Call(Expression.Convert(lambdaInput1, accessorType), method, methodInputs);
 
-            return Expression.Lambda<Func<IDataAccessor, object, bool>>(methodExpression, lambdaInputs).Compile();
+            return Expression.Lambda<Func<IDataAccessor, object, int, bool>>(methodExpression, lambdaInputs).Compile();
         }
 
         /*************************************/

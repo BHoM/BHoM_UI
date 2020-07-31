@@ -76,13 +76,17 @@ namespace BH.UI.Templates
             List<object> inputs = new List<object>();
             try
             {
+                int index = 0;
                 for (int i = 0; i < m_CompiledGetters.Count; i++)
                 {
                     object input = null;
                     try
                     {
                         if (InputParams[i].IsSelected)
-                            input = m_CompiledGetters[i](DataAccessor);
+                        {
+                            input = m_CompiledGetters[i](DataAccessor, index);
+                            index++;
+                        } 
                         else
                             input = InputParams[i].DefaultValue;
                     }
@@ -92,7 +96,7 @@ namespace BH.UI.Templates
                         if (originalInputType != null && originalInputType.IsGenericType)
                         {
                             UpdateInputGenericType(i);
-                            input = m_CompiledGetters[i](DataAccessor);
+                            input = m_CompiledGetters[i](DataAccessor, index);
                         }
                         else
                         {
@@ -153,6 +157,7 @@ namespace BH.UI.Templates
         {
             try
             {
+                int index = 0;
                 for (int i = 0; i < m_CompiledSetters.Count; i++)
                 {
                     // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
@@ -160,15 +165,16 @@ namespace BH.UI.Templates
 
                     try
                     {
-                        m_CompiledSetters[i](DataAccessor, output);
+                        m_CompiledSetters[i](DataAccessor, output, index);
+                        index++;
                     }
                     catch (Exception e)
                     {
                         Type originalOutputType = OutputType(m_OriginalItem, i);
                         if (originalOutputType != null && originalOutputType.IsGenericType)
                         {
-                            m_CompiledSetters[i] = Engine.UI.Create.OutputAccessor(DataAccessor.GetType(), output.GetType(), 0);
-                            m_CompiledSetters[i](DataAccessor, output);
+                            m_CompiledSetters[i] = Engine.UI.Create.OutputAccessor(DataAccessor.GetType(), output.GetType());
+                            m_CompiledSetters[i](DataAccessor, output, 0);
                         }
                         else
                         {
@@ -216,7 +222,7 @@ namespace BH.UI.Templates
                     break;
             }
 
-            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(DataAccessor.GetType(), rawType, index);
+            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(DataAccessor.GetType(), rawType);
         }
 
         /*************************************/
