@@ -146,8 +146,8 @@ namespace BH.UI.Templates
         /*************************************/
 
         protected Func<object[], object> m_CompiledFunc = null;
-        protected List<Func<IDataAccessor, object>> m_CompiledGetters = new List<Func<IDataAccessor, object>>();
-        protected List<Func<IDataAccessor, object, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
+        protected List<Func<IDataAccessor, int, object>> m_CompiledGetters = new List<Func<IDataAccessor, int, object>>();
+        protected List<Func<IDataAccessor, object, int, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, int, bool>>();
 
         protected ParamSelectorMenu m_InputSelector;
         protected ParamSelectorMenu m_OutputSelector;

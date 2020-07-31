@@ -47,12 +47,12 @@ namespace BH.UI.Templates
                 return;
 
             Type accessorType = DataAccessor.GetType();
-            m_CompiledGetters = new List<Func<IDataAccessor, object>>();
+            m_CompiledGetters = new List<Func<IDataAccessor, int, object>>();
 
             for (int index = 0; index < InputParams.Count; index++)
             {
                 ParamInfo param = InputParams[index];
-                Func<IDataAccessor, object> func = Engine.UI.Create.InputAccessor(accessorType, param.DataType, index);
+                Func<IDataAccessor, int, object> func = Engine.UI.Create.InputAccessor(accessorType, param.DataType);
                 m_CompiledGetters.Add(func);
             }
         }
@@ -65,12 +65,12 @@ namespace BH.UI.Templates
                 return;
 
             Type accessorType = DataAccessor.GetType();
-            m_CompiledSetters = new List<Func<IDataAccessor, object, bool>>();
+            m_CompiledSetters = new List<Func<IDataAccessor, object, int, bool>>();
 
             for (int index = 0; index < OutputParams.Count; index++)
             {
                 ParamInfo param = OutputParams[index];
-                Func<IDataAccessor, object, bool> function = Engine.UI.Create.OutputAccessor(accessorType, param.DataType, index);
+                Func<IDataAccessor, object, int, bool> function = Engine.UI.Create.OutputAccessor(accessorType, param.DataType);
                 m_CompiledSetters.Add(function);
             }
         }
