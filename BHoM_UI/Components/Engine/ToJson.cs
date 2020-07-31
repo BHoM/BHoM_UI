@@ -42,6 +42,8 @@ namespace BH.UI.Components
 
         public override int GroupIndex { get; protected set; } = 3;
 
+        public override string Category { get; protected set; } = "Engine";
+
 
         /*************************************/
         /**** Constructors                ****/

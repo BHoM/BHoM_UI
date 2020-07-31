@@ -65,14 +65,6 @@ namespace BH.UI.Templates
 
             // Set description
             Description = method.Description();
-
-            // Set Category
-            Category = "Other";
-            string nameSpace = method.DeclaringType.Namespace;
-            if (nameSpace != null)
-                Category = "Global";
-            if (nameSpace.Length >= 2 && nameSpace.StartsWith("BH"))
-                Category = nameSpace.Split('.')[1];
         }
 
         /*************************************/
