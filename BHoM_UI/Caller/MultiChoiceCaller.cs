@@ -48,6 +48,21 @@ namespace BH.UI.Templates
         /**** Public Methods              ****/
         /*************************************/
 
+        public override void SetItem(object item)
+        {
+            m_OriginalItem = item;
+            SelectedItem = item;
+
+            SetComponentDetails();
+
+            MarkAsModified(new CallerUpdate
+            {
+                Cause = CallerUpdateCause.ItemSelected
+            });
+        }
+
+        /*************************************/
+
         public override object Run(object[] inputs)
         {
             if (inputs.Length != 1)

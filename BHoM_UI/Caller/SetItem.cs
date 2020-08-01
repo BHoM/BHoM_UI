@@ -44,6 +44,9 @@ namespace BH.UI.Templates
 
         public virtual void SetItem(object item)
         {
+            if (item == null)
+                return;
+
             m_OriginalItem = item;
             SelectedItem = FromGeneric(item as dynamic);
 

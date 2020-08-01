@@ -136,13 +136,7 @@ namespace BH.UI.Templates
 
         protected void EnsureMatchingParams(List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
-            bool matchingInputs = true;
-            if (SelectedItem is Type)
-                matchingInputs = Engine.UI.Query.AreMatching(InputParams, inputParams);
-            else
-                matchingInputs = Engine.UI.Query.AreMatching(((Type)SelectedItem).GetProperties().ToList(), inputParams);
-
-            if (!matchingInputs || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
+            if (!Engine.UI.Query.AreMatching(InputParams, inputParams) || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
             {
                 FindOldIndex(InputParams, inputParams);
                 FindOldIndex(OutputParams, outputParams);
