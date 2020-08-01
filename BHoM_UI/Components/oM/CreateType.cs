@@ -74,7 +74,7 @@ namespace BH.UI.Components
         {
             SetPossibleItems(Engine.UI.Query.TypeItems());
             InputParams = new List<ParamInfo>();
-            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Type), Kind = ParamKind.Output, Name = "type", Description = "type definition" } };
+            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Type), Kind = ParamKind.Output, Name = "type", Description = "type definition", IsRequired = true } };
         }
 
 

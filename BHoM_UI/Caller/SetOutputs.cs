@@ -107,7 +107,7 @@ namespace BH.UI.Templates
 
         protected virtual void SetOutputs(Type type)
         {
-            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description() } };
+            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = type, Kind = ParamKind.Output, Name = Name.Substring(0, 1), Description = type.Description(), IsRequired = true } };
         }
 
         /*************************************/

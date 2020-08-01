@@ -165,8 +165,11 @@ namespace BH.UI.Templates
 
                     try
                     {
-                        m_CompiledSetters[i](m_DataAccessor, output, index);
-                        index++;
+                        if (OutputParams[i].IsSelected)
+                        {
+                            m_CompiledSetters[i](m_DataAccessor, output, index);
+                            index++;
+                        }
                     }
                     catch (Exception e)
                     {

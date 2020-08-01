@@ -38,7 +38,7 @@ namespace BH.UI.Templates
     public abstract partial class Caller
     {
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Input Methods               ****/
         /*************************************/
 
         public virtual bool AddInput(int index, string name, Type type = null)
@@ -90,6 +90,19 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public virtual bool SelectInputs(List<string> names)
+        {
+            foreach (ParamInfo info in InputParams)
+                info.IsSelected = names.Contains(info.Name);
+
+            return true;
+        }
+
+
+        /*************************************/
+        /**** Output Methods              ****/
+        /*************************************/
+
         public bool RemoveOutput(string name)
         {
             if (name == null)
@@ -100,6 +113,16 @@ namespace BH.UI.Templates
                 match.IsSelected = false;
 
             CompileOutputSetters();
+            return true;
+        }
+
+        /*************************************/
+
+        public virtual bool SelectOutputs(List<string> names)
+        {
+            foreach (ParamInfo info in OutputParams)
+                info.IsSelected = names.Contains(info.Name);
+
             return true;
         }
 
