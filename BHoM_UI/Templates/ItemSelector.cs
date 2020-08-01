@@ -30,7 +30,7 @@ using BH.oM.Data.Collections;
 using System.Windows.Forms;
 using BH.Engine.Reflection;
 
-namespace BH.UI.Templates
+namespace BH.UI.Menus
 {
     public class ItemSelector<T> : IItemSelector
     {

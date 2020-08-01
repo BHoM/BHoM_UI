@@ -84,7 +84,7 @@ namespace BH.UI.Templates
                     {
                         if (InputParams[i].IsSelected)
                         {
-                            input = m_CompiledGetters[i](DataAccessor, index);
+                            input = m_CompiledGetters[i](m_DataAccessor, index);
                             index++;
                         } 
                         else
@@ -96,7 +96,7 @@ namespace BH.UI.Templates
                         if (originalInputType != null && originalInputType.IsGenericType)
                         {
                             UpdateInputGenericType(i);
-                            input = m_CompiledGetters[i](DataAccessor, index);
+                            input = m_CompiledGetters[i](m_DataAccessor, index);
                         }
                         else
                         {
@@ -165,7 +165,7 @@ namespace BH.UI.Templates
 
                     try
                     {
-                        m_CompiledSetters[i](DataAccessor, output, index);
+                        m_CompiledSetters[i](m_DataAccessor, output, index);
                         index++;
                     }
                     catch (Exception e)
@@ -173,8 +173,8 @@ namespace BH.UI.Templates
                         Type originalOutputType = OutputType(m_OriginalItem, i);
                         if (originalOutputType != null && originalOutputType.IsGenericType)
                         {
-                            m_CompiledSetters[i] = Engine.UI.Create.OutputAccessor(DataAccessor.GetType(), output.GetType());
-                            m_CompiledSetters[i](DataAccessor, output, 0);
+                            m_CompiledSetters[i] = Engine.UI.Create.OutputAccessor(m_DataAccessor.GetType(), output.GetType());
+                            m_CompiledSetters[i](m_DataAccessor, output, 0);
                         }
                         else
                         {
@@ -200,18 +200,18 @@ namespace BH.UI.Templates
             switch (InputType(m_OriginalItem, index).UnderlyingType().Depth)
             {
                 case 0:
-                    object raw = DataAccessor.GetDataItem<object>(index);
+                    object raw = m_DataAccessor.GetDataItem<object>(index);
                     rawType = raw.GetType();
                     break;
                 case 1:
-                    List<object> list = DataAccessor.GetDataList<object>(index);
+                    List<object> list = m_DataAccessor.GetDataList<object>(index);
                     if (list.Count == 0)
                         rawType = typeof(List<object>);
                     else
                         rawType = typeof(List<>).MakeGenericType(new Type[] { list[0].GetType() });
                     break;
                 default:
-                    List<List<object>> tree = DataAccessor.GetDataTree<object>(index);
+                    List<List<object>> tree = m_DataAccessor.GetDataTree<object>(index);
                     if (tree.Count == 0 || tree[0].Count == 0)
                         rawType = typeof(List<List<object>>);
                     else
@@ -222,7 +222,7 @@ namespace BH.UI.Templates
                     break;
             }
 
-            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(DataAccessor.GetType(), rawType);
+            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), rawType);
         }
 
         /*************************************/

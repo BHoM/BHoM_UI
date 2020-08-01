@@ -43,8 +43,8 @@ namespace BH.UI.Templates
 
         public virtual void AddToMenu(ToolStripDropDown menu)
         {
-            if (Selector != null && SelectedItem == null)
-                Selector.AddToMenu(menu);
+            if (m_ItemSelector != null && SelectedItem == null)
+                m_ItemSelector.AddToMenu(menu);
 
             if (SelectedItem != null)
             {
@@ -60,8 +60,8 @@ namespace BH.UI.Templates
 
         public virtual void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
-            if (Selector != null && SelectedItem == null)
-                Selector.AddToMenu(menu);
+            if (m_ItemSelector != null && SelectedItem == null)
+                m_ItemSelector.AddToMenu(menu);
 
             if (SelectedItem != null)
             {
@@ -77,8 +77,8 @@ namespace BH.UI.Templates
 
         public virtual void AddToMenu(object menu)
         {
-            if (Selector != null && SelectedItem == null)
-                Selector.AddToMenu(menu);
+            if (m_ItemSelector != null && SelectedItem == null)
+                m_ItemSelector.AddToMenu(menu);
 
             if (SelectedItem != null)
             {

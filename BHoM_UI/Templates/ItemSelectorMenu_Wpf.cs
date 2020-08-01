@@ -31,7 +31,7 @@ using System.Windows;
 using BH.oM.UI;
 using BH.Engine.UI;
 
-namespace BH.UI.Templates
+namespace BH.UI.Menus
 {
     public class ItemSelectorMenu_Wpf<T> : ItemSelectorMenu<T, ContextMenu>
     {
