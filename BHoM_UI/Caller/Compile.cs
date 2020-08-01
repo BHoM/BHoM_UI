@@ -43,10 +43,10 @@ namespace BH.UI.Templates
 
         protected virtual void CompileInputGetters()
         {
-            if (DataAccessor == null)
+            if (m_DataAccessor == null)
                 return;
 
-            Type accessorType = DataAccessor.GetType();
+            Type accessorType = m_DataAccessor.GetType();
             m_CompiledGetters = new List<Func<IDataAccessor, int, object>>();
 
             for (int index = 0; index < InputParams.Count; index++)
@@ -61,10 +61,10 @@ namespace BH.UI.Templates
 
         protected virtual void CompileOutputSetters()
         {
-            if (DataAccessor == null)
+            if (m_DataAccessor == null)
                 return;
 
-            Type accessorType = DataAccessor.GetType();
+            Type accessorType = m_DataAccessor.GetType();
             m_CompiledSetters = new List<Func<IDataAccessor, object, int, bool>>();
 
             for (int index = 0; index < OutputParams.Count; index++)

@@ -31,7 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BH.UI.Templates
+namespace BH.UI.Menus
 {
     public class ItemSelectorMenu_WinForm<T> : ItemSelectorMenu<T, ToolStripDropDown>
     {

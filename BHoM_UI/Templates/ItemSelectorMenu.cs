@@ -28,7 +28,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Templates
+namespace BH.UI.Menus
 {
     public abstract class ItemSelectorMenu<T, M> : IItemSelectorMenu<T>
     {

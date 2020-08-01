@@ -71,8 +71,8 @@ namespace BH.UI.Components
             {
                 if (m_CompiledGetters.Count == 3)
                 {
-                    object obj = m_CompiledGetters[0](DataAccessor, 0);
-                    string propName = m_CompiledGetters[1](DataAccessor, 1) as string;
+                    object obj = m_CompiledGetters[0](m_DataAccessor, 0);
+                    string propName = m_CompiledGetters[1](m_DataAccessor, 1) as string;
 
                     if (propName != m_CurrentProperty && obj != null)
                     {
@@ -83,11 +83,11 @@ namespace BH.UI.Components
                         {
                             PropertyInfo propInfo = objType.GetProperty(propName);
                             if (propInfo != null)
-                                m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(DataAccessor.GetType(), propInfo.PropertyType);
+                                m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propInfo.PropertyType);
                         }
                     }
 
-                    inputs = new object[] { obj, propName, m_CompiledGetters[2](DataAccessor, 2) };
+                    inputs = new object[] { obj, propName, m_CompiledGetters[2](m_DataAccessor, 2) };
                 }
             }
             catch (Exception e)

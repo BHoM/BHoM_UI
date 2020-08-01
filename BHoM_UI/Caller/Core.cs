@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.UI.Menus;
 
 namespace BH.UI.Templates
 {
@@ -61,10 +62,6 @@ namespace BH.UI.Templates
         public virtual string Description { get; protected set; } = "";
 
         public virtual int GroupIndex { get; protected set; } = 1;
-
-        public virtual IItemSelector Selector { get; protected set; } = null;
-
-        public IDataAccessor DataAccessor { get; protected set; } = null;
 
         public List<ParamInfo> InputParams { get; protected set; } = new List<ParamInfo>();
 
@@ -112,7 +109,7 @@ namespace BH.UI.Templates
 
         public virtual void SetDataAccessor(IDataAccessor accessor)
         {
-            DataAccessor = accessor;
+            m_DataAccessor = accessor;
             CompileInputGetters();
             CompileOutputSetters();
         }
@@ -121,8 +118,8 @@ namespace BH.UI.Templates
 
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
-            Selector = new ItemSelector<T>(items, Name);
-            Selector.ItemSelected += (sender, e) => SetItem(e);
+            m_ItemSelector = new ItemSelector<T>(items, Name);
+            m_ItemSelector.ItemSelected += (sender, e) => SetItem(e);
         }
 
         /*************************************/
@@ -134,10 +131,27 @@ namespace BH.UI.Templates
 
         /*************************************/
 
+        public virtual IItemSelector GetItemSelectorMenu()
+        {
+            return m_ItemSelector;
+        }
+
+        /*************************************/
+        /**** Protected Methods           ****/
+        /*************************************/
+
         protected void ExpireSolution()
         {
             if (SolutionExpired != null)
                 SolutionExpired?.Invoke(this, new EventArgs());
+        }
+
+        /*************************************/
+
+        protected void MarkAsModified(CallerUpdate update)
+        {
+            if (Modified != null)
+                Modified?.Invoke(this, update);
         }
 
 
@@ -149,11 +163,13 @@ namespace BH.UI.Templates
         protected List<Func<IDataAccessor, int, object>> m_CompiledGetters = new List<Func<IDataAccessor, int, object>>();
         protected List<Func<IDataAccessor, object, int, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, int, bool>>();
 
-        protected ParamSelectorMenu m_InputSelector;
-        protected ParamSelectorMenu m_OutputSelector;
+        protected IItemSelector m_ItemSelector = null;
+        protected ParamSelectorMenu m_InputSelector = null;
+        protected ParamSelectorMenu m_OutputSelector = null;
 
-        protected static bool m_Initialised = false;
         protected object m_OriginalItem = null;
+        protected IDataAccessor m_DataAccessor = null;
+        protected static bool m_Initialised = false;
 
         /*************************************/
 

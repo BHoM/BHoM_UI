@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BH.UI.Templates
+namespace BH.UI.Menus
 {
     public interface IItemSelector
     {
