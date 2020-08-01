@@ -82,6 +82,19 @@ namespace BH.UI.Components
         /**** Public Method               ****/
         /*************************************/
 
+        public override void SetItem(object item)
+        {
+            m_OriginalItem = item;
+            SelectedItem = item as Type;
+
+            MarkAsModified(new CallerUpdate
+            {
+                Cause = CallerUpdateCause.ItemSelected
+            });
+        }
+
+        /*************************************/
+
         public override object Run(object[] inputs)
         {
             return SelectedType;
