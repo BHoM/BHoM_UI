@@ -86,6 +86,7 @@ namespace BH.UI.Components
         {
             m_OriginalItem = item;
             SelectedItem = item as Type;
+            Description = ((Type)item).Description();
 
             MarkAsModified(new CallerUpdate
             {
