@@ -58,7 +58,7 @@ namespace BH.UI.Templates
             }
             catch (Exception e)
             {
-                RecordExecutionError(e);
+                Engine.UI.Compute.RecordExecutionError(e);
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace BH.UI.Templates
             }
             catch (Exception e)
             {
-                RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
                 return null;
             }
 
@@ -188,7 +188,7 @@ namespace BH.UI.Templates
             }
             catch (Exception e)
             {
-                RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
+                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Output data is calculated but cannot be set.\n");
                 return false;
             }
 
