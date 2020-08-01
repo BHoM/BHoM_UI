@@ -82,7 +82,6 @@
     <Compile Include="Compute\LogUsage.cs" />
     <Compile Include="Compute\LoadAssemblies.cs" />
     <Compile Include="Compute\Organise.cs" />
-    <Compile Include="Convert\FromProperty.cs" />
     <Compile Include="Compute\ConstructorText.cs" />
     <Compile Include="Compute\Constructor.cs" />
     <Compile Include="Create\OutputAccessor.cs" />
@@ -103,6 +102,9 @@
       <Project>{50d4c1ed-c16c-4365-a742-938bf49ec4b0}</Project>
       <Name>UI_oM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Convert\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

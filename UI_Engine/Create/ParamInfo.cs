@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
 using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
+using System.Reflection;
 
 namespace BH.Engine.UI
 {
@@ -31,6 +33,7 @@ namespace BH.Engine.UI
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
+
         [Input("name", "The name of the parameter")]
         [Input("type", "The framework type of the parameter, e.g. BH.oM.Base.BHoMObject")]
         [Input("kind", "Whether the parameter is an input of an output. Input is the default value")]
@@ -45,6 +48,47 @@ namespace BH.Engine.UI
                 Name = name,
                 DataType = type,
                 Kind = kind
+            };
+        }
+
+        /*************************************/
+
+        [Input("property", "The system property to convert to bhom")]
+        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
+        public static ParamInfo ParamInfo(this PropertyInfo property, object instance = null)
+        {
+            ParamInfo info = new ParamInfo
+            {
+                Name = property.Name,
+                DataType = property.PropertyType,
+                Description = property.IDescription(),
+                Kind = ParamKind.Input
+            };
+
+            if (instance != null)
+            {
+                info.HasDefaultValue = true;
+                info.DefaultValue = property.GetValue(instance);
+            }
+
+            return info;
+        }
+
+        /*************************************/
+
+        [Input("property", "The system property to convert to bhom")]
+        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
+        public static ParamInfo ParamInfo(this ParameterInfo parameter, string description = "")
+        {
+            return new ParamInfo
+            {
+                Name = parameter.Name,
+                DataType = parameter.ParameterType,
+                Description = description,
+                Kind = ParamKind.Input,
+                HasDefaultValue = parameter.HasDefaultValue,
+                IsRequired = !parameter.HasDefaultValue,
+                DefaultValue = parameter.DefaultValue
             };
         }
 

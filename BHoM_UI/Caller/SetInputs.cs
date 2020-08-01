@@ -59,15 +59,10 @@ namespace BH.UI.Templates
             else
             {
                 Dictionary<string, string> descriptions = method.InputDescriptions();
-                InputParams = method.GetParameters().Select(x => new ParamInfo
-                {
-                    Name = x.Name,
-                    DataType = x.ParameterType,
-                    Description = descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "",
-                    Kind = ParamKind.Input,
-                    HasDefaultValue = x.HasDefaultValue,
-                    DefaultValue = x.DefaultValue
-                }).ToList();
+                InputParams = method.GetParameters()
+                    .Select(x => Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : ""))
+                    .ToList();
+
                 if (method is MethodInfo && !method.IsStatic)
                 {
                     InputParams.Insert(0, new ParamInfo
@@ -77,7 +72,8 @@ namespace BH.UI.Templates
                         Description = "",
                         Kind = ParamKind.Input,
                         HasDefaultValue = false,
-                        DefaultValue = System.DBNull.Value
+                        DefaultValue = System.DBNull.Value,
+                        IsRequired = true
                     });
                 }
             }
@@ -89,7 +85,7 @@ namespace BH.UI.Templates
         {
             object instance = Activator.CreateInstance(type);
             string[] excluded = new string[] { "BHoM_Guid", "Fragments", "Tags", "CustomData" };
-            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => x.FromProperty(instance));
+            IEnumerable<ParamInfo> properties = type.GetProperties().Select(x => Engine.UI.Create.ParamInfo(x, instance));
             InputParams = properties.Where(x => !excluded.Contains(x.Name)).ToList();
         }
 

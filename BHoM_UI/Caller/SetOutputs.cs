@@ -95,7 +95,8 @@ namespace BH.UI.Templates
                             Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
                             DataType = method.OutputType(),
                             Description = method.OutputDescription(),
-                            Kind = ParamKind.Output
+                            Kind = ParamKind.Output,
+                            IsRequired = true
                         }
                     };
                 }

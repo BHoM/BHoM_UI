@@ -48,7 +48,7 @@ namespace BH.UI.Menus
 
         public ParamSelectorMenu(List<ParamInfo> parameters)
         {
-            m_Params = parameters.OrderBy(x => x.Name).ToList();
+            m_Params = parameters.ToList();
         }
 
 
@@ -68,7 +68,7 @@ namespace BH.UI.Menus
             };
 
             foreach (ParamInfo param in m_Params)
-                AppendMenuItem(listMenu.DropDown, param.Name, param.IsSelected);
+                AppendMenuItem(listMenu.DropDown, param.Name, param.IsSelected, !param.IsRequired);
         }
 
         /*************************************/
@@ -80,7 +80,7 @@ namespace BH.UI.Menus
             menu.Items.Add(listMenu);
 
             foreach (ParamInfo param in m_Params)
-                AppendMenuItem(listMenu, param.Name, param.IsSelected);
+                AppendMenuItem(listMenu, param.Name, param.IsSelected, !param.IsRequired);
         }
 
         /*************************************/
@@ -116,10 +116,11 @@ namespace BH.UI.Menus
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected ToolStripMenuItem AppendMenuItem(ToolStrip menu, string text, bool @checked = false)
+        protected ToolStripMenuItem AppendMenuItem(ToolStrip menu, string text, bool @checked = false, bool enabled = true)
         {
             ToolStripMenuItem item = new ToolStripMenuItem(text);
             item.Checked = @checked;
+            item.Enabled = enabled;
             item.Click += Item_CheckedChanged;
             menu.Items.Add(item);
             m_MenuItems[text] = item;
@@ -128,12 +129,13 @@ namespace BH.UI.Menus
 
         /*************************************/
 
-        protected System.Windows.Controls.MenuItem AppendMenuItem(System.Windows.Controls.MenuItem menu, string text, bool @checked = false)
+        protected System.Windows.Controls.MenuItem AppendMenuItem(System.Windows.Controls.MenuItem menu, string text, bool @checked = false, bool enabled = true)
         {
             System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem
             {
                 Header = text,
                 IsChecked = @checked,
+                IsEnabled = enabled
             };
             item.Click += Item_CheckedChanged;
             menu.Items.Add(item);
