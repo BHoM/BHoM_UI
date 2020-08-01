@@ -20,28 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
-using BH.oM.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Reflection.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using BH.Engine.Serialiser;
-using System.Windows.Forms;
-using BH.oM.Base;
-using System.Collections;
 
-namespace BH.UI.Templates
+namespace BH.Engine.UI
 {
-    public abstract partial class Caller
+    public static partial class Compute
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        protected static void RecordError(Exception e, string message = "")
+        public static void RecordError(Exception e, string message = "")
         {
             if (e.InnerException != null)
                 message += e.InnerException.Message;
@@ -52,7 +50,7 @@ namespace BH.UI.Templates
 
         /*******************************************/
 
-        protected virtual void RecordExecutionError(Exception e)
+        public static void RecordExecutionError(Exception e)
         {
             string message = "This component failed to run properly.\n- Error: ";
 
