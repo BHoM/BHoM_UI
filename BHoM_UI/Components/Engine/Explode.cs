@@ -62,8 +62,10 @@ namespace BH.UI.Components
 
         public ExplodeCaller() : base()
         {
-            InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(object), Kind = ParamKind.Input, Name = "object", Description = "Object to explode" } };
+            InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(object), Kind = ParamKind.Input, Name = "object", Description = "Object to explode", IsRequired = true } };
             OutputParams = new List<ParamInfo>() { };
+
+            SetOutputSelectionMenu();
         }
 
 

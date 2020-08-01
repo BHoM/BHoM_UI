@@ -46,14 +46,11 @@ namespace BH.UI.Templates
             if (m_ItemSelector != null && SelectedItem == null)
                 m_ItemSelector.AddToMenu(menu);
 
-            if (SelectedItem != null)
-            {
-                if (m_InputSelector != null)
-                    m_InputSelector.AddParamList(menu);
+            if (m_InputSelector != null)
+                m_InputSelector.AddParamList(menu);
 
-                if (m_OutputSelector != null)
-                    m_OutputSelector.AddParamList(menu);
-            } 
+            if (m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
         }
 
         /*************************************/
@@ -63,14 +60,11 @@ namespace BH.UI.Templates
             if (m_ItemSelector != null && SelectedItem == null)
                 m_ItemSelector.AddToMenu(menu);
 
-            if (SelectedItem != null)
-            {
-                if (m_InputSelector != null)
-                    m_InputSelector.AddParamList(menu);
+            if (m_InputSelector != null)
+                m_InputSelector.AddParamList(menu);
 
-                if (m_OutputSelector != null)
-                    m_OutputSelector.AddParamList(menu);
-            }
+            if (m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
         }
 
         /*************************************/
@@ -80,14 +74,11 @@ namespace BH.UI.Templates
             if (m_ItemSelector != null && SelectedItem == null)
                 m_ItemSelector.AddToMenu(menu);
 
-            if (SelectedItem != null)
-            {
-                if (m_InputSelector != null)
-                    m_InputSelector.AddParamList(menu);
+            if (m_InputSelector != null)
+                m_InputSelector.AddParamList(menu);
 
-                if (m_OutputSelector != null)
-                    m_OutputSelector.AddParamList(menu);
-            }
+            if (m_OutputSelector != null)
+                m_OutputSelector.AddParamList(menu);
         }
 
         /*************************************/

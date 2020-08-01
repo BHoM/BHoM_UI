@@ -58,7 +58,7 @@ namespace BH.UI.Components
         public CreateCustomCaller() : base()
         {
             InputParams = new List<ParamInfo>();
-            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs." } };
+            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs.", IsRequired = true } };
         }
 
         /*************************************/
