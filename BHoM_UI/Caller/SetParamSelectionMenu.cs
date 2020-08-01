@@ -48,7 +48,7 @@ namespace BH.UI.Templates
             m_InputSelector = new ParamSelectorMenu(InputParams);
             m_InputSelector.SelectionChanged += (sender, e) =>
             {
-                Modified?.Invoke(this, new CallerUpdate
+                MarkAsModified(new CallerUpdate
                 {
                     Cause = CallerUpdateCause.InputSelection
                 });
@@ -62,7 +62,7 @@ namespace BH.UI.Templates
             m_OutputSelector = new ParamSelectorMenu(OutputParams);
             m_OutputSelector.SelectionChanged += (sender, e) =>
             {
-                Modified?.Invoke(this, new CallerUpdate
+                MarkAsModified(new CallerUpdate
                 {
                     Cause = CallerUpdateCause.OutputSelection
                 });

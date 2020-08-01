@@ -148,7 +148,7 @@ namespace BH.UI.Templates
                 FindOldIndex(OutputParams, outputParams);
 
                 WasUpgraded = true;
-                Modified?.Invoke(this, new CallerUpdate
+                MarkAsModified(new CallerUpdate
                 {
                     Cause = CallerUpdateCause.UpgradedVersion
                 });
