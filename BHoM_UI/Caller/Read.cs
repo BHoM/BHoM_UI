@@ -59,60 +59,18 @@ namespace BH.UI.Templates
                 }
 
                 // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
-                object backendElement = null;
-                if (component.CustomData.TryGetValue("SelectedItem", out backendElement))
-                    SetItem(backendElement);
-
-                // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
-                // Also, if SelectedItem is null, the component will still have its input and outputs
-                object inputParamsRecord;
+                object selectedItem = null;
                 List<ParamInfo> inputParams = new List<ParamInfo>();
-                if (component.CustomData.TryGetValue("InputParams", out inputParamsRecord))
-                    inputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
-
-                object outputParamsRecord;
                 List<ParamInfo> outputParams = new List<ParamInfo>();
-                if (component.CustomData.TryGetValue("OutputParams", out outputParamsRecord))
-                    outputParams = (outputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+                ExtractSavedData(component, out selectedItem, out inputParams, out outputParams);
 
-
-                if (backendElement == null)
-                {
-                    // Maybe this is an old Create method ?
-                    bool solved = false;
-                    if (outputParams.Count == 1)
-                        solved = OldCreateMethodToType(json);
-
-                    // If the method is not found, we need to make sure that the component keeps its old inputs and outputs
-                    if (!solved)
-                    {
-                        InputParams = inputParams;
-                        CompileInputGetters();
-
-                        OutputParams = outputParams;
-                        CompileOutputSetters();
-                    }   
-                }
-                else
-                {
-                    bool matchingInputs = true;
-                    if (SelectedItem is Type)
-                        matchingInputs = Engine.UI.Query.AreMatching(InputParams, inputParams);
-                    else
-                        matchingInputs = Engine.UI.Query.AreMatching(((Type)SelectedItem).GetProperties().ToList(), inputParams);
-
-                    if (!matchingInputs || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
-                    {
-                        FindOldIndex(InputParams, inputParams);
-                        FindOldIndex(OutputParams, outputParams);
-
-                        WasUpgraded = true;
-                        Modified?.Invoke(this, new CallerUpdate
-                        {
-                            Cause = CallerUpdateCause.UpgradedVersion
-                        });
-                    }
-                }
+                // If selected item is null, try to recover it
+                if (selectedItem == null)
+                    RecoverFromNullSelectedItem(json, inputParams, outputParams);
+                
+                // Make sure that saved params are matching the ones generated from selected item (in case of versioning)
+                if (selectedItem != null)
+                    EnsureMatchingParams(inputParams, outputParams);
 
                 return true;
             }
@@ -126,6 +84,77 @@ namespace BH.UI.Templates
 
         /*************************************/
         /**** Helper Methods              ****/
+        /*************************************/
+
+        protected void ExtractSavedData(CustomObject data, out object selectedItem, out List<ParamInfo> inputParams, out List<ParamInfo> outputParams)
+        {
+            // Get teh selected item
+            selectedItem = null;
+            if (data.CustomData.TryGetValue("SelectedItem", out selectedItem))
+                SetItem(selectedItem);
+
+            // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
+            // Also, if SelectedItem is null, the component will still have its input and outputs
+
+            // Get input params
+            object inputParamsRecord;
+            if (data.CustomData.TryGetValue("InputParams", out inputParamsRecord))
+                inputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+            else
+                inputParams = new List<ParamInfo>();
+
+            // Get output params
+            object outputParamsRecord;
+            if (data.CustomData.TryGetValue("OutputParams", out outputParamsRecord))
+                outputParams = (outputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
+            else
+                outputParams = new List<ParamInfo>();
+        }
+
+        /*************************************/
+
+        protected void RecoverFromNullSelectedItem(string json, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        {
+            // Maybe this is an old Create method ?
+            if (outputParams.Count == 1)
+                OldCreateMethodToType(json);
+
+            // If the selected Item is not found, we need to make sure that the component keeps its old inputs and outputs
+            if (SelectedItem == null)
+            {
+                InputParams = inputParams;
+                CompileInputGetters();
+
+                OutputParams = outputParams;
+                CompileOutputSetters();
+            }
+
+            return;
+        }
+
+        /*************************************/
+
+        protected void EnsureMatchingParams(List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        {
+            bool matchingInputs = true;
+            if (SelectedItem is Type)
+                matchingInputs = Engine.UI.Query.AreMatching(InputParams, inputParams);
+            else
+                matchingInputs = Engine.UI.Query.AreMatching(((Type)SelectedItem).GetProperties().ToList(), inputParams);
+
+            if (!matchingInputs || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
+            {
+                FindOldIndex(InputParams, inputParams);
+                FindOldIndex(OutputParams, outputParams);
+
+                WasUpgraded = true;
+                Modified?.Invoke(this, new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.UpgradedVersion
+                });
+            }
+        }
+
         /*************************************/
 
         protected void FindOldIndex(List<ParamInfo> newList, List<ParamInfo> oldList)
@@ -188,7 +217,7 @@ namespace BH.UI.Templates
         /*************************************/
 
         // This converts old create methods into their corresponding auto-generated constructor
-        protected bool OldCreateMethodToType(string json)
+        protected void OldCreateMethodToType(string json)
         {
             CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
             if (component != null && component.CustomData.ContainsKey("SelectedItem"))
@@ -213,15 +242,10 @@ namespace BH.UI.Templates
                         SetInputSelectionMenu();
 
                         if (SelectedItem is Type)
-                        {
                             m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
-                            return true;
-                        }   
                     }
                 }
             }
-
-            return false;
         }
 
 
