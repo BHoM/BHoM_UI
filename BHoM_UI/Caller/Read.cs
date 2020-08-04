@@ -66,8 +66,12 @@ namespace BH.UI.Templates
 
                 // If selected item is null, try to recover it
                 if (selectedItem == null)
-                    RecoverFromNullSelectedItem(json, inputParams, outputParams);
-                
+                    selectedItem = RecoverFromNullSelectedItem(json, inputParams, outputParams);
+
+                // Finally Set the item if not null
+                if (selectedItem != null)
+                    SetItem(selectedItem);
+
                 // Make sure that saved params are matching the ones generated from selected item (in case of versioning)
                 if (selectedItem != null)
                     EnsureMatchingParams(inputParams, outputParams);
@@ -90,8 +94,7 @@ namespace BH.UI.Templates
         {
             // Get teh selected item
             selectedItem = null;
-            if (data.CustomData.TryGetValue("SelectedItem", out selectedItem))
-                SetItem(selectedItem);
+            data.CustomData.TryGetValue("SelectedItem", out selectedItem);
 
             // We also overwrite the InputParams and OutputParams, since we could have made some changes to them - e.g. ListInput
             // Also, if SelectedItem is null, the component will still have its input and outputs
@@ -113,14 +116,15 @@ namespace BH.UI.Templates
 
         /*************************************/
 
-        protected void RecoverFromNullSelectedItem(string json, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        protected object RecoverFromNullSelectedItem(string json, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
             // Maybe this is an old Create method ?
+            object selectedItem = null;
             if (outputParams.Count == 1)
-                OldCreateMethodToType(json);
+                selectedItem = OldCreateMethodToType(json);
 
             // If the selected Item is not found, we need to make sure that the component keeps its old inputs and outputs
-            if (SelectedItem == null)
+            if (selectedItem == null)
             {
                 InputParams = inputParams;
                 CompileInputGetters();
@@ -129,13 +133,16 @@ namespace BH.UI.Templates
                 CompileOutputSetters();
             }
 
-            return;
+            return selectedItem;
         }
 
         /*************************************/
 
         protected void EnsureMatchingParams(List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
+            SelectInputs(inputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
+            SelectOutputs(outputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
+
             if (!Engine.UI.Query.AreMatching(InputParams, inputParams) || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
             {
                 FindOldIndex(InputParams, inputParams);
@@ -147,6 +154,14 @@ namespace BH.UI.Templates
                     Cause = CallerUpdateCause.UpgradedVersion
                 });
             }
+            else
+            {
+                MarkAsModified(new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.ReadFromSave
+                });
+            }
+            
         }
 
         /*************************************/
@@ -211,8 +226,9 @@ namespace BH.UI.Templates
         /*************************************/
 
         // This converts old create methods into their corresponding auto-generated constructor
-        protected void OldCreateMethodToType(string json)
+        protected object OldCreateMethodToType(string json)
         {
+            object selectedItem = null;
             CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
             if (component != null && component.CustomData.ContainsKey("SelectedItem"))
             {
@@ -231,15 +247,15 @@ namespace BH.UI.Templates
                                 parameter.Name = properties[key].Name;
                         }
 
-                        // Set the type item and the selection menu
-                        SelectedItem = type;
-                        SetInputSelectionMenu();
-
-                        if (SelectedItem is Type)
-                            m_CompiledFunc = Engine.UI.Compute.Constructor((Type)SelectedItem, InputParams);
+                        // Set the type item 
+                        selectedItem = type;
+                        if (selectedItem is Type)
+                            m_CompiledFunc = Engine.UI.Compute.Constructor((Type)selectedItem, InputParams);
                     }
                 }
             }
+
+            return selectedItem;
         }
 
 
