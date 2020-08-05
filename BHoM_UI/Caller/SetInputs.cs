@@ -34,7 +34,7 @@ using BH.oM.Base;
 using System.Collections;
 using BH.Engine.UI;
 
-namespace BH.UI
+namespace BH.UI.Base
 {
     public abstract partial class Caller
     {

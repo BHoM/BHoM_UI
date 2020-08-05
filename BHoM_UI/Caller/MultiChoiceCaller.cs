@@ -33,7 +33,7 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 
-namespace BH.UI
+namespace BH.UI.Base
 {
     public abstract class MultiChoiceCaller : Caller
     {

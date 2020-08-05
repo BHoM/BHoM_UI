@@ -23,14 +23,14 @@
 using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.UI;
-using BH.UI.Components;
+using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 
-namespace BH.UI.Global
+namespace BH.UI.Base.Global
 {
     public abstract class SearchMenu
     {

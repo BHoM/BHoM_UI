@@ -24,7 +24,7 @@ using BH.Adapter;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.UI;
-using BH.UI.Components;
+using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,7 +36,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace BH.UI.Global
+namespace BH.UI.Base.Global
 {
     public static class Initialisation
     {

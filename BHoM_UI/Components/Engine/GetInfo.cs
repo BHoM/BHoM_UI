@@ -32,7 +32,7 @@ using BH.oM.UI;
 using BH.Adapter;
 using BH.oM.Reflection;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class GetInfoCaller : Caller
     {

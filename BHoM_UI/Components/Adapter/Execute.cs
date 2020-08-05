@@ -33,7 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Reflection;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class ExecuteCaller : Caller
     {

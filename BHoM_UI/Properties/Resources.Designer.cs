@@ -30,7 +30,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BH.UI.Properties {
+namespace BH.UI.Base.Properties {
     using System;
     
     
@@ -61,7 +61,7 @@ namespace BH.UI.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BH.UI.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BH.UI.Base.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

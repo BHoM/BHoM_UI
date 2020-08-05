@@ -24,7 +24,7 @@ using BH.oM.Reflection.Attributes;
 using System;
 using System.ComponentModel;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class GetPropertyCaller : Caller
     {

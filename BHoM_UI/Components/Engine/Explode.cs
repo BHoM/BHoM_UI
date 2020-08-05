@@ -34,7 +34,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using BH.Engine.Serialiser;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class ExplodeCaller : Caller
     {

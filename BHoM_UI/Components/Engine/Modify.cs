@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BH.Engine.Base;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class ModifyCaller : Caller
     {

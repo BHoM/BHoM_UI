@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class ComputeCaller : Caller
     {

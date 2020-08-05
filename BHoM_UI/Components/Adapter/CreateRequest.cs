@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BH.Engine.Reflection;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateRequestCaller : Caller
     {

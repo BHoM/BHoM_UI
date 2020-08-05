@@ -32,7 +32,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class PullCaller : Caller
     {

@@ -32,9 +32,9 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
-using BH.UI.Menus;
+using BH.UI.Base.Menus;
 
-namespace BH.UI
+namespace BH.UI.Base
 {
     public abstract partial class Caller
     {
