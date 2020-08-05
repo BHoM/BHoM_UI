@@ -35,7 +35,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateDataCaller : MultiChoiceCaller
     {

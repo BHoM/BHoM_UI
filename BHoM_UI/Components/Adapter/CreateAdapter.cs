@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BH.Adapter;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateAdapterCaller : Caller
     {

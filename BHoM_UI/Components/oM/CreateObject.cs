@@ -34,7 +34,7 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateObjectCaller : Caller
     {

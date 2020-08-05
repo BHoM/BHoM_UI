@@ -34,7 +34,7 @@ using BH.Engine.Data;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateTypeCaller : Caller
     {

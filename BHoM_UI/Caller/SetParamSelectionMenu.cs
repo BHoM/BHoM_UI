@@ -33,9 +33,9 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 using BH.Engine.UI;
-using BH.UI.Menus;
+using BH.UI.Base.Menus;
 
-namespace BH.UI
+namespace BH.UI.Base
 {
     public abstract partial class Caller
     {

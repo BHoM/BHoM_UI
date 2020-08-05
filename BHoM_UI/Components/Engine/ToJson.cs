@@ -27,7 +27,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class ToJsonCaller : Caller
     {

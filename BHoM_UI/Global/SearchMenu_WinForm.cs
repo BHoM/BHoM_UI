@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace BH.UI.Global
+namespace BH.UI.Base.Global
 {
     public class SearchMenu_WinForm : SearchMenu
     {

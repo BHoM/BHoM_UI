@@ -31,7 +31,7 @@ using BH.Engine.Serialiser;
 using System.Collections;
 using BH.Engine.UI;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class CreateCustomCaller : Caller
     {

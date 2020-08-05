@@ -27,7 +27,7 @@ using System.ComponentModel;
 using System.Reflection;
 using BH.Engine.Base;
 
-namespace BH.UI.Components
+namespace BH.UI.Base.Components
 {
     public class SetPropertyCaller : Caller
     {
