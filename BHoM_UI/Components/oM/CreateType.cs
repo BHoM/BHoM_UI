@@ -20,7 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +36,7 @@ using System.Windows.Forms;
 
 namespace BH.UI.Components
 {
-    public class CreateTypeCaller : Templates.Caller
+    public class CreateTypeCaller : Caller
     {
         /*************************************/
         /**** Properties                  ****/

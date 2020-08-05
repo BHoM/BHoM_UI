@@ -22,7 +22,6 @@
 
 using BH.oM.Base;
 using BH.oM.Reflection.Attributes;
-using BH.UI.Templates;
 using System;
 using System.ComponentModel;
 using System.Reflection;
