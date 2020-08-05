@@ -33,7 +33,7 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 
-namespace BH.UI.Templates
+namespace BH.UI
 {
     public abstract partial class Caller
     {

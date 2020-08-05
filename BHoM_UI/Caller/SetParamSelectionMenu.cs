@@ -35,7 +35,7 @@ using System.Collections;
 using BH.Engine.UI;
 using BH.UI.Menus;
 
-namespace BH.UI.Templates
+namespace BH.UI
 {
     public abstract partial class Caller
     {

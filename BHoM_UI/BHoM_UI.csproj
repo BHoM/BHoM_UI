@@ -168,16 +168,16 @@
     <Compile Include="Global\SearchMenu.cs" />
     <Compile Include="Global\SearchMenu_WinForm.cs" />
     <Compile Include="Global\SearchMenu_Wpf.cs" />
-    <Compile Include="Templates\ParamSelectorMenu.cs" />
-    <Compile Include="Templates\IItemSelectorMenu.cs" />
-    <Compile Include="Templates\IItemSelector.cs" />
-    <Compile Include="Templates\ItemSelector.cs" />
+    <Compile Include="Menus\ParamSelectorMenu.cs" />
+    <Compile Include="Menus\IItemSelectorMenu.cs" />
+    <Compile Include="Menus\IItemSelector.cs" />
+    <Compile Include="Menus\ItemSelector.cs" />
     <Compile Include="Caller\Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs" />
-    <Compile Include="Templates\ItemSelectorMenu.cs" />
-    <Compile Include="Templates\ItemSelectorMenu_WinForm.cs" />
-    <Compile Include="Templates\ItemSelectorMenu_Wpf.cs" />
+    <Compile Include="Menus\ItemSelectorMenu.cs" />
+    <Compile Include="Menus\ItemSelectorMenu_WinForm.cs" />
+    <Compile Include="Menus\ItemSelectorMenu_Wpf.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

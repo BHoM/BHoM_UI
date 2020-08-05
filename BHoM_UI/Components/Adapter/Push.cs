@@ -25,7 +25,6 @@ using BH.oM.Base;
 using BH.oM.Adapter;
 using BH.oM.Reflection;
 using BH.oM.Reflection.Attributes;
-using BH.UI.Templates;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
