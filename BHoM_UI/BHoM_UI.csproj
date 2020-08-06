@@ -135,7 +135,7 @@
     <Compile Include="Caller\SetOutputs.cs" />
     <Compile Include="Caller\SetInputs.cs" />
     <Compile Include="Caller\SetComponentDetails.cs" />
-    <Compile Include="Caller\MultiChoiceCaller.cs" />
+    <Compile Include="CallerTemplates\MultiChoiceCaller.cs" />
     <Compile Include="Caller\Write.cs" />
     <Compile Include="Caller\SetItem.cs" />
     <Compile Include="Caller\Run.cs" />
