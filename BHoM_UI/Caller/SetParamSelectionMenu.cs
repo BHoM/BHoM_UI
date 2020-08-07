@@ -46,11 +46,18 @@ namespace BH.UI.Base
         protected virtual void SetInputSelectionMenu()
         {
             m_InputSelector = new ParamSelectorMenu(InputParams);
-            m_InputSelector.SelectionChanged += (sender, e) =>
+            m_InputSelector.SelectionChanged += (sender, changedIndices) =>
             {
                 MarkAsModified(new CallerUpdate
                 {
-                    Cause = CallerUpdateCause.InputSelection
+                    Cause = CallerUpdateCause.InputSelection,
+                    InputUpdates = changedIndices.Select<int, IParamUpdate>(i =>
+                    {
+                        if (InputParams[i].IsSelected)
+                            return new ParamAdded { Index = InputParams.SelectionIndex(i), Name = InputParams[i].Name, Param = InputParams[i] };
+                        else
+                            return new ParamRemoved { Name = InputParams[i].Name, Param = InputParams[i] };
+                    }).ToList()
                 });
             };
         }
@@ -60,11 +67,18 @@ namespace BH.UI.Base
         protected virtual void SetOutputSelectionMenu()
         {
             m_OutputSelector = new ParamSelectorMenu(OutputParams);
-            m_OutputSelector.SelectionChanged += (sender, e) =>
+            m_OutputSelector.SelectionChanged += (sender, changedIndices) =>
             {
                 MarkAsModified(new CallerUpdate
                 {
-                    Cause = CallerUpdateCause.OutputSelection
+                    Cause = CallerUpdateCause.OutputSelection,
+                    OutputUpdates = changedIndices.Select<int, IParamUpdate>(i =>
+                    {
+                        if (InputParams[i].IsSelected)
+                            return new ParamAdded { Index = OutputParams.SelectionIndex(i), Name = OutputParams[i].Name, Param = OutputParams[i] };
+                        else
+                            return new ParamRemoved { Name = OutputParams[i].Name, Param = OutputParams[i] };
+                    }).ToList()
                 });
             };
         }

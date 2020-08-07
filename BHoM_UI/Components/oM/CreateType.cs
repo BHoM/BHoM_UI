@@ -81,16 +81,20 @@ namespace BH.UI.Base.Components
         /**** Public Method               ****/
         /*************************************/
 
-        public override void SetItem(object item)
+        public override void SetItem(object item, bool sendNotification = true)
         {
             m_OriginalItem = item;
             SelectedItem = item as Type;
             Description = ((Type)item).Description();
 
-            MarkAsModified(new CallerUpdate
+            if (sendNotification)
             {
-                Cause = CallerUpdateCause.ItemSelected
-            });
+                MarkAsModified(new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.ItemSelected,
+                    ComponentUpdate = new ComponentUpdate { Name = Name, Description = Description }
+                });
+            }
         }
 
         /*************************************/

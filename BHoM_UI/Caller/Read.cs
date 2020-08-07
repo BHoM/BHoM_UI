@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.Engine.UI;
 
 namespace BH.UI.Base
 {
@@ -68,15 +69,11 @@ namespace BH.UI.Base
                 if (selectedItem == null)
                     selectedItem = RecoverFromNullSelectedItem(json, inputParams, outputParams);
 
-                // Finally Set the item if not null
+                // If selected Item is not null, restore it
                 if (selectedItem != null)
-                    SetItem(selectedItem);
-
-                // Make sure that saved params are matching the ones generated from selected item (in case of versioning)
-                if (selectedItem != null)
-                    EnsureMatchingParams(inputParams, outputParams);
-
-                return true;
+                    return RestoreItem(selectedItem, inputParams, outputParams);
+                else
+                    return true;
             }
             catch
             {
@@ -116,6 +113,38 @@ namespace BH.UI.Base
 
         /*************************************/
 
+        protected bool RestoreItem(object selectedItem, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        {
+            // Finally Set the item 
+            SetItem(selectedItem, false);
+
+            // Make sure that saved selection is copied over
+            SelectInputs(inputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
+            SelectOutputs(outputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
+
+            // Look for changes
+            CallerUpdate update = new CallerUpdate
+            {
+                Cause = CallerUpdateCause.ReadFromSave,
+                ComponentUpdate = new ComponentUpdate { Name = Name, Description = Description },
+                InputUpdates = InputParams.Changes(inputParams).Where(x => x.Param.IsSelected).ToList(),
+                OutputUpdates = OutputParams.Changes(outputParams).Where(x => x.Param.IsSelected).ToList()
+            };
+
+            // Record warnings if changes happened
+            List<IParamUpdate> paramUpdates = update.InputUpdates.Concat(update.OutputUpdates).ToList();
+            if (paramUpdates.Count > 0)
+                Engine.Reflection.Compute.RecordWarning("This component was upgraded. Here's the resulting changes: \n" 
+                    + paramUpdates.Select(x => "  - " + x.IToText()).Aggregate((a, b) => a + "\n" + b));
+
+            // Send the notification 
+            MarkAsModified(update);
+
+            return true;
+        }
+
+        /*************************************/
+
         protected object RecoverFromNullSelectedItem(string json, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
             // Maybe this is an old Create method ?
@@ -134,93 +163,6 @@ namespace BH.UI.Base
             }
 
             return selectedItem;
-        }
-
-        /*************************************/
-
-        protected void EnsureMatchingParams(List<ParamInfo> inputParams, List<ParamInfo> outputParams)
-        {
-            SelectInputs(inputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
-            SelectOutputs(outputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
-
-            if (!Engine.UI.Query.AreMatching(InputParams, inputParams) || !Engine.UI.Query.AreMatching(OutputParams, outputParams))
-            {
-                FindOldIndex(InputParams, inputParams);
-                FindOldIndex(OutputParams, outputParams);
-
-                WasUpgraded = true;
-                MarkAsModified(new CallerUpdate
-                {
-                    Cause = CallerUpdateCause.UpgradedVersion
-                });
-            }
-            else
-            {
-                MarkAsModified(new CallerUpdate
-                {
-                    Cause = CallerUpdateCause.ReadFromSave
-                });
-            }
-            
-        }
-
-        /*************************************/
-
-        protected void FindOldIndex(List<ParamInfo> newList, List<ParamInfo> oldList)
-        {
-            List<int> newToMatch = Enumerable.Range(0, newList.Count).ToList();
-            List<int> oldToMatch = Enumerable.Range(0, oldList.Count).ToList();
-
-            // First match using names
-            for (int i = 0; i < newList.Count; i++)
-            {
-                ParamInfo parameter = newList[i];
-                int oldIndex = oldList.FindIndex(x => x.Name == parameter.Name);
-                if (oldIndex >= 0)
-                {
-                    newToMatch.Remove(i);
-                    oldToMatch.Remove(oldIndex);
-                }
-                parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
-            }
-
-            // Then match using types on the remaining params (Only allowed when a single matching type is found)
-            List<int> newToMatchCopy = newToMatch.ToList();
-            foreach (int i in newToMatchCopy)
-            {
-                ParamInfo parameter = newList[i];
-                IEnumerable<int> matches = oldToMatch.Where(x => parameter.DataType == oldList[x].DataType);
-                if (matches.Count() == 1)
-                {
-                    int oldIndex = matches.First();
-                    newToMatch.Remove(i);
-                    oldToMatch.Remove(oldIndex);
-                    parameter.Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = oldIndex });
-                }
-            }
-
-            // Then match using indices (Only allowed when number of parameters are equal for new and old)
-            if (newToMatch.Count == oldToMatch.Count)
-            {
-                newToMatchCopy = newToMatch.ToList();
-                foreach (int i in newToMatchCopy)
-                {
-                    if (oldToMatch.Contains(i))
-                    {
-                        newToMatch.Remove(i);
-                        oldToMatch.Remove(i);
-                        newList[i].Fragments.AddOrReplace(new ParamOldIndexFragment { OldIndex = i });
-                    }
-                }
-            }
-
-            // Provide a warning message if not all parameters where matched successfully
-            if (newToMatch.Count > 0 && oldToMatch.Count > 0)
-            {
-                string message = "This component was upgraded but the following parameters could not be matched with existing ones:\n";
-                message += newToMatch.Select(i => " - " + newList[i].Name).Aggregate((a, b) => a + "\n" + b);
-                Engine.Reflection.Compute.RecordWarning(message);
-            }
         }
 
         /*************************************/
@@ -257,7 +199,6 @@ namespace BH.UI.Base
 
             return selectedItem;
         }
-
 
         /*************************************/
     }

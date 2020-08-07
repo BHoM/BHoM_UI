@@ -20,27 +20,32 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.Engine.Reflection;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.UI
+namespace BH.Engine.UI
 {
-    public class ParamMoved : BHoMObject, IParamUpdate
+    public static partial class Query
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
 
-        public int Index { get; set; } = 0;
+        public static int SelectionIndex(this List<ParamInfo> parameters, int index)
+        {
+            if (index < 0 || index >= parameters.Count)
+                return -1;
 
-        public ParamInfo Param { get; set; } = null;
+            ParamInfo info = parameters[index];
+            return parameters.Where(x => x.IsSelected).ToList().FindIndex(x => x == info);
+        }
 
-        /***************************************************/
+        /*************************************/
     }
 }
 

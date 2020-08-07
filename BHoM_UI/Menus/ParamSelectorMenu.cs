@@ -39,7 +39,7 @@ namespace BH.UI.Base.Menus
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler SelectionChanged;
+        public event EventHandler<List<int>> SelectionChanged;
 
 
         /*************************************/
@@ -168,8 +168,8 @@ namespace BH.UI.Base.Menus
             int index = m_Params.FindIndex(x => x.Name == text);
             if (index >= 0)
             {
+                m_OriginalSelection[index] = m_Params[index].IsSelected;
                 m_Params[index].IsSelected = @checked;
-                m_SelectionChanged = true;
             }
         }
 
@@ -177,9 +177,12 @@ namespace BH.UI.Base.Menus
 
         protected void Menu_Closing(object sender, EventArgs e)
         {
-            if (m_SelectionChanged)
-                SelectionChanged?.Invoke(this, null);
-            m_SelectionChanged = false;
+            if (m_OriginalSelection.Count > 0)
+            {
+                List<int> changedIndices = m_OriginalSelection.Where(x => x.Value != m_Params[x.Key].IsSelected).Select(x => x.Key).ToList();
+                SelectionChanged?.Invoke(this, changedIndices);
+            }
+            m_OriginalSelection = new Dictionary<int, bool>();
         }
 
         /*************************************/
@@ -206,7 +209,7 @@ namespace BH.UI.Base.Menus
 
         List<ParamInfo> m_Params = new List<ParamInfo>();
         Dictionary<string, object> m_MenuItems = new Dictionary<string, object>();
-        bool m_SelectionChanged = false;
+        Dictionary<int, bool> m_OriginalSelection = new Dictionary<int, bool>();
 
         /*************************************/
     }

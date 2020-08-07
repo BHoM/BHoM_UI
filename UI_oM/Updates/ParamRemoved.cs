@@ -36,8 +36,6 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public int Index { get; set; } = 0;
-
         public ParamInfo Param { get; set; } = null;
 
         /***************************************************/
