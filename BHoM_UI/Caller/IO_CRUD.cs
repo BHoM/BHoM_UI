@@ -126,6 +126,54 @@ namespace BH.UI.Base
             return true;
         }
 
+
+        /*************************************/
+        /**** Output Methods              ****/
+        /*************************************/
+
+        public virtual void UpdateParams()
+        {
+
+        }
+
+
+        /*************************************/
+        /**** Authorisation Methods       ****/
+        /*************************************/
+
+        public virtual bool CanAddInput()
+        {
+            return false;
+        }
+
+        /*************************************/
+
+        public virtual bool CanAddOutput()
+        {
+            return false;
+        }
+
+        /*************************************/
+
+        public virtual bool CanRemoveInput(string name)
+        {
+            ParamInfo match = InputParams.Find(x => x.Name == name);
+            return match != null && !match.IsRequired;
+        }
+
+        /*************************************/
+
+        public virtual bool CanRemoveOutput(string name)
+        {
+            if (OutputParams.Count < 2)
+                return false;
+            else
+            {
+                ParamInfo match = OutputParams.Find(x => x.Name == name);
+                return match != null && !match.IsRequired;
+            }
+        }
+
         /*************************************/
     }
 }

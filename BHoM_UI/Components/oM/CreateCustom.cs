@@ -71,6 +71,13 @@ namespace BH.UI.Base.Components
         }
 
         /*************************************/
+
+        public override bool CanAddInput()
+        {
+            return true;
+        }
+
+        /*************************************/
     }
 }
 
