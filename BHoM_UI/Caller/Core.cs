@@ -69,8 +69,6 @@ namespace BH.UI.Base
 
         public object SelectedItem { get; set; } = null;
 
-        public bool WasUpgraded { get; protected set; } = false;
-
 
         /*************************************/
         /**** Constructors                ****/

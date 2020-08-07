@@ -30,13 +30,11 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class ParamReplaced : BHoMObject, IParamUpdate
+    public class ParamUpdated : BHoMObject, IParamUpdate
     {
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
-
-        public int Index { get; set; } = 0;
 
         public ParamInfo Param { get; set; } = null;
 

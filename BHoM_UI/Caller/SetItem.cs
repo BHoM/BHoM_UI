@@ -42,13 +42,16 @@ namespace BH.UI.Base
         /**** Public Methods              ****/
         /*************************************/
 
-        public virtual void SetItem(object item)
+        public virtual void SetItem(object item, bool sendNotification = true)
         {
             if (item == null)
                 return;
 
             m_OriginalItem = item;
             SelectedItem = FromGeneric(item as dynamic);
+
+            List<ParamInfo> oldInputs = InputParams.ToList();
+            List<ParamInfo> oldOutputs = OutputParams.ToList();
 
             SetComponentDetails();
 
@@ -62,10 +65,17 @@ namespace BH.UI.Base
             CompileInputGetters();
             CompileOutputSetters();
 
-            MarkAsModified(new CallerUpdate
+            if (sendNotification)
             {
-                Cause = CallerUpdateCause.ItemSelected
-            });
+                MarkAsModified(new CallerUpdate
+                {
+                    Cause = CallerUpdateCause.ItemSelected,
+                    ComponentUpdate = new ComponentUpdate { Name = Name, Description = Description },
+                    InputUpdates = InputParams.Changes(oldInputs).Where(x => x.Param.IsSelected).ToList(),
+                    OutputUpdates = OutputParams.Changes(oldOutputs).Where(x => x.Param.IsSelected).ToList()
+                });
+            }
+            
         }
 
 

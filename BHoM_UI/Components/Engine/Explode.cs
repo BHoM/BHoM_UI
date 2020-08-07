@@ -33,6 +33,7 @@ using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using BH.Engine.Serialiser;
+using BH.Engine.UI;
 
 namespace BH.UI.Base.Components
 {
@@ -107,6 +108,9 @@ namespace BH.UI.Base.Components
             if (objects.Count == 0 || !IsAllowedToUpdate())
                 return false;
 
+            // Save old outputs
+            List<ParamInfo> oldOutputs = OutputParams.ToList();
+
             // Collect the new output params
             OutputParams = Engine.UI.Query.OutputParams(objects);
 
@@ -115,6 +119,11 @@ namespace BH.UI.Base.Components
 
             // Create the output menu
             SetOutputSelectionMenu();
+
+            // Mark as modified if output have changed
+            List<IParamUpdate> changes = OutputParams.Changes(oldOutputs).Where(x => x.Param.IsSelected).ToList();
+            if (changes.Count > 0)
+                MarkAsModified(new CallerUpdate { Cause = CallerUpdateCause.ItemSelected, OutputUpdates = changes });
 
             return true;
         }

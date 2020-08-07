@@ -21,67 +21,79 @@
  */
 
 using BH.Engine.Reflection;
-using BH.oM.Reflection;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using BH.Engine.Serialiser;
-using System.Windows.Forms;
-using BH.oM.Base;
-using System.Collections;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.UI.Base
+namespace BH.Engine.UI
 {
-    public abstract class MultiChoiceCaller : Caller
+    public static partial class Query
     {
         /*************************************/
-        /**** Properties                  ****/
+        /**** Public Methods              ****/
         /*************************************/
 
-        public List<object> Choices { get; protected set; } = new List<object>();
+        public static string IToText(this IParamUpdate update)
+        {
+            return ToText(update as dynamic);
+        }
 
 
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        public override void SetItem(object item, bool sendNotification = true)
+        private static string ToText(ParamAdded update)
         {
-            m_OriginalItem = item;
-            SelectedItem = item;
-
-            SetComponentDetails();
-
-            if (sendNotification)
-            {
-                MarkAsModified(new CallerUpdate
-                {
-                    Cause = CallerUpdateCause.ItemSelected,
-                    ComponentUpdate = new ComponentUpdate { Name = Name, Description = Description }
-                });
-            }
-        }
-
-        /*************************************/
-
-        public override object Run(object[] inputs)
-        {
-            if (inputs.Length != 1)
-                return null;
-
-            int index = (int)inputs[0];
-            if (index >= 0 && index < Choices.Count)
-                return Choices[index];
+            if (update != null)
+                return "Parameter " + update.Name + " added";
             else
-                return null;
+                return "Undefined param added";
         }
 
         /*************************************/
 
-        public abstract List<string> GetChoiceNames();
+        private static string ToText(ParamMoved update)
+        {
+            if (update != null)
+                return "Param " + update.Name + " moved to " + update.Index;
+            else
+                return "Undefined param moved";
+        }
+
+        /*************************************/
+
+        private static string ToText(ParamRemoved update)
+        {
+            if (update != null)
+                return "Parameter " + update.Name + " removed";
+            else
+                return "Undefined param removed";
+        }
+
+        /*************************************/
+
+        private static string ToText(ParamUpdated update)
+        {
+            if (update != null && update.Param != null && update.OldParam != null)
+            {
+                string newTypeText = (update.Param.DataType != null) ? update.Param.DataType.ToText(true) : "unknow";
+                string oldTypeText = (update.OldParam.DataType != null) ? update.OldParam.DataType.ToText(true) : "unknow";
+                return "Parameter " + update.OldParam.Name + " of type " + oldTypeText + " replaced with parameter " + update.Name + " of type " + newTypeText;
+            }
+            else
+                return "Undefined param replaced";
+        }
+
+        /*************************************/
+
+        private static string ToText(IParamUpdate update)
+        {
+            return update.ToString();
+        }
 
         /*************************************/
     }

@@ -38,8 +38,6 @@ namespace BH.oM.UI
 
         public override string Name { get; set; } = null;
 
-        public string Nickname { get; set; } = null;
-
         public string Description { get; set; } = null;
 
         /***************************************************/
