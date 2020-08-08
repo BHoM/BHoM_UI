@@ -106,11 +106,11 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        public override void AddToMenu(ToolStripDropDown menu)
+        public override void AddToMenu(object menu)
         {
             // Always let the component change its type even after one is selected
             if (m_ItemSelector != null)
-                m_ItemSelector.AddToMenu(menu);
+                m_ItemSelector.AddToMenu(menu as dynamic);
         }
 
         /*************************************/

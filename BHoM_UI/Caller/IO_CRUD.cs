@@ -80,13 +80,15 @@ namespace BH.UI.Base
             if (InputParams.Count <= index)
                 return AddInput(index, name, type);
 
+            if (type != InputParams[index].DataType)
+                m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
+
             if (name != null)
                 InputParams[index].Name = name;
 
             if (type != null)
                 InputParams[index].DataType = type;
 
-            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
             return true;
         }
 
