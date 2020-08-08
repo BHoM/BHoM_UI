@@ -156,10 +156,13 @@ namespace BH.UI.Base
             if (selectedItem == null)
             {
                 InputParams = inputParams;
-                CompileInputGetters();
-
                 OutputParams = outputParams;
+
+                CompileInputGetters();
                 CompileOutputSetters();
+
+                SetInputSelectionMenu();
+                SetOutputSelectionMenu();
             }
 
             return selectedItem;

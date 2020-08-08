@@ -90,22 +90,65 @@ namespace BH.UI.Base.Components
             }
         }
 
+        /*************************************/
+
+        protected override bool PushOutputs(object result)
+        {
+            if (!base.PushOutputs(result))
+            {
+                Engine.Reflection.Compute.ClearCurrentEvents();
+                Engine.Reflection.Compute.RecordWarning("Output paramters do not match object properties. Please right click and <Update Outputs>");
+                return false;
+            }
+            else
+                return true;
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(ToolStripDropDown menu)
+        {
+            menu.Items.Add(new ToolStripMenuItem("Update Outputs", null, (sender, e) => CollectOutputTypes()));
+            menu.Items.Add(new ToolStripSeparator());
+
+            base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        {
+            System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem { Header = "Update Outputs" };
+            item.Click += (sender, e) => CollectOutputTypes();
+            menu.Items.Add(item);
+            menu.Items.Add(new Separator());
+
+            base.AddToMenu(menu);
+        }
+
+        /*************************************/
+
+        public override bool UpdateInput(int index, string name, Type type = null)
+        {
+            bool isAllowedToUpdate = OutputParams.All(x => x.IsSelected);
+
+            if (isAllowedToUpdate)
+                return CollectOutputTypes();
+            else
+                return false;
+        }
+
 
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        public bool IsAllowedToUpdate()
+        public bool CollectOutputTypes()
         {
-            return OutputParams.All(x => x.IsSelected);
-        }
+            List<object> objects = m_DataAccessor.GetAllData(0);
 
-        /*************************************/
-
-        public bool CollectOutputTypes(List<object> objects)
-        {
             // Do not update if the list of input is empty or if user has manually selected outputs
-            if (objects.Count == 0 || !IsAllowedToUpdate())
+            if (objects.Count == 0)
                 return false;
 
             // Save old outputs

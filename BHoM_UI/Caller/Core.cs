@@ -135,6 +135,14 @@ namespace BH.UI.Base
         }
 
         /*************************************/
+
+        public virtual bool IsObsolete()
+        {
+            return SelectedItem == null ? false : SelectedItem.IIsDeprecated();
+        }
+
+
+        /*************************************/
         /**** Protected Methods           ****/
         /*************************************/
 

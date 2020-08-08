@@ -44,6 +44,10 @@ namespace BH.oM.UI
 
         List<List<T>> GetDataTree<T>(int index);
 
+        /*************************************/
+
+        List<object> GetAllData(int index);
+
 
         /*************************************/
         /**** Output Setter Methods       ****/

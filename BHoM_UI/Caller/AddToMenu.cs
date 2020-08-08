@@ -43,28 +43,14 @@ namespace BH.UI.Base
 
         public virtual void AddToMenu(ToolStripDropDown menu)
         {
-            if (m_ItemSelector != null && SelectedItem == null)
-                m_ItemSelector.AddToMenu(menu);
-
-            if (m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
-
-            if (m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
+            AddToMenu(menu as object);
         }
 
         /*************************************/
 
         public virtual void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
-            if (m_ItemSelector != null && SelectedItem == null)
-                m_ItemSelector.AddToMenu(menu);
-
-            if (m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
-
-            if (m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
+            AddToMenu(menu as object);
         }
 
         /*************************************/
@@ -72,13 +58,13 @@ namespace BH.UI.Base
         public virtual void AddToMenu(object menu)
         {
             if (m_ItemSelector != null && SelectedItem == null)
-                m_ItemSelector.AddToMenu(menu);
+                m_ItemSelector.AddToMenu(menu as dynamic);
 
             if (m_InputSelector != null)
-                m_InputSelector.AddParamList(menu);
+                m_InputSelector.AddParamList(menu as dynamic);
 
             if (m_OutputSelector != null)
-                m_OutputSelector.AddParamList(menu);
+                m_OutputSelector.AddParamList(menu as dynamic);
         }
 
         /*************************************/
