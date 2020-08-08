@@ -143,9 +143,10 @@ namespace BH.UI.Base.Components
         /**** Public Methods              ****/
         /*************************************/
 
-        public bool CollectOutputTypes()
+        public bool CollectOutputTypes(List<object> objects = null)
         {
-            List<object> objects = m_DataAccessor.GetAllData(0);
+            if (objects == null)
+                objects = m_DataAccessor.GetAllData(0);
 
             // Do not update if the list of input is empty or if user has manually selected outputs
             if (objects.Count == 0)
