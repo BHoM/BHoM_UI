@@ -74,7 +74,7 @@ namespace BH.UI.Base
                     Cause = CallerUpdateCause.OutputSelection,
                     OutputUpdates = changedIndices.Select<int, IParamUpdate>(i =>
                     {
-                        if (InputParams[i].IsSelected)
+                        if (OutputParams[i].IsSelected)
                             return new ParamAdded { Index = OutputParams.SelectionIndex(i), Name = OutputParams[i].Name, Param = OutputParams[i] };
                         else
                             return new ParamRemoved { Name = OutputParams[i].Name, Param = OutputParams[i] };

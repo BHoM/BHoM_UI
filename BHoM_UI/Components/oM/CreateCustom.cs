@@ -78,6 +78,23 @@ namespace BH.UI.Base.Components
         }
 
         /*************************************/
+
+        public override bool RemoveInput(string name)
+        {
+            if (name == null)
+                return false;
+
+            int index = InputParams.FindIndex(x => x.Name == name);
+            if (index >= 0)
+            {
+                InputParams.RemoveAt(index);
+                m_CompiledGetters.RemoveAt(index);
+            }
+
+            return true;
+        }
+
+        /*************************************/
     }
 }
 

@@ -50,9 +50,12 @@ namespace BH.UI.Base
             if (match != null)
                 match.IsSelected = true;
             else
-                InputParams.Insert(index, Engine.UI.Create.ParamInfo(name, type));
+            {
+                ParamInfo param = Engine.UI.Create.ParamInfo(name, type);
+                InputParams.Insert(index, param);
+                m_CompiledGetters.Insert(index, Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), param.DataType));
+            }
 
-            CompileInputGetters();
             return true;
         }
 
@@ -67,7 +70,6 @@ namespace BH.UI.Base
             if (match != null)
                 match.IsSelected = false;
 
-            CompileInputGetters();
             return true;
         }
 
@@ -84,7 +86,7 @@ namespace BH.UI.Base
             if (type != null)
                 InputParams[index].DataType = type;
 
-            CompileInputGetters();
+            m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
             return true;
         }
 
@@ -112,7 +114,6 @@ namespace BH.UI.Base
             if (match != null)
                 match.IsSelected = false;
 
-            CompileOutputSetters();
             return true;
         }
 
