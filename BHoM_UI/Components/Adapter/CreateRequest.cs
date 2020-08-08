@@ -55,7 +55,11 @@ namespace BH.UI.Base.Components
 
         public CreateRequestCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.CreateRequestItems());
+            List<MemberInfo> possibleItems = new List<MemberInfo>();
+            possibleItems.AddRange(Engine.UI.Query.ConstructableRequestItems());
+            possibleItems.AddRange(Engine.UI.Query.CreateRequestItems());
+
+            SetPossibleItems(possibleItems);
         }
 
         /*************************************/

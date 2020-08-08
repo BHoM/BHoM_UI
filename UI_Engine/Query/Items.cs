@@ -103,6 +103,15 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
+        public static IEnumerable<Type> ConstructableRequestItems()
+        {
+            return Engine.Reflection.Query.BHoMTypeList()
+                .Where(x => x != null && x.Namespace.StartsWith("BH.oM.Adapters") && !x.IsNotImplemented() && !x.IsDeprecated() && !x.IsEnum && !x.IsAbstract)
+                .Where(x => x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
+        }
+
+        /***************************************************/
+
         public static IEnumerable<Type> TypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()

@@ -22,6 +22,7 @@
 
 using BH.Engine.Reflection;
 using BH.Engine.UI;
+using BH.oM.Data.Requests;
 using BH.oM.UI;
 using BH.UI.Base.Components;
 using System;
@@ -117,7 +118,7 @@ namespace BH.UI.Base.Global
 
             // All constructors for the BHoM objects
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
-                .Select(x => new SearchItem { Item = x, CallerType = typeof(CreateObjectCaller), Icon = Properties.Resources.CreateBHoM, Text = x.ConstructorText() }));
+                .Select(x => new SearchItem { Item = x, CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.ConstructorText() }));
 
             // All methods for the BHoM Engine
             items.AddRange(BH.Engine.UI.Query.EngineItems()
@@ -161,7 +162,10 @@ namespace BH.UI.Base.Global
                 case "Convert":
                     return Properties.Resources.Convert;
                 case "Create":
-                    return Properties.Resources.CreateBHoM;
+                    if (typeof(IRequest).IsAssignableFrom(item.OutputType()))
+                        return Properties.Resources.CreateRequest;
+                    else
+                        return Properties.Resources.CreateBHoM;
                 case "Modify":
                     return Properties.Resources.Modify;
                 case "Query":
@@ -169,6 +173,19 @@ namespace BH.UI.Base.Global
                 default:
                     return Properties.Resources.Empty;
             }
+        }
+
+        /*************************************/
+
+        protected Bitmap GetIcon(Type item)
+        {
+            if (item == null)
+                return Properties.Resources.Empty;
+
+            if (typeof(IRequest).IsAssignableFrom(item))
+                return Properties.Resources.CreateRequest;
+            else
+                return Properties.Resources.CreateBHoM;
         }
 
         /*************************************/
@@ -184,7 +201,10 @@ namespace BH.UI.Base.Global
                     case "Convert":
                         return typeof(ConvertCaller);
                     case "Create":
-                        return typeof(CreateObjectCaller);
+                        if (typeof(IRequest).IsAssignableFrom(item.OutputType()))
+                            return typeof(CreateRequestCaller);
+                        else
+                            return typeof(CreateObjectCaller);
                     case "Modify":
                         return typeof(ModifyCaller);
                     case "Query":
@@ -195,6 +215,19 @@ namespace BH.UI.Base.Global
             }
             else
                 return null;
+        }
+
+        /*************************************/
+
+        protected Type GetCallerType(Type item)
+        {
+            if (item == null)
+                return null;
+
+            if (typeof(IRequest).IsAssignableFrom(item))
+                return typeof(CreateRequestCaller);
+            else
+                return typeof(CreateObjectCaller);
         }
 
         /*************************************/
