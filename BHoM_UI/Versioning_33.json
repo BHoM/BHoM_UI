@@ -1,0 +1,22 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+      "BH.UI.Components":  "BH.UI.Base.Components"
+    },
+    "ToOld": {
+      "BH.UI.Base.Components": "BH.UI.Components"
+    }
+  },
+  "Type": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  },
+  "Property": {
+    "ToNew": {
+    },
+    "ToOld": {
+    }
+  }
+}
