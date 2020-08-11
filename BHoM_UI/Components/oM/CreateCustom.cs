@@ -54,9 +54,19 @@ namespace BH.UI.Base.Components
         /**** Constructors                ****/
         /*************************************/
 
-        public CreateCustomCaller() : base()
+        public CreateCustomCaller(bool dynamicInputs = true) : base()
         {
-            InputParams = new List<ParamInfo>();
+            m_DynamicInputs = dynamicInputs;
+
+            if (dynamicInputs)
+                InputParams = new List<ParamInfo>();
+            else
+                InputParams = new List<ParamInfo>
+                {
+                    new ParamInfo { DataType = typeof(List<string>), Kind = ParamKind.Input, Name = "properties", Description = "Names of the properties to set on the object.", IsRequired = true },
+                    new ParamInfo { DataType = typeof(List<object>), Kind = ParamKind.Input, Name = "values", Description = "Values of the properties to set on the object.", IsRequired = true }
+                };
+
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs.", IsRequired = true } };
         }
 
@@ -66,22 +76,29 @@ namespace BH.UI.Base.Components
 
         public override object Run(object[] inputs)
         {
-            List<string> names = InputParams.Select(x => x.Name).ToList();
-            return Engine.Base.Create.CustomObject(names, inputs.ToList());
+            if (m_DynamicInputs)
+            {
+                List<string> names = InputParams.Select(x => x.Name).ToList();
+                return Engine.Base.Create.CustomObject(names, inputs.ToList());
+            }
+            else
+            {
+                return Engine.Base.Create.CustomObject(inputs[0] as List<string>, inputs[1] as List<object>);
+            }   
         }
 
         /*************************************/
 
         public override bool CanAddInput()
         {
-            return true;
+            return m_DynamicInputs;
         }
 
         /*************************************/
 
         public override bool RemoveInput(string name)
         {
-            if (name == null)
+            if (!m_DynamicInputs || name == null)
                 return false;
 
             int index = InputParams.FindIndex(x => x.Name == name);
@@ -93,6 +110,13 @@ namespace BH.UI.Base.Components
 
             return true;
         }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        protected bool m_DynamicInputs = false;
 
         /*************************************/
     }
