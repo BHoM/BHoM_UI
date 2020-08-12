@@ -107,7 +107,10 @@ namespace BH.UI.Base
 
         public virtual void SetDataAccessor(IDataAccessor accessor)
         {
-            Type oldType = m_DataAccessor.GetType();
+            if (accessor == null)
+                return;
+
+            Type oldType = m_DataAccessor == null ? null : m_DataAccessor.GetType();
             m_DataAccessor = accessor;
 
             if (oldType != m_DataAccessor.GetType())
