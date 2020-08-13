@@ -67,9 +67,9 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
-            if (inputs.Length != 1)
+            if (inputs.Count != 1)
                 return null;
 
             int index = (int)inputs[0];

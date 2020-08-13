@@ -59,9 +59,9 @@ namespace BH.UI.Base.Components
         /**** Override Method             ****/
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
-            if (inputs.Length > 0)
+            if (inputs.Count > 0)
             {
                 BHoMAdapter adapter = inputs[0] as BHoMAdapter;
                 Guid id = adapter.AdapterGuid;
