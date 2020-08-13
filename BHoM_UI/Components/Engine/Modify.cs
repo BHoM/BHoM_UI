@@ -61,11 +61,12 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
-            if (inputs != null && inputs.Length >= 1 && inputs[0] != null)
+            if (inputs != null && inputs.Count >= 1 && inputs[0] != null)
             {
                 // Deepclone must be done before the properties are set to ensure immutability
+                // TODO: DeepClone should ignore fragments and CustomData
                 inputs[0] = inputs[0].DeepClone();
             }
             return base.Run(inputs);

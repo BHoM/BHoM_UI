@@ -73,9 +73,9 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
-            if (inputs.Length != 1)
+            if (inputs.Count != 1)
             {
                 BH.Engine.Reflection.Compute.RecordError("The number of inputs is invalid.");
                 return null;

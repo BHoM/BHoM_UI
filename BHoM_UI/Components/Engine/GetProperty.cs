@@ -22,6 +22,7 @@
 
 using BH.oM.Reflection.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace BH.UI.Base.Components
@@ -54,7 +55,7 @@ namespace BH.UI.Base.Components
         /**** Override Method             ****/
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
             object result = base.Run(inputs);
 

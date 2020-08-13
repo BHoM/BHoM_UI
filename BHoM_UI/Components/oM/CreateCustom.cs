@@ -74,12 +74,12 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
             if (m_DynamicInputs)
             {
                 List<string> names = InputParams.Select(x => x.Name).ToList();
-                return Engine.Base.Create.CustomObject(names, inputs.ToList());
+                return Engine.Base.Create.CustomObject(names, inputs);
             }
             else
             {

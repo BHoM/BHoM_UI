@@ -26,6 +26,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using BH.Engine.Base;
+using System.Collections.Generic;
 
 namespace BH.UI.Base.Components
 {
@@ -57,12 +58,12 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        protected override object[] CollectInputs()
+        protected override List<object> CollectInputs()
         {
             // This makes sure that the output type is always matching the property type.
             // This is especially important to differentiate between items, lists and trees
 
-            object[] inputs = new object[] { };
+            List<object> inputs = new List<object>();
             try
             {
                 if (m_CompiledGetters.Count == 3)
@@ -83,7 +84,7 @@ namespace BH.UI.Base.Components
                         }
                     }
 
-                    inputs = new object[] { obj, propName, m_CompiledGetters[2](m_DataAccessor, 2) };
+                    inputs = new List<object> { obj, propName, m_CompiledGetters[2](m_DataAccessor, 2) };
                 }
             }
             catch (Exception e)
@@ -97,11 +98,13 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        public override object Run(object[] inputs)
+        public override object Run(List<object> inputs)
         {
-            if (inputs != null && inputs.Length >= 1 && inputs[0] != null)
+            if (inputs != null && inputs.Count >= 1 && inputs[0] != null)
             {
                 // Deepclone must be done before the properties are set to ensure immutability
+                // TODO: We need to shallow clone only. Let's not forget the case of properties setting like "X.Y.Z"
+                // TODO: DeepClone should ignore fragments and CustomData
                 inputs[0] = inputs[0].DeepClone();
             }
             return base.Run(inputs);

@@ -46,7 +46,7 @@ namespace BH.UI.Base
             BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
             // Get all the inputs
-            object[] inputs = CollectInputs();
+            List<object> inputs = CollectInputs();
             if (inputs == null)
                 return false;
 
@@ -68,13 +68,13 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public virtual object Run(object[] inputs)
+        public virtual object Run(List<object> inputs)
         {
             if (m_CompiledFunc != null)
             {
                 try
                 {
-                    return m_CompiledFunc(inputs);
+                    return m_CompiledFunc(inputs.ToArray());
                 }
                 catch (InvalidCastException e)
                 {
@@ -84,7 +84,7 @@ namespace BH.UI.Base
                         // Try to update the generic method to fit the input types
                         MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
-                        return m_CompiledFunc(inputs);
+                        return m_CompiledFunc(inputs.ToArray());
                     }
                     else
                         throw e;
@@ -107,7 +107,7 @@ namespace BH.UI.Base
         /**** Helper Methods              ****/
         /*************************************/
 
-        protected virtual object[] CollectInputs()
+        protected virtual List<object> CollectInputs()
         {
             List<object> inputs = new List<object>();
             try
@@ -148,7 +148,7 @@ namespace BH.UI.Base
                 return null;
             }
 
-            return inputs.ToArray();
+            return inputs.ToList();
         }
 
         /*************************************/
