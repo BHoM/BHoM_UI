@@ -51,17 +51,21 @@ namespace BH.UI.Base
                 return false;
 
             // Execute the method
-            object result = null;
-            try
+            object result = m_CachedResult;
+            if (m_CachedResult == null || ShouldCalculateNewResult(inputs))
             {
-                result = Run(inputs);
+                try
+                {
+                    result = Run(inputs);
+                    m_CachedResult = result;
+                }
+                catch (Exception e)
+                {
+                    Engine.UI.Compute.RecordExecutionError(e);
+                    return false;
+                }
             }
-            catch (Exception e)
-            {
-                Engine.UI.Compute.RecordExecutionError(e);
-                return false;
-            }
-
+                
             // Set the output
             return PushOutputs(result);
         }
@@ -268,6 +272,20 @@ namespace BH.UI.Base
             else
                 return null;
         }
+
+        /*************************************/
+
+        protected virtual bool ShouldCalculateNewResult(List<object> inputs)
+        {
+            return true;
+        }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        protected object m_CachedResult = null;
 
         /*************************************/
     }
