@@ -75,6 +75,13 @@ namespace BH.UI.Base.Components
             return base.Run(inputs);
         }
 
+        /*************************************/
+
+        protected override bool ShouldCalculateNewResult(List<object> inputs)
+        {
+            return (bool)inputs.Last() == true;
+        }
+
 
         /*************************************/
         /**** Public Method               ****/
