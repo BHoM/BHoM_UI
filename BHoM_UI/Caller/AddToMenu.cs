@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.UI.Base.Menus;
 
 namespace BH.UI.Base
 {
@@ -65,6 +66,14 @@ namespace BH.UI.Base
 
             if (m_OutputSelector != null)
                 m_OutputSelector.AddParamList(menu as dynamic);
+        }
+
+        /*************************************/
+
+        public void SetSelectorMenu<M>(ItemSelectorMenu<M> selectorMenu)
+        {
+            if (m_ItemSelector != null)
+                m_ItemSelector.SetSelectorMenu(selectorMenu);
         }
 
         /*************************************/

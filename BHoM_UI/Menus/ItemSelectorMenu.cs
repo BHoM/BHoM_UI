@@ -30,20 +30,20 @@ using System.Threading.Tasks;
 
 namespace BH.UI.Base.Menus
 {
-    public abstract class ItemSelectorMenu<T, M> : IItemSelectorMenu<T>
+    public abstract class ItemSelectorMenu<M> : IItemSelectorMenu
     {
         /*************************************/
         /**** Public Events               ****/
         /*************************************/
 
-        public event EventHandler<T> ItemSelected;
+        public event EventHandler<object> ItemSelected;
 
 
         /*************************************/
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelectorMenu(List<SearchItem> itemList, Tree<T> itemTree)
+        public ItemSelectorMenu(List<SearchItem> itemList, Tree<object> itemTree)
         {
             m_ItemList = itemList;
             m_ItemTree = itemTree;
@@ -70,7 +70,7 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        public void SetItems(List<SearchItem> itemList, Tree<T> itemTree)
+        public void SetItems(List<SearchItem> itemList, Tree<object> itemTree)
         {
             m_ItemList = itemList;
             m_ItemTree = itemTree;
@@ -81,7 +81,7 @@ namespace BH.UI.Base.Menus
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected abstract void AddTree(M menu, Tree<T> itemTree);
+        protected abstract void AddTree(M menu, Tree<object> itemTree);
 
         /*************************************/
 
@@ -89,7 +89,7 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        protected void ReturnSelectedItem(T item)
+        protected void ReturnSelectedItem(object item)
         {
             if (ItemSelected != null)
                 ItemSelected(this, item);
@@ -102,7 +102,7 @@ namespace BH.UI.Base.Menus
 
         protected List<SearchItem> m_ItemList = new List<SearchItem>();
 
-        protected Tree<T> m_ItemTree = new Tree<T>();
+        protected Tree<object> m_ItemTree = new Tree<object>();
 
 
         /*************************************/
