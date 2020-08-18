@@ -40,70 +40,70 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<T>> IOrganise<T>(this List<T> items)
+        public static Output<List<SearchItem>, Tree<object>> IOrganise(this List<object> items)
         {
-            Type type = typeof(T);
+            List<Type> types = items.GroupBy(x => x.GetType()).Select(x => x.Key).ToList();
 
-            if (type == typeof(MethodBase))
-                return Organise(items.Cast<MethodBase>().ToList()) as Output<List<SearchItem>, Tree<T>>;
-            else if (type == typeof(Type))
-                return Organise(items.Cast<Type>().ToList()) as Output<List<SearchItem>, Tree<T>>;
-            else if (type == typeof(MemberInfo))
-                return Organise(items.Cast<MemberInfo>().ToList()) as Output<List<SearchItem>, Tree<T>>;
+            if (types.Count == 1 && types[0] == typeof(MethodBase))
+                return OrganiseMethods(items);
+            else if (types.Count == 1 && types[0] == typeof(Type))
+                return OrganiseTypes(items);
+            else if (types.All(type => typeof(MemberInfo).IsAssignableFrom(type)))
+                return OrganiseMembers(items);
             else
-                return Organise(items) as Output<List<SearchItem>, Tree<T>>;
+                return OrganiseObjects(items);
         }
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<MethodBase>> Organise(this List<MethodBase> methods)
+        public static Output<List<SearchItem>, Tree<object>> OrganiseMethods(this List<object> methods)
         {
             // Create method list
-            IEnumerable<string> paths = methods.Select(x => x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            IEnumerable<string> paths = methods.Select(x => x.IToText(true).Replace("Engine", "oM.NonBHoMObjects"));
             List<SearchItem> list = paths.Zip(methods, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
-            Tree<MethodBase> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
+            Tree<object> tree = Data.Create.Tree(methods, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select a method");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupByName();
             
-            return new Output<List<SearchItem>, Tree<MethodBase>> { Item1 = list, Item2 = tree };
+            return new Output<List<SearchItem>, Tree<object>> { Item1 = list, Item2 = tree };
         }
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<Type>> Organise(this List<Type> types)
+        public static Output<List<SearchItem>, Tree<object>> OrganiseTypes(this List<object> types)
         {
             // Create type list
-            IEnumerable<string> paths = types.Select(x => x.ToText(true));
+            IEnumerable<string> paths = types.Select(x => x.IToText(true));
             List<SearchItem> list = paths.Zip(types, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create type tree
-            Tree<Type> tree = Data.Create.Tree(types, paths.Select(x => x.Split('.').ToList()).ToList(), "select a type");
+            Tree<object> tree = Data.Create.Tree(types, paths.Select(x => x.Split('.').ToList()).ToList(), "select a type");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
 
-            return new Output<List<SearchItem>, Tree<Type>> { Item1 = list, Item2 = tree };
+            return new Output<List<SearchItem>, Tree<object>> { Item1 = list, Item2 = tree };
         }
 
         /*************************************/
 
-        public static Output<List<SearchItem>, Tree<MemberInfo>> Organise(this List<MemberInfo> members)
+        public static Output<List<SearchItem>, Tree<object>> OrganiseMembers(this List<object> members)
         {
             // Create method list
-            IEnumerable<string> paths = members.Select(x => x is Type ? ((Type)x).ConstructorText() : x.ToText(true).Replace("Engine", "oM.NonBHoMObjects"));
+            IEnumerable<string> paths = members.Select(x => x is Type ? ((Type)x).ConstructorText() : x.IToText(true).Replace("Engine", "oM.NonBHoMObjects"));
             List<SearchItem> list = paths.Zip(members, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create method tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query" };
-            Tree<MemberInfo> tree = Data.Create.Tree(members, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select an item");
+            Tree<object> tree = Data.Create.Tree(members, paths.Select(x => x.Split('.').Except(toSkip).ToList()).ToList(), "Select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupByName();
 
-            return new Output<List<SearchItem>, Tree<MemberInfo>> { Item1 = list, Item2 = tree };
+            return new Output<List<SearchItem>, Tree<object>> { Item1 = list, Item2 = tree };
         }
 
 
@@ -111,18 +111,18 @@ namespace BH.Engine.UI
         /**** Private Methods             ****/
         /*************************************/
 
-        private static Output<List<SearchItem>, Tree<T>> Organise<T>(this List<T> items)
+        private static Output<List<SearchItem>, Tree<object>> OrganiseObjects(this List<object> items)
         {
             // Create item list
             IEnumerable<string> paths = items.Select(x => x.ToString());
             List<SearchItem> list = paths.Zip(items, (k, v) => new SearchItem { Text = k, Item = v }).ToList();
 
             //Create ietm tree
-            Tree<T> tree = Data.Create.Tree(items, paths.Select(x => x.Split(new char[] { '.', '/', '\\' }).ToList()).ToList(), "select an item");
+            Tree<object> tree = Data.Create.Tree(items, paths.Select(x => x.Split(new char[] { '.', '/', '\\' }).ToList()).ToList(), "select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
 
-            return new Output<List<SearchItem>, Tree<T>> { Item1 = list, Item2 = tree };
+            return new Output<List<SearchItem>, Tree<object>> { Item1 = list, Item2 = tree };
         }
 
 

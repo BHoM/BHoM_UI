@@ -32,7 +32,7 @@ using BH.Engine.Reflection;
 
 namespace BH.UI.Base.Menus
 {
-    public class ItemSelector<T> : IItemSelector
+    public class ItemSelector
     {
         /*************************************/
         /**** Events                      ****/
@@ -45,14 +45,14 @@ namespace BH.UI.Base.Menus
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelector(IEnumerable<T> possibleItems, string key) 
+        public ItemSelector(IEnumerable<object> possibleItems, string key) 
         {
             m_Key = key;
 
             if (!m_ItemTreeStore.ContainsKey(key) || !m_ItemListStore.ContainsKey(key))
             {
-                List<T> toKeep = possibleItems.Where(x => x.IIsExposed()).ToList();
-                Output<List<SearchItem>, Tree<T>> organisedMethod = Engine.UI.Compute.IOrganise(toKeep);
+                List<object> toKeep = possibleItems.Where(x => x.IIsExposed()).ToList();
+                Output<List<SearchItem>, Tree<object>> organisedMethod = Engine.UI.Compute.IOrganise(toKeep);
                 m_ItemListStore[key] = organisedMethod.Item1;
                 m_ItemTreeStore[key] = organisedMethod.Item2;
             }
@@ -65,7 +65,7 @@ namespace BH.UI.Base.Menus
         public void AddToMenu(ToolStripDropDown menu)
         {
             if (m_SelectorMenu == null)
-                SetSelectorMenu(new ItemSelectorMenu_WinForm<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
+                SetSelectorMenu(new ItemSelectorMenu_WinForm(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
             m_SelectorMenu.FillMenu(menu);
         }
@@ -75,7 +75,7 @@ namespace BH.UI.Base.Menus
         public void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
             if (m_SelectorMenu == null)
-                SetSelectorMenu(new ItemSelectorMenu_Wpf<T>(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
+                SetSelectorMenu(new ItemSelectorMenu_Wpf(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]));
 
             m_SelectorMenu.FillMenu(menu);
         }
@@ -90,7 +90,7 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        public void SetSelectorMenu<M>(ItemSelectorMenu<T, M> selectorMenu)
+        public void SetSelectorMenu<M>(ItemSelectorMenu<M> selectorMenu)
         {
             selectorMenu.SetItems(m_ItemListStore[m_Key], m_ItemTreeStore[m_Key]);
             selectorMenu.ItemSelected += M_Menu_ItemSelected;
@@ -103,7 +103,7 @@ namespace BH.UI.Base.Menus
         /**** Private Methods             ****/
         /*************************************/
 
-        private void M_Menu_ItemSelected(object sender, T e)
+        private void M_Menu_ItemSelected(object sender, object e)
         {
             ItemSelected?.Invoke(this, e);
         }
@@ -114,9 +114,9 @@ namespace BH.UI.Base.Menus
         /*************************************/
 
         protected string m_Key = "";
-        protected IItemSelectorMenu<T> m_SelectorMenu = null;
+        protected IItemSelectorMenu m_SelectorMenu = null;
 
-        protected static Dictionary<string, Tree<T>> m_ItemTreeStore = new Dictionary<string, Tree<T>>();
+        protected static Dictionary<string, Tree<object>> m_ItemTreeStore = new Dictionary<string, Tree<object>>();
         protected static Dictionary<string, List<SearchItem>> m_ItemListStore = new Dictionary<string, List<SearchItem>>();
 
 

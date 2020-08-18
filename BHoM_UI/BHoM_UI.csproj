@@ -170,7 +170,6 @@
     <Compile Include="Global\SearchMenu_Wpf.cs" />
     <Compile Include="Menus\ParamSelectorMenu.cs" />
     <Compile Include="Menus\IItemSelectorMenu.cs" />
-    <Compile Include="Menus\IItemSelector.cs" />
     <Compile Include="Menus\ItemSelector.cs" />
     <Compile Include="Caller\Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

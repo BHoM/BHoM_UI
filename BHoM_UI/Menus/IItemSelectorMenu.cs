@@ -29,9 +29,9 @@ using System.Windows.Forms;
 
 namespace BH.UI.Base.Menus
 {
-    public interface IItemSelectorMenu<T>
+    public interface IItemSelectorMenu
     {
-        event EventHandler<T> ItemSelected;
+        event EventHandler<object> ItemSelected;
 
         void FillMenu(object menu);
     }

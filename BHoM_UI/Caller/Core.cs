@@ -124,7 +124,7 @@ namespace BH.UI.Base
 
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
-            m_ItemSelector = new ItemSelector<T>(items, Name);
+            m_ItemSelector = new ItemSelector(items.Cast<object>(), Name);
             m_ItemSelector.ItemSelected += (sender, e) => SetItem(e);
         }
 
@@ -133,13 +133,6 @@ namespace BH.UI.Base
         public virtual string GetFullName()
         {
             return "BH." + Category + "." + Name;
-        }
-
-        /*************************************/
-
-        public virtual IItemSelector GetItemSelectorMenu()
-        {
-            return m_ItemSelector;
         }
 
         /*************************************/
@@ -177,7 +170,7 @@ namespace BH.UI.Base
         protected List<Func<IDataAccessor, int, object>> m_CompiledGetters = new List<Func<IDataAccessor, int, object>>();
         protected List<Func<IDataAccessor, object, int, bool>> m_CompiledSetters = new List<Func<IDataAccessor, object, int, bool>>();
 
-        protected IItemSelector m_ItemSelector = null;
+        protected ItemSelector m_ItemSelector = null;
         protected ParamSelectorMenu m_InputSelector = null;
         protected ParamSelectorMenu m_OutputSelector = null;
 
