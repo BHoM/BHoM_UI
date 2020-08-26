@@ -67,7 +67,9 @@ namespace BH.UI.Base
 
         public List<ParamInfo> OutputParams { get; protected set; } = new List<ParamInfo>();
 
-        public object SelectedItem { get; set; } = null;
+        public object SelectedItem { get; protected set; } = null;
+
+        public bool HasPossibleItems { get; protected set; } = false;
 
 
         /*************************************/
@@ -124,6 +126,7 @@ namespace BH.UI.Base
 
         protected void SetPossibleItems<T>(IEnumerable<T> items)
         {
+            HasPossibleItems = true;
             m_ItemSelector = new ItemSelector(items.Cast<object>(), Name);
             m_ItemSelector.ItemSelected += (sender, e) => SetItem(e);
         }
