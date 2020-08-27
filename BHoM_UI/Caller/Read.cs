@@ -61,8 +61,8 @@ namespace BH.UI.Base
 
                 // New serialisation, we stored a CustomObject with SelectedItem, InputParams and OutputParams
                 object selectedItem = null;
-                List<ParamInfo> inputParams = new List<ParamInfo>();
-                List<ParamInfo> outputParams = new List<ParamInfo>();
+                List<ParamInfo> inputParams;
+                List<ParamInfo> outputParams;
                 ExtractSavedData(component, out selectedItem, out inputParams, out outputParams);
 
                 // If selected item is null, try to recover it
@@ -101,14 +101,14 @@ namespace BH.UI.Base
             if (data.CustomData.TryGetValue("InputParams", out inputParamsRecord))
                 inputParams = (inputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
             else
-                inputParams = new List<ParamInfo>();
+                inputParams = null;
 
             // Get output params
             object outputParamsRecord;
             if (data.CustomData.TryGetValue("OutputParams", out outputParamsRecord))
                 outputParams = (outputParamsRecord as IEnumerable).OfType<ParamInfo>().ToList();
             else
-                outputParams = new List<ParamInfo>();
+                outputParams = null;
         }
 
         /*************************************/
@@ -119,8 +119,10 @@ namespace BH.UI.Base
             SetItem(selectedItem, false);
 
             // Make sure that saved selection is copied over
-            SelectInputs(inputParams.ToDictionary(x => x.Name, x => x.IsSelected));
-            SelectOutputs(outputParams.ToDictionary(x => x.Name, x => x.IsSelected));
+            if (inputParams != null)
+                SelectInputs(inputParams.ToDictionary(x => x.Name, x => x.IsSelected));
+            if (outputParams != null)
+                SelectOutputs(outputParams.ToDictionary(x => x.Name, x => x.IsSelected));
 
             // Look for changes
             CallerUpdate update = new CallerUpdate
@@ -155,8 +157,11 @@ namespace BH.UI.Base
             // If the selected Item is not found, we need to make sure that the component keeps its old inputs and outputs
             if (selectedItem == null)
             {
-                InputParams = inputParams;
-                OutputParams = outputParams;
+                if (inputParams != null)
+                    InputParams = inputParams;
+
+                if (outputParams != null)
+                    OutputParams = outputParams;
 
                 CompileInputGetters();
                 CompileOutputSetters();

@@ -40,6 +40,8 @@ namespace BH.Engine.UI
         public static List<IParamUpdate> Changes(this List<ParamInfo> newList, List<ParamInfo> oldList, bool selectedOnly = true)
         {
             List<IParamUpdate> changes = new List<IParamUpdate>();
+            if (newList == null || oldList == null)
+                return changes;
 
             List<ParamInfo> oldSelection = selectedOnly ? oldList.Where(x => x.IsSelected).ToList() : oldList.ToList();
             List<ParamInfo> newSelection = selectedOnly ? newList.Where(x => x.IsSelected).ToList() : newList.ToList();
