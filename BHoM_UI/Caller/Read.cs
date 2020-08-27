@@ -55,7 +55,8 @@ namespace BH.UI.Base
                 // Old component, serialised only with the SelectedItem as object
                 if (component == null)
                 {
-                    SetItem(obj);
+                    m_IsMissingParamInfo = true;
+                    SetItem(obj, false);
                     return true;
                 }
 

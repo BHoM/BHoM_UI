@@ -148,7 +148,12 @@ namespace BH.UI.Base
             }
             catch (Exception e)
             {
-                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                if (m_IsMissingParamInfo)
+                    Engine.UI.Compute.RecordError(e, "This component failed to run properly.\n"
+                        + "It looks like this is a component created before version 2.3 and some data is missing to restore it properly.\n"
+                        + "Please, create a new component for " + SelectedItem.IToText(true) + "\n");
+                else 
+                    Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
                 return null;
             }
 
