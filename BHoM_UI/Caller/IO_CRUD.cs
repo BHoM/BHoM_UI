@@ -97,7 +97,7 @@ namespace BH.UI.Base
         public virtual bool SelectInputs(List<string> names)
         {
             foreach (ParamInfo info in InputParams)
-                info.IsSelected = names.Contains(info.Name);
+                info.IsSelected = info.IsRequired || names.Contains(info.Name);
 
             return true;
         }
@@ -124,7 +124,7 @@ namespace BH.UI.Base
         public virtual bool SelectOutputs(List<string> names)
         {
             foreach (ParamInfo info in OutputParams)
-                info.IsSelected = names.Contains(info.Name);
+                info.IsSelected = info.IsRequired || names.Contains(info.Name);
 
             return true;
         }
