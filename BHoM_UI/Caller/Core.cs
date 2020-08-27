@@ -179,6 +179,7 @@ namespace BH.UI.Base
 
         protected object m_OriginalItem = null;
         protected IDataAccessor m_DataAccessor = null;
+        protected bool m_IsMissingParamInfo = false;
         protected static bool m_Initialised = false;
 
         /*************************************/
