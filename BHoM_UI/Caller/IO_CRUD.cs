@@ -94,10 +94,11 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public virtual bool SelectInputs(List<string> names)
+        public virtual bool SelectInputs(Dictionary<string, bool> selection)
         {
+            // Only unselect a param if it is not required and is explicitely marked as unselected in the selection dictionary
             foreach (ParamInfo info in InputParams)
-                info.IsSelected = info.IsRequired || names.Contains(info.Name);
+                info.IsSelected = info.IsRequired || !selection.ContainsKey(info.Name) || selection[info.Name];
 
             return true;
         }
@@ -121,10 +122,11 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public virtual bool SelectOutputs(List<string> names)
+        public virtual bool SelectOutputs(Dictionary<string, bool> selection)
         {
+            // Only unselect a param if it is not required and is explicitely marked as unselected in the selection dictionary
             foreach (ParamInfo info in OutputParams)
-                info.IsSelected = info.IsRequired || names.Contains(info.Name);
+                info.IsSelected = info.IsRequired || !selection.ContainsKey(info.Name) || selection[info.Name];
 
             return true;
         }

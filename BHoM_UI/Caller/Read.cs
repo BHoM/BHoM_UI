@@ -119,8 +119,8 @@ namespace BH.UI.Base
             SetItem(selectedItem, false);
 
             // Make sure that saved selection is copied over
-            SelectInputs(inputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
-            SelectOutputs(outputParams.Where(x => x.IsSelected).Select(x => x.Name).ToList());
+            SelectInputs(inputParams.ToDictionary(x => x.Name, x => x.IsSelected));
+            SelectOutputs(outputParams.ToDictionary(x => x.Name, x => x.IsSelected));
 
             // Look for changes
             CallerUpdate update = new CallerUpdate
