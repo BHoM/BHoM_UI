@@ -60,9 +60,9 @@ namespace BH.Engine.UI
                 }
                 else
                 {
-                    // Was it moved or added ?
+                    // Finding the old Index
                     int oldIndex = oldSelection.FindIndex(x => x.Name == newParam.Name);
-                    if (oldIndex < 0 && newSelection.Count == 1 && oldSelection.Count == 1 && newSelection[0].DataType == oldSelection[0].DataType)
+                    if (oldIndex < 0)
                     {
                         Type matchingType = newSelection[i].DataType;
                         List<int> matchingIndices = Enumerable.Range(0, oldSelection.Count).Where(index => oldSelection[index].DataType == matchingType).ToList();
@@ -70,7 +70,8 @@ namespace BH.Engine.UI
                             oldIndex = matchingIndices[0];
                     }
 
-                    else if (oldIndex < 0)
+                    // Was it moved updated, or added ?
+                    if (oldIndex < 0)
                     {
                         // It was added
                         changes.Add(new ParamAdded { Index = i, Name = newParam.Name, Param = newParam });
@@ -78,6 +79,8 @@ namespace BH.Engine.UI
                     }
                     else if (oldIndex != i)
                     {
+                        oldParam = oldSelection[oldIndex];
+
                         // It was moved
                         changes.Add(new ParamMoved { Index = i, Name = oldParam.Name, Param = newParam });
                         oldSelection.Move(oldIndex, i);
@@ -89,7 +92,7 @@ namespace BH.Engine.UI
                     else
                     { 
                         // It was updated
-                        changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldSelection[oldIndex] });
+                        changes.Add(new ParamUpdated { Name = oldSelection[oldIndex].Name, Param = newParam, OldParam = oldSelection[oldIndex] });
                     }  
                 }
             }
@@ -106,11 +109,19 @@ namespace BH.Engine.UI
         /**** Helper Methods              ****/
         /*************************************/
 
-        private static void Move<T>(this List<T> list, int from, int to)
+        private static void Move(this List<ParamInfo> list, int from, int to)
         {
-            T item = list[from];
+            ParamInfo item = list[from];
             list.RemoveAt(from);
-            list.Insert(to, item);
+
+            if (list.Count >= to)
+                list.Insert(to, item);
+            else
+            {
+                while (list.Count < to)
+                    list.Add(new ParamInfo());
+                list.Add(item);
+            }
         }
 
         /*************************************/
