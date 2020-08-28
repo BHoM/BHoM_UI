@@ -56,27 +56,40 @@ namespace BH.Engine.UI
                 {
                     // If type or description is different => Tag as update. Otherwise, no action needed
                     if (newParam.DataType != oldParam.DataType || newParam.Description != oldParam.Description)
-                        changes.Add(new ParamUpdated { Name = newParam.Name, Param = newParam, OldParam = oldParam });
+                        changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldParam });
                 }
                 else
                 {
                     // Was it moved or added ?
                     int oldIndex = oldSelection.FindIndex(x => x.Name == newParam.Name);
-                    if (oldIndex < 0)
+                    if (oldIndex < 0 && newSelection.Count == 1 && oldSelection.Count == 1 && newSelection[0].DataType == oldSelection[0].DataType)
+                    {
+                        Type matchingType = newSelection[i].DataType;
+                        List<int> matchingIndices = Enumerable.Range(0, oldSelection.Count).Where(index => oldSelection[index].DataType == matchingType).ToList();
+                        if (matchingIndices.Count == 1)
+                            oldIndex = matchingIndices[0];
+                    }
+
+                    else if (oldIndex < 0)
                     {
                         // It was added
                         changes.Add(new ParamAdded { Index = i, Name = newParam.Name, Param = newParam });
                         oldSelection.Insert(i, newParam);
                     }
-                    else
+                    else if (oldIndex != i)
                     {
                         // It was moved
-                        changes.Add(new ParamMoved { Index = i, Name = newParam.Name, Param = newParam });
+                        changes.Add(new ParamMoved { Index = i, Name = oldParam.Name, Param = newParam });
                         oldSelection.Move(oldIndex, i);
 
-                        // Was it also updated (type or description) ?
-                        if (newParam.DataType != oldSelection[i].DataType || newParam.Description != oldSelection[i].Description)
-                            changes.Add(new ParamUpdated { Name = newParam.Name, Param = newParam, OldParam = oldSelection[i] });
+                        // Was it also updated ?
+                        if (newParam.DataType != oldParam.DataType || newParam.Description != oldParam.Description || newParam.Name != oldParam.Name)
+                            changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldParam });
+                    }
+                    else
+                    { 
+                        // It was updated
+                        changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldSelection[oldIndex] });
                     }  
                 }
             }
