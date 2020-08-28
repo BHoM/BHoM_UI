@@ -138,6 +138,27 @@ namespace BH.UI.Base.Components
                 return false;
         }
 
+        /*************************************/
+
+        protected override void ExtractSavedData(CustomObject data, out object selectedItem, out List<ParamInfo> inputParams, out List<ParamInfo> outputParams)
+        {
+            base.ExtractSavedData(data, out selectedItem, out inputParams, out outputParams);
+
+            // Take care of backwards compatibility
+            if (outputParams == null && data.CustomData.ContainsKey("Outputs") && data.CustomData.ContainsKey("PossibleOutputs"))
+            {
+                List<object> possibleOutputs = data.CustomData["PossibleOutputs"] as List<object>;
+                List<object> selectedOutputs = data.CustomData["Outputs"] as List<object>;
+                if (possibleOutputs != null && selectedOutputs != null)
+                {
+                    List<string> selection = selectedOutputs.OfType<ParamInfo>().Select(x => x.Name).ToList();
+                    outputParams = possibleOutputs.OfType<ParamInfo>().ToList();
+                    foreach (ParamInfo info in outputParams)
+                        info.IsSelected = selection.Contains(info.Name);
+                }
+            }
+        }
+
 
         /*************************************/
         /**** Public Methods              ****/
