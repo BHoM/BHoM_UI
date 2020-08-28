@@ -88,7 +88,7 @@ namespace BH.UI.Base
         /**** Helper Methods              ****/
         /*************************************/
 
-        protected void ExtractSavedData(CustomObject data, out object selectedItem, out List<ParamInfo> inputParams, out List<ParamInfo> outputParams)
+        protected virtual void ExtractSavedData(CustomObject data, out object selectedItem, out List<ParamInfo> inputParams, out List<ParamInfo> outputParams)
         {
             // Get teh selected item
             selectedItem = null;
