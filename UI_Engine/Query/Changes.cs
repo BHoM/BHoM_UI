@@ -62,10 +62,10 @@ namespace BH.Engine.UI
                 {
                     // Finding the old Index
                     int oldIndex = oldSelection.FindIndex(x => x.Name == newParam.Name);
-                    if (oldIndex < 0)
+                    if (oldIndex < 0 && i < oldSelection.Count)
                     {
                         Type matchingType = newSelection[i].DataType;
-                        List<int> matchingIndices = Enumerable.Range(0, oldSelection.Count).Where(index => oldSelection[index].DataType == matchingType).ToList();
+                        List<int> matchingIndices = Enumerable.Range(i, oldSelection.Count-i).Where(index => oldSelection[index].DataType == matchingType).ToList();
                         if (matchingIndices.Count == 1)
                             oldIndex = matchingIndices[0];
                     }

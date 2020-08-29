@@ -154,7 +154,10 @@ namespace BH.UI.Base.Components
                     List<string> selection = selectedOutputs.OfType<ParamInfo>().Select(x => x.Name).ToList();
                     outputParams = possibleOutputs.OfType<ParamInfo>().ToList();
                     foreach (ParamInfo info in outputParams)
+                    {
+                        info.Kind = ParamKind.Output;
                         info.IsSelected = selection.Contains(info.Name);
+                    }    
                 }
             }
         }
