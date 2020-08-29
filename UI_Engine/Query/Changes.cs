@@ -46,60 +46,43 @@ namespace BH.Engine.UI
             List<ParamInfo> oldSelection = selectedOnly ? oldList.Where(x => x.IsSelected).ToList() : oldList.ToList();
             List<ParamInfo> newSelection = selectedOnly ? newList.Where(x => x.IsSelected).ToList() : newList.ToList();
 
-            // Look for matching param in old list
+            // Look for matches between the two lists
+            List<ParamInfo> added, removed;
+            Dictionary<ParamInfo, ParamInfo > matches = newSelection.MatchWith(oldSelection, out added, out removed);
+
+            // First remove all the old params that are not matching with any new one
+            foreach (ParamInfo param in removed)
+            {
+                changes.Add(new ParamRemoved { Name = param.Name, Param = param });
+                oldSelection.Remove(param);
+            }
+                
+            // Then create the other changes. We will need to update old list as we go to make sure we detect moved params correctly
             for (int i = 0; i < newSelection.Count; i++)
             {
                 ParamInfo newParam = newSelection[i];
-                ParamInfo oldParam = (i < oldSelection.Count) ? oldSelection[i] : null;
-
-                if (oldParam != null && newParam.Name == oldParam.Name)
+                if (!matches.ContainsKey(newParam)) 
                 {
-                    // If type or description is different => Tag as update. Otherwise, no action needed
-                    if (newParam.DataType != oldParam.DataType || newParam.Description != oldParam.Description)
-                        changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldParam });
+                    // New parameter added
+                    changes.Add(new ParamAdded { Index = i, Name = newParam.Name, Param = newParam });
+                    oldSelection.Insert(i, newParam);
                 }
                 else
                 {
-                    // Finding the old Index
-                    int oldIndex = oldSelection.FindIndex(x => x.Name == newParam.Name);
-                    if (oldIndex < 0 && i < oldSelection.Count)
-                    {
-                        Type matchingType = newSelection[i].DataType;
-                        List<int> matchingIndices = Enumerable.Range(i, oldSelection.Count-i).Where(index => oldSelection[index].DataType == matchingType).ToList();
-                        if (matchingIndices.Count == 1)
-                            oldIndex = matchingIndices[0];
-                    }
+                    // check if we need to update old param
+                    ParamInfo oldParam = matches[newParam];
+                    if (newParam.DataType != oldParam.DataType || newParam.Description != oldParam.Description || newParam.Name != oldParam.Name)
+                        changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldParam });
 
-                    // Was it moved updated, or added ?
-                    if (oldIndex < 0)
+                    // Check if we need to move old param (can be on top of the update)
+                    int oldIndex = oldSelection.IndexOf(oldParam);
+                    if (oldIndex != i)
                     {
-                        // It was added
-                        changes.Add(new ParamAdded { Index = i, Name = newParam.Name, Param = newParam });
-                        oldSelection.Insert(i, newParam);
-                    }
-                    else if (oldIndex != i)
-                    {
-                        oldParam = oldSelection[oldIndex];
-
-                        // It was moved
                         changes.Add(new ParamMoved { Index = i, Name = oldParam.Name, Param = newParam });
                         oldSelection.Move(oldIndex, i);
-
-                        // Was it also updated ?
-                        if (newParam.DataType != oldParam.DataType || newParam.Description != oldParam.Description || newParam.Name != oldParam.Name)
-                            changes.Add(new ParamUpdated { Name = oldParam.Name, Param = newParam, OldParam = oldParam });
                     }
-                    else
-                    { 
-                        // It was updated
-                        changes.Add(new ParamUpdated { Name = oldSelection[oldIndex].Name, Param = newParam, OldParam = oldSelection[oldIndex] });
-                    }  
-                }
+                }   
             }
-
-            // Remove all old params that have not been matched
-            for (int i = newSelection.Count; i < oldSelection.Count; i++)
-                changes.Add(new ParamRemoved { Name = oldSelection[i].Name, Param = oldSelection[i] });
 
             return changes;
         }
