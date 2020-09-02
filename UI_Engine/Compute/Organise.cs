@@ -46,7 +46,7 @@ namespace BH.Engine.UI
 
             if (types.Count == 1 && types[0] == typeof(MethodBase))
                 return OrganiseMethods(items);
-            else if (types.Count == 1 && types[0] == typeof(Type))
+            else if (types.Count == 1 && (types[0] == typeof(Type) || types[0].Name == "RuntimeType"))
                 return OrganiseTypes(items);
             else if (types.All(type => typeof(MemberInfo).IsAssignableFrom(type)))
                 return OrganiseMembers(items);
