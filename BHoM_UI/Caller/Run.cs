@@ -120,29 +120,28 @@ namespace BH.UI.Base
                 for (int i = 0; i < m_CompiledGetters.Count; i++)
                 {
                     object input = null;
-                    try
+                    if (InputParams[i].IsSelected)
                     {
-                        if (InputParams[i].IsSelected)
+                        try
                         {
                             input = m_CompiledGetters[i](m_DataAccessor, index);
-                            index++;
-                        } 
-                        else
-                            input = InputParams[i].DefaultValue;
-                    }
-                    catch (Exception e)
-                    {
-                        Type originalInputType = InputType(m_OriginalItem, i);
-                        if (originalInputType != null && originalInputType.IsGenericType)
-                        {
-                            UpdateInputGenericType(i);
-                            input = m_CompiledGetters[i](m_DataAccessor, index);
                         }
-                        else
+                        catch (Exception e)
                         {
-                            throw e;
+                            Type originalInputType = InputType(m_OriginalItem, i);
+                            if (originalInputType != null && originalInputType.IsGenericType)
+                            {
+                                UpdateInputGenericType(i);
+                                input = m_CompiledGetters[i](m_DataAccessor, index);
+                            }
+                            else
+                                throw e;
                         }
-                    }
+                        index++;
+                    } 
+                    else
+                        input = InputParams[i].DefaultValue;
+                    
                     inputs.Add(input);
                 }
             }
