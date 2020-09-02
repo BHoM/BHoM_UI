@@ -86,7 +86,8 @@ namespace BH.UI.Base.Components
                 if (obj == null)
                     return Enumerable.Repeat<object>(null, m_CompiledSetters.Count).ToList();
 
-                return OutputParams.Select(x => obj.PropertyValue(x.Name)).ToList();
+                List<object> result = OutputParams.Select(x => obj.PropertyValue(x.Name)).ToList();
+                return (result.Count == 1) ? result[0] : result;
             }
         }
 
