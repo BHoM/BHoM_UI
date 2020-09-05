@@ -41,7 +41,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static void LogUsage(string uiName, Guid componentId, object selectedItem, List<Event> events = null)
+        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null)
         {
             try
             {
@@ -49,8 +49,10 @@ namespace BH.Engine.UI
                 UsageLogEntry info = new UsageLogEntry
                 {
                     UI = uiName,
+                    UiVersion = uiVersion,
                     BHoMVersion = BHoMVersion(),
                     ComponentId = componentId,
+                    CallerName = callerName,
                     SelectedItem = selectedItem,
                     Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
                 };
