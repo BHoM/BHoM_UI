@@ -59,7 +59,7 @@ namespace BH.UI.Base.Menus
         public void AddParamList(ToolStripDropDown menu)
         {
             ToolStripMenuItem listMenu = AppendMenuItem(menu, "Add/Remove " + ParamLabel());
-            listMenu.DropDown.Opened += DropDown_Opened;
+            listMenu.DropDown.Opened += Menu_Opening;
             listMenu.DropDown.Closed += Menu_Closing;
 
             listMenu.DropDown.Closing += (object sender, ToolStripDropDownClosingEventArgs e) => 
@@ -77,6 +77,7 @@ namespace BH.UI.Base.Menus
         public void AddParamList(System.Windows.Controls.ContextMenu menu)
         {
             System.Windows.Controls.MenuItem listMenu = new System.Windows.Controls.MenuItem { Header = "Add/Remove "+ ParamLabel() };
+            listMenu.SubmenuOpened += Menu_Opening;
             listMenu.SubmenuClosed += Menu_Closing;
             menu.Items.Add(listMenu);
 
@@ -173,7 +174,7 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        protected void DropDown_Opened(object sender, EventArgs e)
+        protected void Menu_Opening(object sender, EventArgs e)
         {
             m_OriginalSelection = m_Params.Select((x, i) => new { i, x.IsSelected }).ToDictionary(x => x.i, x => x.IsSelected);
         }
