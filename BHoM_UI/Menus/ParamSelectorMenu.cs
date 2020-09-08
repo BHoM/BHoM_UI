@@ -59,6 +59,7 @@ namespace BH.UI.Base.Menus
         public void AddParamList(ToolStripDropDown menu)
         {
             ToolStripMenuItem listMenu = AppendMenuItem(menu, "Add/Remove " + ParamLabel());
+            listMenu.DropDown.Opened += DropDown_Opened;
             listMenu.DropDown.Closed += Menu_Closing;
 
             listMenu.DropDown.Closing += (object sender, ToolStripDropDownClosingEventArgs e) => 
@@ -167,10 +168,14 @@ namespace BH.UI.Base.Menus
 
             int index = m_Params.FindIndex(x => x.Name == text);
             if (index >= 0)
-            {
-                m_OriginalSelection[index] = m_Params[index].IsSelected;
                 m_Params[index].IsSelected = @checked;
-            }
+        }
+
+        /*************************************/
+
+        protected void DropDown_Opened(object sender, EventArgs e)
+        {
+            m_OriginalSelection = m_Params.Select((x, i) => new { i, x.IsSelected }).ToDictionary(x => x.i, x => x.IsSelected);
         }
 
         /*************************************/
