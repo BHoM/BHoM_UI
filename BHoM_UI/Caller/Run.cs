@@ -129,7 +129,8 @@ namespace BH.UI.Base
                         catch (Exception e)
                         {
                             Type originalInputType = InputType(m_OriginalItem, i);
-                            if (originalInputType != null && originalInputType.IsGenericType)
+                            MethodInfo originalMethod = m_OriginalItem as MethodInfo;
+                            if (originalInputType != null && originalInputType.IsGenericType && originalMethod != null && originalMethod.IsGenericMethod)
                             {
                                 UpdateInputGenericType(i);
                                 input = m_CompiledGetters[i](m_DataAccessor, index);
