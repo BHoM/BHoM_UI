@@ -54,6 +54,16 @@ namespace BH.UI.Base.Components
         /**** Constructors                ****/
         /*************************************/
 
+        public CreateCustomCaller() : base()
+        {
+            m_DynamicInputs = true;
+
+            InputParams = new List<ParamInfo>();
+            OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "object", Description = "New Object with properties set as per the inputs.", IsRequired = true } };
+        }
+
+        /*************************************/
+
         public CreateCustomCaller(bool dynamicInputs = true) : base()
         {
             m_DynamicInputs = dynamicInputs;
