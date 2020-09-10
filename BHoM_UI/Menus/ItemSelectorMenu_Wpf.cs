@@ -127,7 +127,7 @@ namespace BH.UI.Base.Menus
                 m_Menu.Items.Remove(m_SearchBox);
                 m_SearchBox = null;
                 m_Menu.Items.Remove(m_ItemMenu);
-                m_ItemTree = null;
+                m_ItemMenu = null;
                 m_Menu.Items.Remove(m_SearchLabel);
                 m_SearchLabel = null;
 
