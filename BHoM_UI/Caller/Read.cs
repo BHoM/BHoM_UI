@@ -121,9 +121,9 @@ namespace BH.UI.Base
 
             // Make sure that saved selection is copied over
             if (inputParams != null)
-                SelectInputs(inputParams.ToDictionary(x => x.Name, x => x.IsSelected));
+                SelectInputs(inputParams.GroupBy(x => x.Name).Select(g => g.First()).ToDictionary(x => x.Name, x => x.IsSelected));
             if (outputParams != null)
-                SelectOutputs(outputParams.ToDictionary(x => x.Name, x => x.IsSelected));
+                SelectOutputs(outputParams.GroupBy(x => x.Name).Select(g => g.First()).ToDictionary(x => x.Name, x => x.IsSelected));
 
             // Look for changes
             CallerUpdate update = new CallerUpdate
