@@ -66,12 +66,19 @@ namespace BH.UI.Base.Global
             bool success = true;
             foreach (string file in Directory.GetFiles(@"C:\ProgramData\BHoM\Settings", "*.cfg"))
             {
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                ISettings settings = Engine.UI.Query.Settings(fileName);
+                try
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(file);
+                    ISettings settings = Engine.UI.Query.Settings(fileName);
 
-                // Initialise the toolkit if needed
-                if (settings is IInitialisationSettings)
-                    success = InitialiseToolkit(settings as IInitialisationSettings);
+                    // Initialise the toolkit if needed
+                    if (settings is IInitialisationSettings)
+                        success = InitialiseToolkit(settings as IInitialisationSettings);
+                }
+                catch (Exception e)
+                {
+                    Engine.Reflection.Compute.RecordWarning(@"Failed to load one of the config file. Error:\n" + e.Message);
+                }
             }
 
             return success;
