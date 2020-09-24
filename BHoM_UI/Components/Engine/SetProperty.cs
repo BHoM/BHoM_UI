@@ -111,6 +111,15 @@ namespace BH.UI.Base.Components
         }
 
         /*************************************/
+
+        public override bool UpdateInput(int index, string name, Type type = null)
+        {
+            // Do not let update input types (they are detected automatically in CollectInputs())
+            return true;
+        }
+
+
+        /*************************************/
         /**** Private Fields              ****/
         /*************************************/
 
