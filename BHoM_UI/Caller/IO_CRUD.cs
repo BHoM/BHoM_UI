@@ -88,10 +88,10 @@ namespace BH.UI.Base
 
             if (type != null)
             {
-                InputParams[index].DataType = type;
-
                 if (type != InputParams[index].DataType)
                     m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
+
+                InputParams[index].DataType = type;
             }
                 
             return true;
