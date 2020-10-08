@@ -43,7 +43,7 @@ namespace BH.UI.Base
 
         public virtual bool AddInput(int index, string name, Type type = null)
         {
-            if (name == null)
+            if (name == null || index < 0)
                 return false;
 
             ParamInfo match = InputParams.Find(x => x.Name == name);
@@ -75,20 +75,25 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public virtual bool UpdateInput(int index, string name, Type type = null)
+        public virtual bool UpdateInput(int index, string name = null, Type type = null)
         {
+            if (index < 0)
+                return false;
+
             if (InputParams.Count <= index)
                 return AddInput(index, name, type);
-
-            if (type != InputParams[index].DataType)
-                m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
 
             if (name != null)
                 InputParams[index].Name = name;
 
             if (type != null)
+            {
                 InputParams[index].DataType = type;
 
+                if (type != InputParams[index].DataType)
+                    m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
+            }
+                
             return true;
         }
 
