@@ -119,10 +119,13 @@ namespace BH.UI.Base.Components
 
         public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
         {
-            System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem { Header = "Update Outputs" };
-            item.Click += (sender, e) => CollectOutputTypes();
-            menu.Items.Add(item);
-            menu.Items.Add(new Separator());
+            if (menu.Items.OfType<System.Windows.Controls.MenuItem>().All(x => x.Header.ToString() != "Update Outputs"))
+            {
+                System.Windows.Controls.MenuItem item = new System.Windows.Controls.MenuItem { Header = "Update Outputs" };
+                item.Click += (sender, e) => CollectOutputTypes();
+                menu.Items.Add(item);
+                menu.Items.Add(new Separator());
+            }
 
             base.AddToMenu(menu);
         }
