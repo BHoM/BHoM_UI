@@ -68,8 +68,12 @@ namespace BH.UI.Base.Menus
                     e.Cancel = true;
             };
 
-            foreach (ParamInfo param in m_Params)
-                AppendMenuItem(listMenu.DropDown, param.Name, param.IsSelected, !param.IsRequired);
+            menu.Opened += (sender, e) =>
+            {
+                listMenu.DropDown.Items.Clear();
+                foreach (ParamInfo param in m_Params)
+                    AppendMenuItem(listMenu.DropDown, param.Name, param.IsSelected, !param.IsRequired);
+            };   
         }
 
         /*************************************/
@@ -81,8 +85,12 @@ namespace BH.UI.Base.Menus
             listMenu.SubmenuClosed += Menu_Closing;
             menu.Items.Add(listMenu);
 
-            foreach (ParamInfo param in m_Params)
-                AppendMenuItem(listMenu, param.Name, param.IsSelected, !param.IsRequired);
+            menu.Opened += (sender, e) =>
+            {
+                listMenu.Items.Clear();
+                foreach (ParamInfo param in m_Params)
+                    AppendMenuItem(listMenu, param.Name, param.IsSelected, !param.IsRequired);
+            };
         }
 
         /*************************************/
