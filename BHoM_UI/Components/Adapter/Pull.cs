@@ -123,7 +123,7 @@ namespace BH.UI.Base.Components
             //----------------------------------------------//
 
             if (active)
-                return adapter.Pull(actualRequest, pullType, actionConfig);
+                return adapter.SetupThenCallPull(actualRequest, pullType, actionConfig);
             else
                 return new List<object>();
         }
