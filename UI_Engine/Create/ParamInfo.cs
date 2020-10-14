@@ -62,7 +62,9 @@ namespace BH.Engine.UI
                 Name = property.Name,
                 DataType = property.PropertyType,
                 Description = property.IDescription(),
-                Kind = ParamKind.Input
+                Kind = ParamKind.Input,
+                IsRequired = property.IsRequired(),
+                DefaultValueWarning = property.DefaultValueWarning()
             };
 
             if (instance != null)

@@ -128,7 +128,7 @@ namespace BH.Engine.UI
         public static IEnumerable<Type> ConstructableTypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()
-                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && !x.IsEnum && !x.IsAbstract && !x.FullName.Contains("+<>c"))
+                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && x.IsAutoConstructorAllowed() && !x.IsEnum && !x.IsAbstract && !x.FullName.Contains("+<>c"))
                 .Where(x => x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
         }
 
