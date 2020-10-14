@@ -49,6 +49,8 @@ namespace BH.oM.UI
 
         public virtual bool IsSelected { get; set; } = true;
 
+        public virtual string DefaultValueWarning { get; set; } = "";
+
         /***************************************************/
     }
 }

@@ -125,6 +125,13 @@ namespace BH.UI.Base
                         try
                         {
                             input = m_CompiledGetters[i](m_DataAccessor, index);
+
+                            if (input == null || input.ToString() == "")
+                            {
+                                string warning = InputParams[i].DefaultValueWarning;
+                                if (!string.IsNullOrEmpty(warning))
+                                    Engine.Reflection.Compute.RecordNote(warning);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -141,8 +148,13 @@ namespace BH.UI.Base
                         index++;
                     } 
                     else
+                    {
+                        string warning = InputParams[i].DefaultValueWarning;
+                        if (!string.IsNullOrEmpty(warning))
+                            Engine.Reflection.Compute.RecordNote(warning);
                         input = InputParams[i].DefaultValue;
-                    
+                    }
+                        
                     inputs.Add(input);
                 }
             }
