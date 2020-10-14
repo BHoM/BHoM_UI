@@ -153,7 +153,7 @@ namespace BH.UI.Base
             // Maybe this is an old Create method ?
             object selectedItem = null;
             if (outputParams.Count == 1)
-                selectedItem = OldCreateMethodToType(json);
+                selectedItem = OldCreateMethodToType(json, inputParams, outputParams);
 
             // If the selected Item is not found, we need to make sure that the component keeps its old inputs and outputs
             if (selectedItem == null)
@@ -177,21 +177,21 @@ namespace BH.UI.Base
         /*************************************/
 
         // This converts old create methods into their corresponding auto-generated constructor
-        protected object OldCreateMethodToType(string json)
+        protected object OldCreateMethodToType(string json, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
             object selectedItem = null;
             CustomObject component = Engine.Serialiser.Convert.FromJson(json.Replace("\"_t\"", "_refType")) as CustomObject;
-            if (component != null && component.CustomData.ContainsKey("SelectedItem"))
+            if (component != null && outputParams.Count == 1 && component.CustomData.ContainsKey("SelectedItem"))
             {
                 CustomObject itemData = component.CustomData["SelectedItem"] as CustomObject;
                 if (itemData != null && itemData.CustomData.ContainsKey("_refType") && (string)itemData.CustomData["_refType"] == "System.Reflection.MethodBase")
                 {
-                    Type type = OutputParams.First().DataType;
+                    Type type = outputParams.First().DataType;
                     if (!type.IsNotImplemented() && !type.IsDeprecated() && type?.GetInterface("IImmutable") == null && !type.IsEnum && !type.IsAbstract) // Is type constructable ?
                     {
                         // Translate from method param name to property name
                         Dictionary<string, PropertyInfo> properties = type.GetProperties().ToDictionary(x => x.Name.ToLower(), x => x);
-                        foreach (ParamInfo parameter in InputParams)
+                        foreach (ParamInfo parameter in inputParams)
                         {
                             string key = parameter.Name.ToLower();
                             if (properties.ContainsKey(key) && parameter.DataType == properties[key].PropertyType)
@@ -201,7 +201,7 @@ namespace BH.UI.Base
                         // Set the type item 
                         selectedItem = type;
                         if (selectedItem is Type)
-                            m_CompiledFunc = Engine.UI.Compute.Constructor((Type)selectedItem, InputParams);
+                            m_CompiledFunc = Engine.UI.Compute.Constructor((Type)selectedItem, inputParams);
                     }
                 }
             }
