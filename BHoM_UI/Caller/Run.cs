@@ -52,7 +52,7 @@ namespace BH.UI.Base
 
             // Execute the method
             object result = m_CachedResult;
-            if (m_CachedResult == null || ShouldCalculateNewResult(inputs))
+            if (m_CachedResult == null || ShouldCalculateNewResult(inputs, ref result))
             {
                 try
                 {
@@ -292,7 +292,7 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        protected virtual bool ShouldCalculateNewResult(List<object> inputs)
+        protected virtual bool ShouldCalculateNewResult(List<object> inputs, ref object result)
         {
             return true;
         }
