@@ -60,9 +60,17 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        protected override bool ShouldCalculateNewResult(List<object> inputs)
+        protected override bool ShouldCalculateNewResult(List<object> inputs, ref object result)
         {
-            return (bool)inputs.Last() == true;
+            bool active = (bool)inputs.Last();
+            if (!active && m_CompiledSetters.Count > 0)
+            {
+                Output<List<object>, bool> output = result as Output<List<object>, bool>;
+                if (output != null)
+                    output.Item2 = false;
+            }
+
+            return active;
         }
 
 

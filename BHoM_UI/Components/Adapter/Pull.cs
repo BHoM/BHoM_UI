@@ -77,7 +77,7 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        protected override bool ShouldCalculateNewResult(List<object> inputs)
+        protected override bool ShouldCalculateNewResult(List<object> inputs, ref object result)
         {
             return (bool)inputs.Last() == true;
         }
