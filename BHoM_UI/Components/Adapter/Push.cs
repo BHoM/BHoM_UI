@@ -91,21 +91,9 @@ namespace BH.UI.Base.Components
             PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null, 
             bool active = false)
         {
-            // ---------------------------------------------//
-            // Mandatory Adapter Action set-up              //
-            //----------------------------------------------//
-            // The following are mandatory set-ups to be ALWAYS performed 
-            // before the Adapter Action is called,
-            // whether the Action is overrided at the Toolkit level or not.
-
-            // If unset, set the actionConfig to a new ActionConfig.
-            actionConfig = actionConfig == null ? new ActionConfig() : actionConfig;
-
-            //----------------------------------------------//
-
             List<object> result = new List<object>();
             if (active)
-                result = adapter.Push(objects, tag, pushType, actionConfig);
+                result = adapter.SetupThenPush(objects, tag, pushType, actionConfig);
 
             return BH.Engine.Reflection.Create.Output(result, result.Count() == objects.Count());
         }

@@ -87,30 +87,8 @@ namespace BH.UI.Base.Components
             PullType pullType = PullType.AdapterDefault, ActionConfig pullConfig = null,
             PushType pushType = PushType.AdapterDefault, ActionConfig pushConfig = null, bool active = false)
         {
-            if (source == null || target == null)
-            {
-                Engine.Reflection.Compute.RecordError("Adapter input cannot be null.");
-                return false;
-            }
-
-            // ---------------------------------------------//
-            // Mandatory Adapter Action set-up              //
-            //----------------------------------------------//
-            // The following are mandatory set-ups to be ALWAYS performed 
-            // before the Adapter Action is called,
-            // whether the Action is overrided at the Toolkit level or not.
-
-            // If unset, set the actionConfig to a new ActionConfig.
-            pullConfig = pullConfig == null ? new ActionConfig() : pullConfig;
-            pushConfig = pushConfig == null ? new ActionConfig() : pushConfig;
-
-            if (request == null)
-                request = new FilterRequest();
-
-            //----------------------------------------------//
-
             if (active)
-                return source.Move(target, request, pullType, pullConfig, pushType, pushConfig);
+                return source.SetupThenMove(source, target, request, pullType, pullConfig, pushType, pushConfig);
             else
                 return false;
         }

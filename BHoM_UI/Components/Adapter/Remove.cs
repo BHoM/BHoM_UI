@@ -77,20 +77,6 @@ namespace BH.UI.Base.Components
         [Output("#removed", "Number of objects that have been removed")]
         public static int Remove(BHoMAdapter adapter, IRequest request = null, ActionConfig actionConfig = null, bool active = false)
         {
-            // ---------------------------------------------//
-            // Mandatory Adapter Action set-up              //
-            //----------------------------------------------//
-            // The following are mandatory set-ups to be ALWAYS performed 
-            // before the Adapter Action is called,
-            // whether the Action is overrided at the Toolkit level or not.
-
-            // If unset, set the actionConfig to a new ActionConfig.
-            actionConfig = actionConfig == null ? new ActionConfig() : actionConfig;
-
-            if (request == null)
-                request = new FilterRequest();
-            //----------------------------------------------//
-
             if (active)
                 return adapter.Remove(request, actionConfig);
             else
