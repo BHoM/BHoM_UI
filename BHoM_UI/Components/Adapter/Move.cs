@@ -83,14 +83,40 @@ namespace BH.UI.Base.Components
             "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the Move")]
         [Output("success", "Define if the Move was successful")]
-        public static bool Move(BHoMAdapter source, BHoMAdapter target, IRequest request = null, 
+        [PreviousVersion("4.0", "BH.UI.Base.Components.RemoveCaller.Remove(BH.Adapter.BHoMAdapter, BH.Adapter.BHoMAdapter, BH.oM.Data.Requests.IRequest, BH.oM.Adapter.PullType, BH.Adapter.BHoMAdapter.ActionConfig, BH.oM.Adapter.PushType, BH.Adapter.BHoMAdapter.ActionConfig, System.Boolean)")]
+        public static bool Move(BHoMAdapter source, BHoMAdapter target, object request = null,
             PullType pullType = PullType.AdapterDefault, ActionConfig pullConfig = null,
             PushType pushType = PushType.AdapterDefault, ActionConfig pushConfig = null, bool active = false)
         {
-            if (active)
-                return source.SetupThenMove(source, target, request, pullType, pullConfig, pushType, pushConfig);
-            else
+            if (!active)
                 return false;
+
+            if (source == null || !source.VerifyMoveAdapters(source, target))
+                return false;
+
+            IRequest actualRequest = null;
+            if (!source.SetupPullRequest(request, out actualRequest))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(request)}` input.");
+                return false;
+            }
+
+            ActionConfig pullCfg = null;
+            if (!source.SetupPullConfig(pullConfig, out pullCfg))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pullConfig)}` input.");
+                return false;
+            }
+
+            ActionConfig pushCfg = null;
+            if (!source.SetupPushConfig(pushConfig, out pullCfg))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pushConfig)}` input.");
+                return false;
+            }
+
+
+            return source.Move(target, actualRequest, pullType, pullCfg, pushType, pushCfg);
         }
 
         /*************************************/

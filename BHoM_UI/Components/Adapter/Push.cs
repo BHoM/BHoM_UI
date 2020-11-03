@@ -92,10 +92,34 @@ namespace BH.UI.Base.Components
             bool active = false)
         {
             List<object> result = new List<object>();
-            if (active)
-                result = adapter.SetupThenPush(objects, tag, pushType, actionConfig);
+            IEnumerable<object> objectsToPush = new List<object>();
+            PushType pt = pushType;
 
-            return BH.Engine.Reflection.Create.Output(result, result.Count() == objects.Count());
+            if (active)
+            {
+                ActionConfig pushConfig = null;
+                if (!adapter.SetupPushConfig(actionConfig, out pushConfig))
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                    return null;
+                }
+
+                if (!adapter.SetupPushType(pushType, out pt))
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pushType)}` input.");
+                    return null;
+                }
+
+                if (!adapter.SetupPushObjects(objects, pushConfig, out objectsToPush))
+                {
+                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(objects)}` input.");
+                    return null;
+                }
+
+                result = adapter.Push(objectsToPush, tag, pt, pushConfig);
+            }
+
+            return BH.Engine.Reflection.Create.Output(result, objectsToPush?.Count() == result?.Count());
         }
 
         /*************************************/
