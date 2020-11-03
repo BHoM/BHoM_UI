@@ -55,52 +55,71 @@ namespace BH.UI.Base
         protected virtual void SetOutputs(MethodBase method)
         {
             if (method == null)
-                OutputParams = new List<ParamInfo>();
-            else
             {
-                if (method.IsMultipleOutputs())
+                OutputParams = new List<ParamInfo>();
+                return;
+            }
+                
+            // Collect the outputs from the output type
+            if (method.IsMultipleOutputs())
+            {
+                Type[] subTypes = method.OutputType().GenericTypeArguments;
+                List<OutputAttribute> attributes = method.OutputAttributes();
+                if (subTypes.Length == attributes.Count)
                 {
-                    Type[] subTypes = method.OutputType().GenericTypeArguments;
-                    List<OutputAttribute> attributes = method.OutputAttributes();
-                    if (subTypes.Length == attributes.Count)
+                    OutputParams = attributes.Select((x, i) => new ParamInfo
                     {
-                        OutputParams = attributes.Select((x, i) => new ParamInfo
-                        {
-                            Name = x.Name,
-                            DataType = subTypes[i],
-                            Description = x.Description,
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
-                    else
-                    {
-                        OutputParams = subTypes.Select(x => new ParamInfo
-                        {
-                            Name = x.UnderlyingType().Type.Name.Substring(0, 1),
-                            DataType = x,
-                            Description = "",
-                            Kind = ParamKind.Output
-                        }).ToList();
-                    }
+                        Name = x.Name,
+                        DataType = subTypes[i],
+                        Description = x.Description,
+                        Kind = ParamKind.Output
+                    }).ToList();
                 }
                 else
                 {
-                    Type nameType = method.OutputType().UnderlyingType().Type;
-                    if (nameType == typeof(void))
-                        return;
-                    string name = method.OutputName();
-                    OutputParams = new List<ParamInfo> {
-                        new ParamInfo
-                        {
-                            Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
-                            DataType = method.OutputType(),
-                            Description = method.OutputDescription(),
-                            Kind = ParamKind.Output,
-                            IsRequired = true
-                        }
-                    };
+                    OutputParams = subTypes.Select(x => new ParamInfo
+                    {
+                        Name = x.UnderlyingType().Type.Name.Substring(0, 1),
+                        DataType = x,
+                        Description = "",
+                        Kind = ParamKind.Output
+                    }).ToList();
                 }
             }
+            else
+            {
+                Type nameType = method.OutputType().UnderlyingType().Type;
+                if (nameType == typeof(void))
+                    return;
+                string name = method.OutputName();
+                OutputParams = new List<ParamInfo> {
+                    new ParamInfo
+                    {
+                        Name = (name == "") ? nameType.Name.Substring(0, 1) : name,
+                        DataType = method.OutputType(),
+                        Description = method.OutputDescription(),
+                        Kind = ParamKind.Output,
+                        IsRequired = true
+                    }
+                };
+            }
+
+            // Collect the out inputs
+            Dictionary<string, string> descriptions = method.InputDescriptions();
+            foreach (ParameterInfo parameter in method.GetParameters().Where(x => x.IsOut))
+            {
+                OutputParams.Add(new ParamInfo
+                {
+                    Name = parameter.Name,
+                    DataType = parameter.ParameterType,
+                    Description = descriptions.ContainsKey(parameter.Name) ? descriptions[parameter.Name] : "",
+                    Kind = ParamKind.Input,
+                    HasDefaultValue = parameter.HasDefaultValue,
+                    IsRequired = !parameter.HasDefaultValue,
+                    DefaultValue = parameter.DefaultValue
+                });
+            }
+
         }
 
         /*************************************/

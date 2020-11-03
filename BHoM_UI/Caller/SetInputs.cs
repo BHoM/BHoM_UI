@@ -59,7 +59,7 @@ namespace BH.UI.Base
             else
             {
                 Dictionary<string, string> descriptions = method.InputDescriptions();
-                InputParams = method.GetParameters()
+                InputParams = method.GetParameters().Where(x => !x.IsOut)
                     .Select(x => Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : ""))
                     .ToList();
 

@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.oM.Reflection.Interface;
 
 namespace BH.UI.Base
 {
@@ -65,6 +66,9 @@ namespace BH.UI.Base
                     return false;
                 }
             }
+
+            // Add the out inputs as outputs
+            MigrateOutInputs(ref result, inputs);
                 
             // Set the output
             return PushOutputs(result);
@@ -169,7 +173,26 @@ namespace BH.UI.Base
                 return null;
             }
 
+            foreach (ParamInfo param in OutputParams.Where(x => x.Kind == ParamKind.Input))
+                inputs.Add(Activator.CreateInstance(param.DataType.IsByRef ? param.DataType.GetElementType() : param.DataType));
+
             return inputs.ToList();
+        }
+
+        /*************************************/
+
+        protected virtual void MigrateOutInputs(ref object outputs, List<object> inputs)
+        {
+            if (OutputParams.Where(x => x.Kind == ParamKind.Input).Count() > 0)
+            {
+                List<object> list = new List<object>();
+                for (int i = 0; i < OutputParams.Where(x => x.Kind == ParamKind.Output).Count(); i++)
+                    list.Add(Engine.Reflection.Query.IItem(outputs, i));
+
+                for (int i = InputParams.Count; i < inputs.Count; i++)
+                    list.Add(inputs[i]);
+                outputs = list;
+            }
         }
 
         /*************************************/
@@ -255,8 +278,8 @@ namespace BH.UI.Base
         {
             if (item is MethodBase)
             {
-                ParameterInfo[] parameters = ((MethodBase)item).GetParameters();
-                if (parameters.Count() > index)
+                List<ParameterInfo> parameters = ((MethodBase)item).GetParameters().Where(x => !x.IsOut).ToList();
+                if (parameters.Count > index)
                     return parameters[index].ParameterType;
             }
             else if (item is Type)
