@@ -75,12 +75,27 @@ namespace BH.UI.Base.Components
             "consider that Toolkits may have a custom ActionConfig (e.g. GSAConfig, SpeckleConfig).")]
         [Input("active", "Execute the delete")]
         [Output("#removed", "Number of objects that have been removed")]
-        public static int Remove(BHoMAdapter adapter, IRequest request = null, ActionConfig actionConfig = null, bool active = false)
+        [PreviousVersion("4.0", "BH.UI.Base.Components.RemoveCaller.Remove(BH.Adapter.BHoMAdapter, BH.oM.Data.Requests.IRequest, BH.Adapter.BHoMAdapter.ActionConfig, System.Boolean)")]
+        public static int Remove(BHoMAdapter adapter, object request = null, ActionConfig actionConfig = null, bool active = false)
         {
-            if (active)
-                return adapter.Remove(request, actionConfig);
-            else
+            if (!active)
                 return 0;
+
+            IRequest actualRequest = null;
+            if (!adapter.SetupRemoveRequest(request, out actualRequest))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(request)}` input.");
+                return 0;
+            }
+
+            ActionConfig removeConfig = null;
+            if (!adapter.SetupRemoveConfig(actionConfig, out removeConfig))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                return 0;
+            }
+
+            return adapter.Remove(actualRequest, removeConfig);
         }
 
         /*************************************/

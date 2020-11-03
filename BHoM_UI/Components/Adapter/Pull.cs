@@ -89,7 +89,7 @@ namespace BH.UI.Base.Components
 
         [Description("Adapter Action 'Pull': imports objects from an external software. \nAlso allows for querying through Requests.")]
         [Input("adapter", "Adapter to the external software")]
-        [Input("request", "Input a Request to pull only objects that satisfy a certain rule. \n" + 
+        [Input("request", "Input a Request to pull only objects that satisfy a certain rule. \n" +
             "Input a Type to pull only objects of that type.")]
         [Input("pullType", "Pull type. Connect the enum PullType for all the alternatives.")]
         [Input("actionConfig", "Configuration for this Action. You can input an ActionConfig (it contains the configs common to all Toolkits); \n" +
@@ -100,10 +100,24 @@ namespace BH.UI.Base.Components
             PullType pullType = PullType.AdapterDefault, ActionConfig actionConfig = null,
             bool active = false)
         {
-            if (active)
-                return adapter.SetupThenPull(request, pullType, actionConfig);
-            else
+            if (!active)
                 return new List<object>();
+
+            IRequest actualRequest = null;
+            if (!adapter.SetupPullRequest(request, out actualRequest))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(request)}` input.");
+                return null;
+            }
+
+            ActionConfig pullConfig = null;
+            if (!adapter.SetupPullConfig(actionConfig, out pullConfig))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                return null;
+            }
+
+            return adapter.Pull(actualRequest, pullType, pullConfig);
         }
 
         /*************************************/

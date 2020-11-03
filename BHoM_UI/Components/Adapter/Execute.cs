@@ -89,13 +89,21 @@ namespace BH.UI.Base.Components
         [MultiOutput(1, "success", "True if the operation was successful.")]
         public static Output<List<object>, bool> Execute(BHoMAdapter adapter, IExecuteCommand command, ActionConfig actionConfig = null, bool active = false)
         {
-            if (active)
+            Output<List<object>, bool> result = new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+
+            if (!active)
+                return result;
+
+            ActionConfig executeConfig = null;
+            if (!adapter.SetupExecuteConfig(actionConfig, out executeConfig))
             {
-                var result = adapter.SetupThenExecute(command, actionConfig);
-                return result == null ? new Output<List<object>, bool>() { Item1 = null, Item2 = false } : result;
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                return result;
             }
-            else
-                return new Output<List<object>, bool>() { Item1 = null, Item2 = false };
+
+            result = adapter.Execute(command, executeConfig); // Item1 is the result of the Execute; Item2 the `success` bool.
+
+            return result != null ? result : new Output<List<object>, bool>() { Item1 = null, Item2 = false };
         }
 
         /*************************************/
