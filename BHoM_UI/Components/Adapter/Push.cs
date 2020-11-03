@@ -110,12 +110,6 @@ namespace BH.UI.Base.Components
                     return null;
                 }
 
-                if (!adapter.SetupPushObjects(objects, pushConfig, out objectsToPush))
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(objects)}` input.");
-                    return null;
-                }
-
                 result = adapter.Push(objectsToPush, tag, pt, pushConfig);
             }
 

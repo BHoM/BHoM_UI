@@ -91,9 +91,6 @@ namespace BH.UI.Base.Components
             if (!active)
                 return false;
 
-            if (source == null || !source.VerifyMoveAdapters(source, target))
-                return false;
-
             IRequest actualRequest = null;
             if (!source.SetupPullRequest(request, out actualRequest))
             {
