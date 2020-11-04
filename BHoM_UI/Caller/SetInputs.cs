@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 using BH.Engine.UI;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.UI.Base
 {
@@ -58,10 +59,16 @@ namespace BH.UI.Base
                 InputParams = new List<ParamInfo>();
             else
             {
+                List< PreviousInputNamesAttribute> previousNames = method.GetCustomAttributes<PreviousInputNamesAttribute>().ToList();
                 Dictionary<string, string> descriptions = method.InputDescriptions();
-                InputParams = method.GetParameters()
-                    .Select(x => Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : ""))
-                    .ToList();
+                InputParams = method.GetParameters().Select(x =>
+                {
+                    ParamInfo p = Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "");
+                    PreviousInputNamesAttribute match = previousNames.FirstOrDefault(a => a.Name == p.Name);
+                    if (match != null)
+                        p.Fragments.Add(new PreviousNamesFragment { OldNames = match.PreviousNames });
+                    return p;
+                }).ToList();
 
                 if (method is MethodInfo && !method.IsStatic)
                 {
