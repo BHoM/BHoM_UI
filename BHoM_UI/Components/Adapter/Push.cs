@@ -92,7 +92,6 @@ namespace BH.UI.Base.Components
             bool active = false)
         {
             List<object> result = new List<object>();
-            IEnumerable<object> objectsToPush = new List<object>();
             PushType pt = pushType;
 
             if (active)
@@ -110,10 +109,10 @@ namespace BH.UI.Base.Components
                     return null;
                 }
 
-                result = adapter.Push(objectsToPush, tag, pt, pushConfig);
+                result = adapter.Push(objects, tag, pt, pushConfig);
             }
 
-            return BH.Engine.Reflection.Create.Output(result, objectsToPush?.Count() == result?.Count());
+            return BH.Engine.Reflection.Create.Output(result, objects?.Count() == result?.Count());
         }
 
         /*************************************/
