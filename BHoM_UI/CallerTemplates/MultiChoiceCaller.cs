@@ -67,7 +67,7 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
             if (inputs.Count != 1)
                 return null;

@@ -84,7 +84,7 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
             if (m_DynamicInputs)
             {

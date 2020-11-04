@@ -59,7 +59,7 @@ namespace BH.UI.Base.Components
         /**** Override Method             ****/
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
             if (inputs.Count > 0)
             {
@@ -72,7 +72,7 @@ namespace BH.UI.Base.Components
                 }
             }
 
-            return base.Run(inputs);
+            return base.Run(ref inputs);
         }
 
         /*************************************/

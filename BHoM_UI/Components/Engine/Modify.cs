@@ -61,7 +61,7 @@ namespace BH.UI.Base.Components
         /**** Override Methods            ****/
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
             if (inputs != null && inputs.Count >= 1 && inputs[0] != null)
             {
@@ -69,7 +69,7 @@ namespace BH.UI.Base.Components
                 // TODO: DeepClone should ignore fragments and CustomData
                 inputs[0] = inputs[0].DeepClone();
             }
-            return base.Run(inputs);
+            return base.Run(ref inputs);
         }
 
         /*************************************/

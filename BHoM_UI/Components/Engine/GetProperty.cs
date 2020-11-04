@@ -55,9 +55,9 @@ namespace BH.UI.Base.Components
         /**** Override Method             ****/
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
-            object result = base.Run(inputs);
+            object result = base.Run(ref inputs);
 
             // Set the output type
             if (result != null && OutputParams.Count > 0)

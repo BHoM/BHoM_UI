@@ -57,7 +57,7 @@ namespace BH.UI.Base
             {
                 try
                 {
-                    result = Run(inputs);
+                    result = Run(ref inputs);
                     m_CachedResult = result;
                 }
                 catch (Exception e)
@@ -76,13 +76,16 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        public virtual object Run(List<object> inputs)
+        public virtual object Run(ref List<object> inputs)
         {
             if (m_CompiledFunc != null)
             {
                 try
                 {
-                    return m_CompiledFunc(inputs.ToArray());
+                    object[] inputsAsArray = inputs.ToArray();
+                    object result = m_CompiledFunc(inputsAsArray);
+                    inputs = inputsAsArray.ToList();
+                    return result;
                 }
                 catch (InvalidCastException e)
                 {
@@ -91,8 +94,11 @@ namespace BH.UI.Base
                     {
                         // Try to update the generic method to fit the input types
                         MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
+                        object[] inputsAsArray = inputs.ToArray();
                         m_CompiledFunc = method.ToFunc();
-                        return m_CompiledFunc(inputs.ToArray());
+                        object result = m_CompiledFunc(inputs.ToArray());
+                        inputs = inputsAsArray.ToList();
+                        return result;
                     }
                     else
                         throw e;

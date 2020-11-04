@@ -99,7 +99,7 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        public override object Run(List<object> inputs)
+        public override object Run(ref List<object> inputs)
         {
             return SelectedType;
         }
