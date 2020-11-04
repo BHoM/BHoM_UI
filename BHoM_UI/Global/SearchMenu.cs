@@ -305,6 +305,12 @@ namespace BH.UI.Base.Global
                 },
                 new SearchItem {
                     Item = null,
+                    CallerType = typeof(GetEventsCaller),
+                    Icon = Properties.Resources.GetEvents,
+                    Text = "BH.Engine.GetEvents"
+                },
+                new SearchItem {
+                    Item = null,
                     CallerType = typeof(CreateCustomCaller),
                     Icon = Properties.Resources.CustomObject,
                     Text = "BH.oM.CreateCustom"
