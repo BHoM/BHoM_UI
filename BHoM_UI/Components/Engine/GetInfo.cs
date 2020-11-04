@@ -44,7 +44,7 @@ namespace BH.UI.Base.Components
 
         public override Guid Id { get; protected set; } = new Guid("90D428FE-BC49-4944-8E22-C3180FDD6A96");
 
-        public override int GroupIndex { get; protected set; } = 2;
+        public override int GroupIndex { get; protected set; } = 4;
 
         public override string Description { get; protected set; } = "Get information about the BHoM";
 

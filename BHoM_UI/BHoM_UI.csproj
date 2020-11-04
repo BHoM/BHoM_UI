@@ -148,6 +148,7 @@
     <Compile Include="Components\Adapter\Remove.cs" />
     <Compile Include="Components\Adapter\Push.cs" />
     <Compile Include="Components\Engine\Explode.cs" />
+    <Compile Include="Components\Engine\GetEvents.cs" />
     <Compile Include="Components\Engine\GetInfo.cs" />
     <Compile Include="Components\Engine\Query.cs" />
     <Compile Include="Components\Engine\Modify.cs" />
@@ -210,6 +211,7 @@
     <Content Include="Properties\Resources\External.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
+    <None Include="Properties\Resources\GetEvents.png" />
     <Content Include="Properties\Resources\GetInfo.png" />
     <Content Include="Properties\Resources\Modify.png" />
     <Content Include="Properties\Resources\Move.png" />
