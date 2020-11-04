@@ -49,7 +49,7 @@ namespace BH.Engine.UI
                 // First, get all the pairs that have matching names
                 foreach (ParamInfo newParam in added.ToList())
                 {
-                    ParamInfo oldParam = removed.Find(x => x.Name == newParam.Name);
+                    ParamInfo oldParam = removed.Find(x => newParam.IsMatchingName(x.Name));
                     if (oldParam != null)
                     {
                         matches[newParam] = oldParam;
@@ -80,6 +80,19 @@ namespace BH.Engine.UI
             }
 
             return matches;
+        }
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static bool IsMatchingName(this ParamInfo param, string name)
+        {
+            if (param.Name == name)
+                return true;
+
+            PreviousNamesFragment fragment = param.Fragments.OfType<PreviousNamesFragment>().FirstOrDefault();
+            return fragment != null && fragment.OldNames.Contains(name);
         }
 
         /*************************************/
