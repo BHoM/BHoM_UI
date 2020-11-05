@@ -88,29 +88,29 @@ namespace BH.UI.Base.Components
         [MultiOutput(0, "objects", "Objects that have been pushed.\nThese objects may be different from the input objects (e.g. their correspondent external software id may be stored in their CustomData).")]
         [MultiOutput(1, "success", "Define if the push was sucessful")]
         public static Output<List<object>, bool> Push(BHoMAdapter adapter, IEnumerable<object> objects, string tag = "",
-            PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null, 
+            PushType pushType = PushType.AdapterDefault, ActionConfig actionConfig = null,
             bool active = false)
         {
-            List<object> result = new List<object>();
-            PushType pt = pushType;
+            var noOutput = BH.Engine.Reflection.Create.Output(new List<object>(), false);
 
-            if (active)
+            if (!active)
+                return noOutput;
+
+            ActionConfig pushConfig = null;
+            if (!adapter.SetupPushConfig(actionConfig, out pushConfig))
             {
-                ActionConfig pushConfig = null;
-                if (!adapter.SetupPushConfig(actionConfig, out pushConfig))
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
-                    return null;
-                }
-
-                if (!adapter.SetupPushType(pushType, out pt))
-                {
-                    BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pushType)}` input.");
-                    return null;
-                }
-
-                result = adapter.Push(objects, tag, pt, pushConfig);
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                return noOutput;
             }
+
+            PushType pt = pushType;
+            if (!adapter.SetupPushType(pushType, out pt))
+            {
+                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pushType)}` input.");
+                return noOutput;
+            }
+
+            List<object> result = adapter.Push(objects, tag, pt, pushConfig);
 
             return BH.Engine.Reflection.Create.Output(result, objects?.Count() == result?.Count());
         }
