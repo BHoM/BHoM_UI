@@ -32,6 +32,7 @@ using BH.oM.UI;
 using BH.Adapter;
 using BH.oM.Reflection;
 using BH.oM.Reflection.Debugging;
+using BH.UI.Base.Global;
 
 namespace BH.UI.Base.Components
 {
@@ -68,10 +69,18 @@ namespace BH.UI.Base.Components
         [MultiOutput(0, "errors", "All recorded errors.")]
         [MultiOutput(1, "warnings", "All recorded warnings.")]
         [MultiOutput(2, "notes", "All recorded notes.")]
-        public static Output<List<Event>, List<Event>, List<Event>> GetEvents(DateTime? since = null)
+        [MultiOutput(3, "startup", "All evetns that occured during startup.")]
+        public static Output<List<Event>, List<Event>, List<Event>, List<Event>> GetEvents(DateTime? since = null)
         {
             List<Event> events = Engine.Reflection.Query.AllEvents().ToList();
-            
+
+            List<Event> startupEvents = new List<Event>();
+            if (Initialisation.CompletionTime != null)
+            {
+                startupEvents = events.Where(x => x.Time <= Initialisation.CompletionTime).ToList();
+                events = events.Where(x => x.Time > Initialisation.CompletionTime).ToList();
+            }
+
             if (since != null)
                 events = events.Where(x => x.Time > since).ToList();
 
@@ -79,7 +88,8 @@ namespace BH.UI.Base.Components
             (
                 events.Where(x => x.Type == EventType.Error).ToList(),
                 events.Where(x => x.Type == EventType.Warning).ToList(),
-                events.Where(x => x.Type == EventType.Note).ToList()
+                events.Where(x => x.Type == EventType.Note).ToList(),
+                startupEvents
             );
         }
 

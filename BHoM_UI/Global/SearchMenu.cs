@@ -62,6 +62,7 @@ namespace BH.UI.Base.Global
         public SearchMenu()
         {
             PossibleItems = GetAllPossibleItems();
+            Initialisation.CompletionTime = DateTime.Now;
         }
 
         /*************************************/

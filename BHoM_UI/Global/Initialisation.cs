@@ -41,6 +41,13 @@ namespace BH.UI.Base.Global
     public static class Initialisation
     {
         /*************************************/
+        /**** Public Properties           ****/
+        /*************************************/
+
+        public static DateTime? CompletionTime { get; set; } = null;
+
+
+        /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
@@ -49,6 +56,8 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             success &= LoadToolkitSettings();
+
+            CompletionTime = DateTime.Now;
 
             return success;
         }
