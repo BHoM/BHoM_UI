@@ -69,7 +69,7 @@ namespace BH.UI.Base.Components
         [MultiOutput(0, "errors", "All recorded errors.")]
         [MultiOutput(1, "warnings", "All recorded warnings.")]
         [MultiOutput(2, "notes", "All recorded notes.")]
-        [MultiOutput(3, "startup", "All evetns that occured during startup.")]
+        [MultiOutput(3, "startup", "All events that occured during startup.")]
         public static Output<List<Event>, List<Event>, List<Event>, List<Event>> GetEvents(DateTime? since = null)
         {
             List<Event> events = Engine.Reflection.Query.AllEvents().ToList();
