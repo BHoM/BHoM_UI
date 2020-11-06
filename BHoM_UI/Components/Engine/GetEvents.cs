@@ -64,6 +64,7 @@ namespace BH.UI.Base.Components
         /*************************************/
 
         [Description("Get all events (errors, warnings, and notes) occuring on BHoM components.")]
+        [Input("since", "Only events after this time will be provided in the outputs. To get all events, leave this empty.")]
         [MultiOutput(0, "errors", "All recorded errors.")]
         [MultiOutput(1, "warnings", "All recorded warnings.")]
         [MultiOutput(2, "notes", "All recorded notes.")]
