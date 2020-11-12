@@ -80,7 +80,12 @@ namespace BH.UI.Base.Components
                         {
                             PropertyInfo propInfo = objType.GetProperty(propName);
                             if (propInfo != null)
-                                m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propInfo.PropertyType);
+                            {
+                                Type propType = propInfo.PropertyType;
+                                if (propType.IsValueType)
+                                    propType = typeof(object);
+                                m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);
+                            }    
                         }
                     }
 
