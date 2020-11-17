@@ -57,7 +57,7 @@ namespace BH.UI.Base.Global
 
             success &= LoadToolkitSettings();
 
-            CompletionTime = DateTime.Now;
+            CompletionTime = DateTime.UtcNow;
 
             return success;
         }
