@@ -77,8 +77,8 @@ namespace BH.UI.Base.Components
             List<Event> startupEvents = new List<Event>();
             if (Initialisation.CompletionTime != null)
             {
-                startupEvents = events.Where(x => x.Time <= Initialisation.CompletionTime).ToList();
-                events = events.Where(x => x.Time > Initialisation.CompletionTime).ToList();
+                startupEvents = events.Where(x => x.UtcTime <= Initialisation.CompletionTime).ToList();
+                events = events.Where(x => x.UtcTime > Initialisation.CompletionTime).ToList();
             }
 
             if (since != null)
