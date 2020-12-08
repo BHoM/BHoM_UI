@@ -32,6 +32,7 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.oM.Reflection.Debugging;
 
 namespace BH.UI.Base
 {
@@ -122,6 +123,8 @@ namespace BH.UI.Base
                     object input = null;
                     if (InputParams[i].IsSelected)
                     {
+                        int preGetterEventCount = Engine.Reflection.Query.CurrentEvents().Where(x => x.Type == EventType.Error).Count();
+
                         try
                         {
                             input = m_CompiledGetters[i](m_DataAccessor, index);
@@ -131,6 +134,12 @@ namespace BH.UI.Base
                                 string warning = InputParams[i].DefaultValueWarning;
                                 if (!string.IsNullOrEmpty(warning))
                                     Engine.Reflection.Compute.RecordNote(warning);
+
+                                // Temporary solution to handle error casting events that didn't throw an exception. 
+                                // Long term, we need Events of different types to better identify them instead of relying on message content.
+                                int newErrorCount = Engine.Reflection.Query.CurrentEvents().Skip(preGetterEventCount).Where(x => x.Type == EventType.Error).Where(x => x.Message.StartsWith("Failed to cast")).Count();
+                                if (newErrorCount > 0)
+                                    throw new Exception();
                             }
                         }
                         catch (Exception e)
@@ -139,6 +148,7 @@ namespace BH.UI.Base
                             MethodInfo originalMethod = m_OriginalItem as MethodInfo;
                             if (originalInputType != null && originalInputType.IsGenericType && originalMethod != null && originalMethod.IsGenericMethod)
                             {
+                                Engine.Reflection.Compute.RemoveEvents(Engine.Reflection.Query.CurrentEvents().Skip(preGetterEventCount).ToList());
                                 UpdateInputGenericType(i);
                                 input = m_CompiledGetters[i](m_DataAccessor, index);
                             }
