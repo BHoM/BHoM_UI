@@ -41,7 +41,7 @@ namespace BH.Test.UI
         {
             Engine.Reflection.Compute.LoadAllAssemblies();
             SearchMenu_WinForm searchMenu = new SearchMenu_WinForm();
-            return searchMenu.PossibleItems;
+            return searchMenu.PossibleItems.Where(x => !(x.Item is string && (x.Item as string).StartsWith("TestSets"))).ToList();
         }
     }
 }
