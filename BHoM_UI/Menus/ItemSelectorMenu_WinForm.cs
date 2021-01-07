@@ -26,6 +26,7 @@ using BH.oM.Data.Collections;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,8 +78,15 @@ namespace BH.UI.Base.Menus
             if (tree.Children.Count > 0)
             {
                 ToolStripMenuItem treeMenu = AppendMenuItem(menu, tree.Name);
-                foreach (Tree<object> childTree in tree.Children.Values.OrderBy(x => x.Name))
-                    AppendMenuTree(childTree, treeMenu.DropDown);
+                treeMenu.Paint += (s, e) =>
+                {
+                    if (treeMenu.DropDown.Items.Count == 0)
+                    {
+                        foreach (Tree<object> childTree in tree.Children.Values.OrderBy(x => x.Name))
+                            AppendMenuTree(childTree, treeMenu.DropDown);
+                        treeMenu.Invalidate();
+                    }
+                };
             }
             else
             {
