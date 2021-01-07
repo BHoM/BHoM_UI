@@ -48,9 +48,10 @@ namespace BH.UI.Base
         /**** Public Methods              ****/
         /*************************************/
 
-        public override void SetItem(object item, bool sendNotification = true)
+        public override void SetItem(object item, bool sendNotification = true, bool updateOriginal = true)
         {
-            m_OriginalItem = item;
+            if (updateOriginal)
+                m_OriginalItem = item;
             SelectedItem = item;
 
             SetComponentDetails();

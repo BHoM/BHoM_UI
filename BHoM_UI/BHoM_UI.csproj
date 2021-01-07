@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BH.UI</RootNamespace>
     <AssemblyName>BHoM_UI</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,14 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CSharp_Engine">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\CSharp_Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CSharp_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\CSharp_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Data_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_Engine.dll</HintPath>
       <Private>False</Private>
@@ -63,6 +72,9 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.1.278, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.6.0.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
@@ -71,6 +83,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="PresentationFramework">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Programming_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Programming_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Quantities_oM">
@@ -168,6 +184,7 @@
     <Compile Include="Components\oM\CreateType.cs" />
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
+    <Compile Include="Components\UI\RunCode.cs" />
     <Compile Include="Global\Initialisation.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
     <Compile Include="Global\SearchMenu.cs" />
@@ -182,6 +199,9 @@
     <Compile Include="Menus\ItemSelectorMenu.cs" />
     <Compile Include="Menus\ItemSelectorMenu_WinForm.cs" />
     <Compile Include="Menus\ItemSelectorMenu_Wpf.cs" />
+    <Compile Include="Windows\CodeEditor.xaml.cs">
+      <DependentUpon>CodeEditor.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -215,6 +235,7 @@
     <Content Include="Properties\Resources\External.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
+    <None Include="packages.config" />
     <None Include="Properties\Resources\GetEvents.png" />
     <Content Include="Properties\Resources\GetInfo.png" />
     <Content Include="Properties\Resources\Modify.png" />
@@ -223,15 +244,14 @@
     <Content Include="Properties\Resources\Push.png" />
     <Content Include="Properties\Resources\Query.png" />
     <Content Include="Properties\Resources\CreateRequest.png" />
+    <Content Include="Properties\Resources\RunCode.png" />
     <Content Include="Properties\Resources\ToJson.png" />
     <Content Include="Properties\Resources\Type.png" />
     <Content Include="Properties\Resources\UpdateProperty.png" />
     <Content Include="Properties\Resources\VBH_Script.png" />
     <Content Include="Properties\Resources\VS_Script.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\UI_Engine\UI_Engine.csproj">
       <Project>{565ddbd0-5c04-4be9-b57d-ce54c2124abb}</Project>
@@ -247,9 +267,17 @@
   <ItemGroup>
     <None Include="Versioning_33.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="Windows\CodeEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
+
+xcopy "$(TargetDir)ICSharpCode.AvalonEdit.dll"  "C:\ProgramData\BHoM\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
