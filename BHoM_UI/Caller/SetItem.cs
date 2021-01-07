@@ -42,12 +42,13 @@ namespace BH.UI.Base
         /**** Public Methods              ****/
         /*************************************/
 
-        public virtual void SetItem(object item, bool sendNotification = true)
+        public virtual void SetItem(object item, bool sendNotification = true, bool updateOriginal = true)
         {
             if (item == null)
                 return;
 
-            m_OriginalItem = item;
+            if (updateOriginal)
+                m_OriginalItem = item;
             SelectedItem = FromGeneric(item as dynamic);
 
             List<ParamInfo> oldInputs = InputParams.ToList();
