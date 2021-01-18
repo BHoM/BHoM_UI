@@ -104,40 +104,12 @@ namespace BH.UI.Base.Components
 
         public override object Run(List<object> inputs)
         {
-            if (m_CompiledFunc != null)
-            {
-                object returnValue = null;
-                MethodInfo method = m_OriginalItem as MethodInfo;
-                try
-                {
-                    returnValue = m_CompiledFunc(inputs.ToArray());
-                }
-                catch (InvalidCastException e)
-                {
-                    MethodInfo originalMethod = m_OriginalItem as MethodInfo;
-                    if (originalMethod != null && originalMethod.IsGenericMethod)
-                    {
-                        // Try to update the generic method to fit the input types
-                        method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
-                        m_CompiledFunc = method.ToFunc();
-                        returnValue = m_CompiledFunc(inputs.ToArray());
-                    }
-                    else
-                        throw e;
-                }
+            object returnValue = base.Run(inputs);
 
-                return new UnitTest() { Method = method, Data = new List<TestData>() { new TestData(inputs, SeparateOutputs(returnValue)) } };
-            }
-            else if (InputParams.Count <= 0)
-            {
-                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
-                return null;
-            }
+            if (m_CompiledFunc != null)
+                return new UnitTest() { Method = m_OriginalItem as MethodBase, Data = new List<TestData>() { new TestData(inputs, SeparateOutputs(returnValue)) } };
             else
-            {
-                BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
                 return null;
-            }
         }
 
         /*************************************/
