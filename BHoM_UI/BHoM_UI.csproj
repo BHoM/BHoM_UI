@@ -252,6 +252,7 @@
     <Content Include="Properties\Resources\RunCode.png" />
     <Content Include="Properties\Resources\ToJson.png" />
     <Content Include="Properties\Resources\Type.png" />
+    <None Include="Properties\Resources\UnitTest.png" />
     <Content Include="Properties\Resources\UpdateProperty.png" />
     <Content Include="Properties\Resources\VBH_Script.png" />
     <Content Include="Properties\Resources\VS_Script.png" />

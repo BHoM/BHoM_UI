@@ -42,6 +42,8 @@ namespace BH.UI.Base.Components
         /**** Properties                  ****/
         /*************************************/
 
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.UnitTest;
+
         public override Guid Id { get; protected set; } = new Guid("dd7ad577-8e27-42e0-ad72-f70e87fc7492");
 
         public override string Name { get; protected set; } = "UnitTest";
