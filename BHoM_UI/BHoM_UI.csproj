@@ -138,7 +138,7 @@
     <Reference Include="System.Xml">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Test_oM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Test_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Test_oM.dll</HintPath>
     </Reference>
