@@ -33,6 +33,7 @@ using System.Windows.Controls;
 using BH.oM.Test.UnitTests;
 using BH.oM.UI;
 using BH.oM.Reflection.Interface;
+using BH.Engine.Base;
 
 namespace BH.UI.Base.Components
 {
@@ -106,6 +107,13 @@ namespace BH.UI.Base.Components
 
         public override object Run(List<object> inputs)
         {
+            if (inputs != null && inputs.Count > 0)
+            {
+                // Deepclone must be done before the properties are set to ensure immutability
+                for(int x = 0; x < inputs.Count; x++)
+                    inputs[x] = inputs[x].DeepClone();
+            }
+
             object returnValue = base.Run(inputs);
 
             if (m_CompiledFunc != null)
