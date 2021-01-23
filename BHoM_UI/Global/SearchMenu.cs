@@ -317,12 +317,6 @@ namespace BH.UI.Base.Global
                     Text = "BH.oM.CreateCustom"
                 },
                 new SearchItem {
-                    Item = null,
-                    CallerType = typeof(RunCodeCaller),
-                    Icon = Properties.Resources.RunCode,
-                    Text = "BH.UI.RunCode"
-                },
-                new SearchItem {
                     Item = typeof(CreateDictionaryCaller).GetMethod("CreateDictionary"),
                     CallerType = typeof(CreateDictionaryCaller),
                     Icon = Properties.Resources.Dictionary,

@@ -72,9 +72,6 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.1.278, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.6.0.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
-    </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
@@ -188,7 +185,6 @@
     <Compile Include="Components\oM\CreateType.cs" />
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
-    <Compile Include="Components\UI\RunCode.cs" />
     <Compile Include="Components\UI\UnitTest.cs" />
     <Compile Include="Global\Initialisation.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
@@ -204,9 +200,6 @@
     <Compile Include="Menus\ItemSelectorMenu.cs" />
     <Compile Include="Menus\ItemSelectorMenu_WinForm.cs" />
     <Compile Include="Menus\ItemSelectorMenu_Wpf.cs" />
-    <Compile Include="Windows\CodeEditor.xaml.cs">
-      <DependentUpon>CodeEditor.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -240,7 +233,6 @@
     <Content Include="Properties\Resources\External.png" />
     <Content Include="Properties\Resources\FromJson.png" />
     <Content Include="Properties\Resources\gator.png" />
-    <None Include="packages.config" />
     <None Include="Properties\Resources\GetEvents.png" />
     <Content Include="Properties\Resources\GetInfo.png" />
     <Content Include="Properties\Resources\Modify.png" />
@@ -273,17 +265,9 @@
   <ItemGroup>
     <None Include="Versioning_33.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Page Include="Windows\CodeEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y
-
-xcopy "$(TargetDir)ICSharpCode.AvalonEdit.dll"  "C:\ProgramData\BHoM\Assemblies" /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "C:\ProgramData\BHoM\Assemblies" /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
