@@ -27,6 +27,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using BH.Engine.Base;
+using BH.Engine.Reflection;
+using BH.oM.UI;
 
 namespace BH.UI.Base.Components
 {
@@ -63,14 +65,51 @@ namespace BH.UI.Base.Components
 
         public override object Run(List<object> inputs)
         {
-            if (inputs != null && inputs.Count >= 1 && inputs[0] != null)
+            bool cloned = (inputs != null && inputs.Count >= 1 && inputs[0] != null);
+            if (cloned)
             {
                 // Deepclone must be done before the properties are set to ensure immutability
                 // TODO: DeepClone should ignore fragments and CustomData
                 inputs[0] = inputs[0].DeepClone();
             }
-            return base.Run(inputs);
+
+            object result = base.Run(inputs);
+            if (m_IsVoidOutput && cloned)
+                result = inputs[0];
+            return result;
         }
+
+        /*************************************/
+
+        protected override void SetOutputs(MethodBase method)
+        {
+            m_IsVoidOutput = method.OutputType() == typeof(void);
+
+            if (m_IsVoidOutput)
+            {
+                ParameterInfo firstParam = method.GetParameters().FirstOrDefault();
+                if (firstParam != null)
+                {
+                    Type returnType = firstParam.ParameterType;
+                    OutputParams = new List<oM.UI.ParamInfo> { new ParamInfo {
+                        Name = "result",
+                        DataType = firstParam.ParameterType,
+                        Description = "Modified copy of the input object.",
+                        Kind = ParamKind.Output,
+                        IsRequired = true
+                    }};
+                }
+            }
+            else
+                base.SetOutputs(method);
+        }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private bool m_IsVoidOutput = false;
 
         /*************************************/
     }
