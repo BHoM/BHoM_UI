@@ -21,7 +21,6 @@
  */
 
  using BH.Engine.Reflection;
-using BH.oM.Data.Collections;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using System;
 using System.Collections.Generic;
