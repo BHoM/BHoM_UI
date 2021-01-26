@@ -34,9 +34,11 @@
   <ItemGroup>
     <Reference Include="CSharp_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\CSharp_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="CSharp_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\CSharp_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=6.0.1.278, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.6.0.1\lib\net45\ICSharpCode.AvalonEdit.dll</HintPath>
@@ -45,9 +47,11 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="Reflection_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Reflection_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Reflection_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,14 +82,17 @@
     <ProjectReference Include="..\BHoM_UI\BHoM_UI.csproj">
       <Project>{69f4f042-e23a-4673-ab32-3d787cfa976c}</Project>
       <Name>BHoM_UI</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UI_Engine\UI_Engine.csproj">
       <Project>{565ddbd0-5c04-4be9-b57d-ce54c2124abb}</Project>
       <Name>UI_Engine</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\UI_oM\UI_oM.csproj">
       <Project>{50d4c1ed-c16c-4365-a742-938bf49ec4b0}</Project>
       <Name>UI_oM</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
