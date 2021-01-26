@@ -138,6 +138,7 @@
     <Reference Include="Test_oM">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\BHoM\Assemblies\Test_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Versioning_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Versioning_Engine.dll</HintPath>
