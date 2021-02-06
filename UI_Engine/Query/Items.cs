@@ -22,6 +22,7 @@
 
 using BH.Adapter;
 using BH.Engine.Reflection;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +129,7 @@ namespace BH.Engine.UI
         public static IEnumerable<Type> ConstructableTypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()
-                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && x.IsAutoConstructorAllowed() && !x.IsEnum && !x.IsAbstract && !x.FullName.Contains("+<>c"))
+                .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && x.IsAutoConstructorAllowed() && !x.IsEnum && !x.IsAbstract)
                 .Where(x => x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
         }
 

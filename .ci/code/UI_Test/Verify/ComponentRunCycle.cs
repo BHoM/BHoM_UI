@@ -20,7 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Test;
 using BH.oM.Reflection.Debugging;
+using BH.oM.Test;
 using BH.oM.Test.Results;
 using BH.oM.UI;
 using BH.UI.Base;
@@ -40,15 +42,26 @@ namespace BH.Test.UI
 
         public static TestResult ComponentRunCycle()
         {
-            List<SearchItem> items = Helpers.PossibleComponentItems();
+            List<SearchItem> items = Helpers.PossibleComponentItems()
+                .Where(x => !(x.Item is string && (x.Item as string).StartsWith("TestSets")))
+                .ToList();
+
             List<TestResult> results = items.Select(x => ComponentRunCycle(x)).ToList();
-            List<TestResult> fails = results.Where(x => x.Status == ResultStatus.Fail).ToList();
 
-            ResultStatus status = fails.Count == 0 ? ResultStatus.Pass : ResultStatus.Fail;
-            List<Event> events = fails.SelectMany(x => x.Events).ToList();
-            string description = $"Testing input and output handling for the {results.Count} possible BHoM components.";
+            // Generate the result message
+            int errorCount = results.Where(x => x.Status == TestStatus.Error).Count();
+            int warningCount = results.Where(x => x.Status == TestStatus.Warning).Count();
 
-            return new TestResult(status, events, description);
+            // Returns a summary result 
+            return new TestResult()
+            {
+                ID = "UIComponentRunCycle",
+                Description = $"Testing input and output handling of the {results.Count} available BHoM components.",
+                Message = $"{errorCount} errors and {warningCount} warnings reported.",
+                Status = results.MostSevereStatus(),
+                Information = results.Where(x => x.Status != TestStatus.Pass).ToList<ITestInformation>(),
+                UTCTime = DateTime.UtcNow,
+            };
 
         }
 
@@ -56,10 +69,18 @@ namespace BH.Test.UI
 
         public static TestResult ComponentRunCycle(SearchItem item)
         {
+            Engine.Reflection.Compute.ClearCurrentEvents();
             Caller caller = Helpers.InstantiateCaller(item);
             if (caller == null)
-                return Engine.Test.Create.FailResult($"Failed to instatiate {item.Text}.", item.Text);
-            else if (caller is MultiChoiceCaller)
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to instatiate {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
+
+            if (caller is MultiChoiceCaller)
                 return Engine.Test.Create.PassResult("item.Text");
 
             DummyCaller dummy = null;
@@ -68,14 +89,20 @@ namespace BH.Test.UI
                 dummy = new DummyCaller();
                 dummy.SetItem(item);
             }
-            catch
+            catch (Exception e)
             {
-                return Engine.Test.Create.FailResult($"Failed to create dummy caller for {item.Text}.", item.Text);
+                Engine.Reflection.Compute.RecordError(e.Message);
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to create dummy caller for {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
             }
 
             try
             {
-                BH.Engine.Reflection.Compute.ClearCurrentEvents();
                 m_Accessor.Outputs = new List<object>();
 
                 caller.SetDataAccessor(m_Accessor);
@@ -83,13 +110,26 @@ namespace BH.Test.UI
 
                 List<Event> errors = BH.Engine.Reflection.Query.CurrentEvents().Where(x => x.Type == EventType.Error).ToList();
                 if (errors.Count > 0 || m_Accessor.Outputs.Any(x => x == null))
-                    return Engine.Test.Create.FailResult($"Failed to handle params of {item.Text}.", item.Text);
+                    return new TestResult
+                    {
+                        Description = item.Text,
+                        Status = TestStatus.Error,
+                        Message = $"Error: Failed to handle params of {item.Text}.",
+                        Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                    };
                 else
                     return Engine.Test.Create.PassResult("item.Text");
             }
-            catch
+            catch (Exception e)
             {
-                return Engine.Test.Create.FailResult($"Failed to test param handling of {item.Text}.", item.Text);
+                Engine.Reflection.Compute.RecordError(e.Message);
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to test param handling of {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
             }
         }
 
