@@ -20,9 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Test;
 using BH.oM.Base;
 using BH.oM.Reflection;
 using BH.oM.Reflection.Debugging;
+using BH.oM.Test;
 using BH.oM.Test.Results;
 using BH.oM.UI;
 using BH.UI.Base;
@@ -42,25 +44,42 @@ namespace BH.Test.UI
 
         public static TestResult ComponentReadWriteCycle()
         {
-            List<SearchItem> items = Helpers.PossibleComponentItems();
+            List<SearchItem> items = Helpers.PossibleComponentItems()
+                .Where(x => !(x.Item is string && (x.Item as string).StartsWith("TestSets")))
+                .ToList();
+
             List<TestResult> results = items.Select(x => ComponentReadWriteCycle(x)).ToList();
-            List<TestResult> fails = results.Where(x => x.Status == ResultStatus.Fail).ToList();
 
-            ResultStatus status = fails.Count == 0 ? ResultStatus.Pass : ResultStatus.Fail;
-            List<Event> events = fails.SelectMany(x => x.Events).ToList();
-            string description = $"Testing copy of the {results.Count} possible BHoM components.";
+            // Generate the result message
+            int errorCount = results.Where(x => x.Status == TestStatus.Error).Count();
+            int warningCount = results.Where(x => x.Status == TestStatus.Warning).Count();
 
-            return new TestResult(status, events, description);
-
+            // Returns a summary result 
+            return new TestResult()
+            {
+                ID = "UIComponentReadWriteCycle",
+                Description = $"Testing copy of the {results.Count} available BHoM components.",
+                Message = $"{errorCount} errors and {warningCount} warnings reported.",
+                Status = results.MostSevereStatus(),
+                Information = results.Where(x => x.Status != TestStatus.Pass).ToList<ITestInformation>(),
+                UTCTime = DateTime.UtcNow,
+            };
         }
 
         /*************************************/
 
         public static TestResult ComponentReadWriteCycle(SearchItem item)
         {
+            Engine.Reflection.Compute.ClearCurrentEvents();
             Caller caller = Helpers.InstantiateCaller(item);
             if (caller == null)
-                return Engine.Test.Create.FailResult($"Failed to instatiate {item.Text}.", item.Text);
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to instatiate {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
 
             Caller copy = null;
             try
@@ -69,24 +88,44 @@ namespace BH.Test.UI
                 copy = Helpers.InstantiateCaller(caller.GetType());
                 copy.Read(json);
             }
-            catch
+            catch (Exception e)
             {
-                return Engine.Test.Create.FailResult($"Failed to copy {item.Text}.", item.Text);
+                Engine.Reflection.Compute.RecordError(e.Message);
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to copy {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
             }
 
             try
             {
                 ComparisonConfig config = new ComparisonConfig();
-                config.PropertyExceptions = new List<string> { "Icon_24x24", "BHoM_Guid" };
+                config.PropertyExceptions = new List<string> { "Icon_24x24", "BHoM_Guid", "DefaultValue" };  // DefaultValue needs to be excluded because ot can be a DateTime set to Now()
                 Output<bool, List<string>, List<string>, List<string>> isEqual = Engine.Test.Query.IsEqual(caller, copy, config);
                 if (isEqual.Item1)
                     return Engine.Test.Create.PassResult(item.Text);
                 else
-                    return Engine.Test.Create.FailResult($"Incorrect copy of {item.Text}.", item.Text);
+                    return new TestResult
+                    {
+                        Description = item.Text,
+                        Status = TestStatus.Error,
+                        Message = $"Error: Incorrect copy of {item.Text}.",
+                        Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                    };
             }
-            catch
+            catch (Exception e)
             {
-                return Engine.Test.Create.FailResult($"Failed to test equality of {item.Text}.", item.Text);
+                Engine.Reflection.Compute.RecordError(e.Message);
+                return new TestResult
+                {
+                    Description = item.Text,
+                    Status = TestStatus.Error,
+                    Message = $"Error: Failed to test equality of {item.Text}.",
+                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                };
             }
         }
 
