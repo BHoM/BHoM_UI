@@ -105,7 +105,7 @@ namespace BH.UI.Base.Components
             }
 
             ActionConfig pushCfg = null;
-            if (!source.SetupPushConfig(pushConfig, out pullCfg))
+            if (!source.SetupPushConfig(pushConfig, out pushCfg))
             {
                 BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(pushConfig)}` input.");
                 return false;
