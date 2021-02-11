@@ -82,10 +82,14 @@ namespace BH.Engine.UI
         [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
         public static ParamInfo ParamInfo(this ParameterInfo parameter, string description = "")
         {
+            Type paramType = parameter.ParameterType;
+            if (paramType.IsByRef && paramType.HasElementType)
+                paramType = paramType.GetElementType();
+
             return new ParamInfo
             {
                 Name = parameter.Name,
-                DataType = parameter.ParameterType,
+                DataType = paramType,
                 Description = description,
                 Kind = ParamKind.Input,
                 HasDefaultValue = parameter.HasDefaultValue,
