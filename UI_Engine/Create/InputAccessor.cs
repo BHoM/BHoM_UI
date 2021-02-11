@@ -43,7 +43,10 @@ namespace BH.Engine.UI
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "GetDataItem" : (subType.Depth == 1) ? "GetDataList" : "GetDataTree";
 
-            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(subType.Type);
+            Type inputType = subType.Type;
+            if (inputType.IsByRef && inputType.HasElementType)
+                inputType = inputType.GetElementType();
+            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(inputType);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");
             ParameterExpression lambdaInput2 = Expression.Parameter(typeof(int), "index");
@@ -64,7 +67,7 @@ namespace BH.Engine.UI
 
                 return (accessor, index) => { return castDelegate(lambda(accessor, index)); };
             }
-            else if (subType.Depth == 1 && dataType.Name != "List`1" && dataType.Name != "IEnumerable`1")
+            else if (subType.Depth == 1 && !dataType.IsValueType && dataType.Name != "List`1" && dataType.Name != "IEnumerable`1")
             {
                 // If we have a `DataList` that isn't actually a list, lets try to create it from teh list through the appropriate constructor
                 foreach (ConstructorInfo constructor in dataType.GetConstructors())
