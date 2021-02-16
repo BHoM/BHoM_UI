@@ -50,6 +50,12 @@ namespace BH.oM.UI
 
         public virtual object SelectedItem { get; set; } = null;
 
+        public virtual string FileId { get; set; } = "";
+
+        public virtual string FileName { get; set; } = "";
+
+        public virtual string ProjectCode { get; set; } = "";
+
         public virtual List<Event> Errors { get; set; } = new List<Event>();
 
 

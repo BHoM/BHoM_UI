@@ -41,8 +41,16 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null)
+        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
+            // If a projectCode event is available, save the project code for this file
+            if (events != null)
+            {
+                ProjectCodeEvent e = events.OfType<ProjectCodeEvent>().FirstOrDefault();
+                if (e != null && !string.IsNullOrEmpty(fileId))
+                    m_ProjectCodePerFile[fileId] = e.ProjectCode;
+            }
+
             try
             {
                 // Create the log item
@@ -54,12 +62,17 @@ namespace BH.Engine.UI
                     ComponentId = componentId,
                     CallerName = callerName,
                     SelectedItem = selectedItem,
+                    FileId = fileId,
+                    FileName = fileName,
                     Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
                 };
 
-                string json = info.ToJson();
+                // Record the project code if it exists
+                if (m_ProjectCodePerFile.ContainsKey(fileId))
+                    info.ProjectCode = m_ProjectCodePerFile[fileId];
 
                 // Write to the log file
+                string json = info.ToJson();
                 StreamWriter log = GetUsageLog(uiName);
                 log.WriteLine(json);
                 log.Flush();
@@ -148,6 +161,8 @@ namespace BH.Engine.UI
         private static string m_BHoMVersion = null;
 
         private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
+
+        private static Dictionary<string, string> m_ProjectCodePerFile = new Dictionary<string, string>();
 
         /*************************************/
     }
