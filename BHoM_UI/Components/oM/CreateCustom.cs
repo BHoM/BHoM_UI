@@ -106,6 +106,13 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
+        public override bool CanUpdateInput(int index, string name)
+        {
+            return m_DynamicInputs;
+        }
+
+        /*************************************/
+
         public override bool RemoveInput(string name)
         {
             if (!m_DynamicInputs || name == null)
