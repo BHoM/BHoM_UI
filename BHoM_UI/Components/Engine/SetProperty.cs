@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Reflection;
 using BH.Engine.Base;
 using System.Collections.Generic;
+using BH.Engine.Reflection;
 
 namespace BH.UI.Base.Components
 {
@@ -78,10 +79,18 @@ namespace BH.UI.Base.Components
                         Type objType = obj.GetType();
                         if (objType != null)
                         {
-                            PropertyInfo propInfo = objType.GetProperty(propName);
-                            if (propInfo != null)
+                            Type propType = GetPropertyType(objType, propName);
+                            if (propType == null && propName.Contains("."))
                             {
-                                Type propType = propInfo.PropertyType;
+                                // If property type is null, it might be because the user is trying to access properties of objects exposed only through an interface (and therefore not available)
+                                // (e.g. SectionProperty.Reinforcement of a Bar with SectionProperty being an ISectionProperty interface that doesn't have a Reinforcement property)
+                                // So let's try to get the type directly from the value of the target property if it exists
+                                object value = obj.PropertyValue(propName);
+                                if (value != null)
+                                    propType = value.GetType();
+                            }
+                            if (propType != null)
+                            {
                                 if (propType.IsValueType)
                                     propType = typeof(object);
                                 m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);
@@ -121,6 +130,26 @@ namespace BH.UI.Base.Components
         {
             // Do not let update input types (they are detected automatically in CollectInputs())
             return true;
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private Type GetPropertyType(Type objType, string propName)
+        {
+            string[] props = propName.Split('.');
+            for (int i = 0; i < props.Length; i++)
+            {
+                PropertyInfo propInfo = objType.GetProperty(props[i]);
+                if (propInfo != null)
+                    objType = propInfo.PropertyType;
+                else 
+                    return null;
+            }
+
+            return objType;
         }
 
 
