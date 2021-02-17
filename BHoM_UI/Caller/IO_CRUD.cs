@@ -77,7 +77,7 @@ namespace BH.UI.Base
 
         public virtual bool UpdateInput(int index, string name = null, Type type = null)
         {
-            if (index < 0)
+            if (index < 0 || !CanUpdateInput(index, name))
                 return false;
 
             if (InputParams.Count <= index)
@@ -182,6 +182,13 @@ namespace BH.UI.Base
                 ParamInfo match = OutputParams.Find(x => x.Name == name);
                 return match != null && !match.IsRequired;
             }
+        }
+
+        /*************************************/
+
+        public virtual bool CanUpdateInput(int index, string name)
+        {
+            return false;
         }
 
         /*************************************/
