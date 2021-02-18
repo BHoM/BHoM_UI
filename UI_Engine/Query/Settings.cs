@@ -39,9 +39,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Extract settings of a given type from C:\ProgramData\BHoM\Settings")]
+        [Description(@"Extract settings of a given type from C:/ProgramData/BHoM/Settings")]
         [Input("type", "Object type of the settings you want to recover")]
-        [Output("settings", @"Settings recovered from the corresponding file in C:\ProgramData\BHoM\Settings")]
+        [Output("settings", @"Settings recovered from the corresponding file in C:/ProgramData/BHoM/Settings")]
         public static ISettings Settings(Type type)
         {
             if (type == null)
@@ -64,9 +64,9 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        [Description(@"Extract settings for a given toolkit from C:\ProgramData\BHoM\Settings")]
+        [Description(@"Extract settings for a given toolkit from C:/ProgramData/BHoM/Settings")]
         [Input("toolkitName", "Toolkit you want to recover the settings for")]
-        [Output("settings", @"Settings recovered from the corresponding file in C:\ProgramData\BHoM\Settings")]
+        [Output("settings", @"Settings recovered from the corresponding file in C:/ProgramData/BHoM/Settings")]
         public static ISettings Settings(string toolkitName)
         {
             // Make sure the file exists
