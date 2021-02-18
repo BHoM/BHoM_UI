@@ -44,13 +44,13 @@ namespace BH.Engine.UI
         [Output("success", "Returns true if the project ID was correctly registered.")]
         public static bool SetProjectID(string projectID)
         {
-            if (projectCode == "")
+            if (projectID == "")
                 return false;
 
-            Engine.Reflection.Compute.RecordEvent(new ProjectCodeEvent
+            Engine.Reflection.Compute.RecordEvent(new ProjectIDEvent
             {
-                Message = "The project code for this file is now set to " + projectCode,
-                ProjectCode = projectCode
+                Message = "The project code for this file is now set to " + projectID,
+                ProjectID = projectID
             });
 
             return true;

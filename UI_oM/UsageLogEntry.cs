@@ -54,7 +54,7 @@ namespace BH.oM.UI
 
         public virtual string FileName { get; set; } = "";
 
-        public virtual string ProjectCode { get; set; } = "";
+        public virtual string ProjectID { get; set; } = "";
 
         public virtual List<Event> Errors { get; set; } = new List<Event>();
 
