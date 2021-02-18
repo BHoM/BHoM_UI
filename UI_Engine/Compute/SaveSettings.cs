@@ -39,7 +39,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:\ProgramData\BHoM\Settings. If Any previoulsy saved settings for that toolkit will be overwritten")]
+        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If Any previoulsy saved settings for that toolkit will be overwritten")]
         [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
         [Output("success", "Returns true if the settings were saved successfully.")]
         public static bool SaveSettings(ISettings settings)
