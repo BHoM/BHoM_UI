@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compute\RecordError.cs" />
-    <Compile Include="Compute\SetProjectCode.cs" />
+    <Compile Include="Compute\SetProjectID.cs" />
     <Compile Include="Compute\SaveSettings.cs" />
     <Compile Include="Compute\LogUsage.cs" />
     <Compile Include="Compute\LoadAssemblies.cs" />
