@@ -43,12 +43,12 @@ namespace BH.Engine.UI
 
         public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
-            // If a projectCode event is available, save the project code for this file
+            // If a projectID event is available, save the project code for this file
             if (events != null)
             {
-                ProjectCodeEvent e = events.OfType<ProjectCodeEvent>().FirstOrDefault();
+                ProjectIDEvent e = events.OfType<ProjectIDEvent>().FirstOrDefault();
                 if (e != null && !string.IsNullOrEmpty(fileId))
-                    m_ProjectCodePerFile[fileId] = e.ProjectCode;
+                    m_ProjectIDPerFile[fileId] = e.ProjectID;
             }
 
             try
@@ -68,8 +68,8 @@ namespace BH.Engine.UI
                 };
 
                 // Record the project code if it exists
-                if (m_ProjectCodePerFile.ContainsKey(fileId))
-                    info.ProjectCode = m_ProjectCodePerFile[fileId];
+                if (m_ProjectIDPerFile.ContainsKey(fileId))
+                    info.ProjectID = m_ProjectIDPerFile[fileId];
 
                 // Write to the log file
                 string json = info.ToJson();
@@ -162,7 +162,7 @@ namespace BH.Engine.UI
 
         private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
 
-        private static Dictionary<string, string> m_ProjectCodePerFile = new Dictionary<string, string>();
+        private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
         /*************************************/
     }

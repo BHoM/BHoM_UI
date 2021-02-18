@@ -30,13 +30,13 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class ProjectCodeEvent : Event
+    public class ProjectIDEvent : Event
     {
         /***************************************************/
         /**** Properties                                ****/
         /***************************************************/
 
-        public virtual string ProjectCode { get; set; } = "";
+        public virtual string ProjectID { get; set; } = "";
 
         public override EventType Type { get; set; } = EventType.Note;
 
