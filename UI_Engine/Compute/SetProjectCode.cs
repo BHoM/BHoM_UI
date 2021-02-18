@@ -39,10 +39,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Set the code of the project this file is related to.")]
-        [Input("projectCode", "Project code/number this file is associated with.")]
-        [Output("success", "Returns true if the project code was correctly registered.")]
-        public static bool SetProjectCode(string projectCode)
+        [Description(@"Set the project number or unique project ID this script is associated with.")]
+        [Input("projectID", "Project number/unique project ID this script is associated with.")]
+        [Output("success", "Returns true if the project ID was correctly registered.")]
+        public static bool SetProjectID(string projectID)
         {
             if (projectCode == "")
                 return false;
@@ -59,5 +59,4 @@ namespace BH.Engine.UI
         /*************************************/
     }
 }
-
 
