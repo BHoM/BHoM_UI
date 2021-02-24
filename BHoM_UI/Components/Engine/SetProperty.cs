@@ -28,6 +28,8 @@ using System.Reflection;
 using BH.Engine.Base;
 using System.Collections.Generic;
 using BH.Engine.Reflection;
+using System.Linq;
+using System.Collections;
 
 namespace BH.UI.Base.Components
 {
@@ -85,16 +87,13 @@ namespace BH.UI.Base.Components
                                 // If property type is null, it might be because the user is trying to access properties of objects exposed only through an interface (and therefore not available)
                                 // (e.g. SectionProperty.Reinforcement of a Bar with SectionProperty being an ISectionProperty interface that doesn't have a Reinforcement property)
                                 // So let's try to get the type directly from the value of the target property if it exists
-                                object value = obj.PropertyValue(propName);
-                                if (value != null)
-                                    propType = value.GetType();
+                                propType = GetPropertyType(obj, propName);
                             }
-                            if (propType != null)
-                            {
-                                if (propType.IsValueType)
-                                    propType = typeof(object);
-                                m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);
-                            }    
+                            if (propType == null)
+                                propType = typeof(object); // Fallback to object tpye in case of properties set on CustomData for example
+                            if (propType.IsValueType)
+                                propType = typeof(object);
+                            m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);  
                         }
                     }
 
@@ -134,16 +133,50 @@ namespace BH.UI.Base.Components
             string[] props = propName.Split('.');
             for (int i = 0; i < props.Length; i++)
             {
-                PropertyInfo propInfo = objType.GetProperty(props[i]);
+                PropertyInfo propInfo = objType?.GetProperty(props[i]);
                 if (propInfo != null)
                     objType = propInfo.PropertyType;
                 else 
                     return null;
+
+                if (objType.GetInterfaces().Any(x => x.Name == "IEnumerable`1") && i < props.Length - 1)
+                   objType = objType.GetGenericArguments().FirstOrDefault(); // Get the type inside the list for intermediate properties
             }
 
             return objType;
         }
 
+        /*************************************/
+
+        private Type GetPropertyType(object obj, string propName)
+        {
+            if (obj == null || propName == null)
+                return null;
+
+            string[] props = propName.Split('.');
+            for (int i = 0; i < props.Length; i++)
+            {
+                Type objType = obj.GetType();
+                PropertyInfo propInfo = objType.GetProperty(props[i]);
+                if (propInfo != null)
+                {
+                    obj = propInfo.GetValue(obj);
+                    if (obj is IEnumerable && i < props.Length - 1)
+                        obj = FirstOrDefault(obj as dynamic); // Get the type inside the list for intermediate properties
+                } 
+                else
+                    return null;
+            }
+
+            return obj?.GetType();
+        }
+
+        /*************************************/
+
+        private T FirstOrDefault<T>(IEnumerable<T> list)
+        {
+            return list.FirstOrDefault();
+        }
 
         /*************************************/
         /**** Private Fields              ****/
