@@ -87,7 +87,7 @@ namespace BH.UI.Base
                     if (originalMethod != null && originalMethod.IsGenericMethod)
                     {
                         // Try to update the generic method to fit the input types
-                        MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x.GetType()).ToList());
+                        MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
                         return m_CompiledFunc(inputs.ToArray());
                     }
@@ -129,7 +129,7 @@ namespace BH.UI.Base
                         {
                             input = m_CompiledGetters[i](m_DataAccessor, index);
 
-                            if (input == null || input.ToString() == "")
+                            if (input == null || input.ToString() == "" || (input is IEnumerable && ((IEnumerable)input).Cast<object>().All(x => x == null)))
                             {
                                 string warning = InputParams[i].DefaultValueWarning;
                                 if (!string.IsNullOrEmpty(warning))
