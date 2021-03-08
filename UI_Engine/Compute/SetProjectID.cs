@@ -52,7 +52,7 @@ namespace BH.Engine.UI
                 
             Engine.Reflection.Compute.RecordEvent(new ProjectIDEvent
             {
-                Message = "The project code for this file is now set to " + projectID,
+                Message = "The project ID for this file is now set to " + projectID,
                 ProjectID = projectID
             });
 
