@@ -45,8 +45,11 @@ namespace BH.Engine.UI
         public static bool SetProjectID(string projectID)
         {
             if (projectID == "")
+            {
+                Engine.Reflection.Compute.RecordWarning("Please enter the project number your work in this script relates to");
                 return false;
-
+            }
+                
             Engine.Reflection.Compute.RecordEvent(new ProjectIDEvent
             {
                 Message = "The project code for this file is now set to " + projectID,
