@@ -22,6 +22,7 @@
 
 using BH.Engine.Serialiser;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 using BH.oM.Reflection.Debugging;
 using BH.oM.UI;
 using System;
@@ -41,6 +42,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [PreviousVersion("4.1", "BH.Engine.UI.Compute.LogUsage(System.String, System.String, System.Guid, System.String, System.Object, System.Collections.Generic.List<BH.oM.Reflection.Debugging.Event>)")]
         public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
             // If a projectID event is available, save the project code for this file
