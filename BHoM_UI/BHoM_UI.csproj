@@ -136,6 +136,10 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Versioning_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Versioning_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Versioning_oM.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="WindowsBase">
       <Private>False</Private>
     </Reference>
@@ -179,6 +183,7 @@
     <Compile Include="Components\oM\CreateObject.cs" />
     <Compile Include="Components\oM\CreateDictionary.cs" />
     <Compile Include="Components\UI\UnitTest.cs" />
+    <Compile Include="Global\DocumentListener.cs" />
     <Compile Include="Global\Initialisation.cs" />
     <Compile Include="Global\GlobalSearch.cs" />
     <Compile Include="Global\SearchMenu.cs" />
