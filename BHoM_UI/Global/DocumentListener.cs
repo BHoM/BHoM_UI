@@ -47,14 +47,19 @@ namespace BH.UI.Base.Global
 
         public static void OnDocumentBeginOpening(string documentName)
         {
-            BH.Engine.Reflection.Compute.ClearCurrentEvents();
+            m_OpeningTimes[documentName] = DateTime.Now.Ticks;
         }
 
         /*************************************/
 
         public static void OnDocumentEndOpening(string documentName)
         {
-            List<VersioningEvent> events = BH.Engine.Reflection.Query.CurrentEvents().OfType<VersioningEvent>().ToList();
+            if (!m_OpeningTimes.ContainsKey(documentName))
+                return;
+
+            long openingStartTicks = m_OpeningTimes[documentName];
+            List<VersioningEvent> events = BH.Engine.Versioning.Query.VersioningEvents().Where(x => x.Time.Ticks >= openingStartTicks).ToList();
+            BH.Engine.Reflection.Compute.ClearCurrentEvents();
 
             if (events.Count > 0)
             {
@@ -140,6 +145,13 @@ namespace BH.UI.Base.Global
 
             return view;
         }
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private static Dictionary<string, long> m_OpeningTimes = new Dictionary<string, long>();
+
 
         /*************************************/
     }
