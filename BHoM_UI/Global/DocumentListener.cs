@@ -36,6 +36,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
 using System.Windows.Input;
+using System.Diagnostics;
+using System.Threading;
 
 namespace BH.UI.Base.Global
 {
@@ -48,6 +50,7 @@ namespace BH.UI.Base.Global
         public static void OnDocumentBeginOpening(string documentName)
         {
             m_OpeningTimes[documentName] = DateTime.Now.Ticks;
+            Debug.WriteLine($"DocumentBeginOpening at {DateTime.Now.ToString("HH:mm:ss.ffffzzz")}");
         }
 
         /*************************************/
@@ -63,44 +66,56 @@ namespace BH.UI.Base.Global
 
             if (events.Count > 0)
             {
-                string message = $"The file was upgraded from version {events.First().OldVersion} to version {events.First().NewVersion}.";
-                message += "\nPlease review the file before saving it.";
-                message += "\n\nHere's the list of components that have been modified:";
-
-                Form form = new Form
-                {
-                    Text = "Versioning report",
-                    AutoSize = true,
-                    BackColor = System.Drawing.Color.White,
-                    MaximumSize = new System.Drawing.Size(1200, 900),
-                    AutoScroll = true
-                };
-
-                FlowLayoutPanel layout = new FlowLayoutPanel
-                {
-                    FlowDirection = FlowDirection.TopDown,
-                    AutoSize = true
-                };
-                form.Controls.Add(layout);
-
-                layout.Controls.Add(new Label
-                {
-                    Text = message,
-                    AutoSize = true,
-                    BackColor = System.Drawing.Color.White,
-                    Margin = new Padding(5, 20, 5, 5)
-                });
-
-                foreach (VersioningEvent e in events)
-                    layout.Controls.Add(GetTable(e));
-
-                form.ShowDialog();
+                Thread newThread = new Thread(ShowForm);
+                newThread.Start(events);
             }
         }
 
 
         /*************************************/
         /**** Private Methods             ****/
+        /*************************************/
+
+        private static void ShowForm(object input)
+        {
+            List<VersioningEvent> events = input as List<VersioningEvent>;
+            if (events == null)
+                return;
+
+            string message = $"The file was upgraded from version {events.First().OldVersion} to version {events.First().NewVersion}.";
+            message += "\nPlease review the file before saving it.";
+            message += "\n\nHere's the list of components that have been modified:";
+
+            Form form = new Form
+            {
+                Text = "Versioning report",
+                AutoSize = true,
+                BackColor = System.Drawing.Color.White,
+                MaximumSize = new System.Drawing.Size(1200, 900),
+                AutoScroll = true
+            };
+
+            FlowLayoutPanel layout = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize = true
+            };
+            form.Controls.Add(layout);
+
+            layout.Controls.Add(new Label
+            {
+                Text = message,
+                AutoSize = true,
+                BackColor = System.Drawing.Color.White,
+                Margin = new Padding(5, 20, 5, 5)
+            });
+
+            foreach (VersioningEvent e in events)
+                layout.Controls.Add(GetTable(e));
+
+            form.ShowDialog();
+        }
+
         /*************************************/
 
         private static DataGridView GetTable(VersioningEvent e)
