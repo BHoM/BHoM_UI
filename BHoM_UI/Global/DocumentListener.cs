@@ -118,47 +118,45 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
-        private static DataGridView GetTable(VersioningEvent e)
+        private static TableLayoutPanel GetTable(VersioningEvent e)
         {
-            DataTable table = new DataTable();
-
-            table.Columns.Add(new DataColumn { ColumnName = " ", DataType = typeof(string) });
-            table.Columns.Add(new DataColumn { ColumnName = "Version", DataType = typeof(string) });
-            table.Columns.Add(new DataColumn { ColumnName = "Item", DataType = typeof(string) });
-
-            DataRow oldRow = table.NewRow();
-            oldRow[" "] = "Old";
-            oldRow["Version"] = e.OldVersion;
-            oldRow["Item"] = e.OldDocument;
-            table.Rows.Add(oldRow);
-
-            DataRow newRow = table.NewRow();
-            newRow[" "] = "New";
-            newRow["Version"] = e.NewVersion;
-            newRow["Item"] = e.NewDocument ?? e.Message;
-            table.Rows.Add(newRow);
-
-            DataGridView view = new DataGridView
+            TableLayoutPanel table = new TableLayoutPanel
             {
-                DataSource = table,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
-                AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells,
+                ColumnCount = 3,
+                RowCount = 3,
                 AutoSize = true,
-                RowHeadersVisible = false,
-                BackgroundColor = System.Drawing.Color.White,
-                ForeColor = System.Drawing.Color.Black,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                BorderStyle = BorderStyle.None,
-                ReadOnly = true
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                CellBorderStyle = TableLayoutPanelCellBorderStyle.Single,
+                Margin = new Padding(5, 20, 5, 20)
             };
-            view.RowsDefaultCellStyle.SelectionBackColor = System.Drawing.Color.White;
-            view.RowsDefaultCellStyle.SelectionForeColor = System.Drawing.Color.Black;
+
+            table.Controls.AddRange(new Control[] {
+                new Label(),
+                GetCell("Version"),
+                GetCell("Item"),
+                GetCell("Old"),
+                GetCell(e.OldVersion),
+                GetCell(e.OldDocument),
+                GetCell("New"),
+                GetCell(e.NewVersion),
+                GetCell(e.NewDocument ?? e.Message)
+            });
 
             if (e.NewDocument == null)
-                view.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                table.Controls[8].MaximumSize = new System.Drawing.Size(table.Controls[5].Width, 0);
 
-            return view;
+            return table;
+        }
+
+        /*************************************/
+
+        private static Label GetCell(string text)
+        {
+            return new Label
+            {
+                Text = text,
+                AutoSize = true
+            };
         }
 
         /*************************************/
