@@ -603,6 +603,30 @@ namespace BH.UI.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BHoM_Logo
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("BHoM_Logo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon.
+        /// </summary>
+        internal static System.Drawing.Icon BHoM_Icon
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("BHoM_Icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
 
