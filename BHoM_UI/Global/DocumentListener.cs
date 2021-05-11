@@ -38,6 +38,7 @@ using System.Data;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace BH.UI.Base.Global
 {
@@ -153,11 +154,34 @@ namespace BH.UI.Base.Global
 
         private static Label GetCell(string text)
         {
-            return new Label
+            Match match = Regex.Match(text, @"http[s]?://\S+");
+            if (match != null && match.Captures.Count > 0)
             {
-                Text = text,
-                AutoSize = true
-            };
+                LinkLabel label = new LinkLabel
+                {
+                    Text = text,
+                    AutoSize = true,
+                    LinkArea = new LinkArea(match.Index, match.Length)
+                };
+
+                label.LinkClicked += (sender, e) => Process.Start(match.Captures[0].Value);
+
+                return label;
+            }
+            else
+            {
+                return new Label
+                {
+                    Text = text,
+                    AutoSize = true
+                };
+            }
+            
+        }
+
+        private static void sendere(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         /*************************************/
