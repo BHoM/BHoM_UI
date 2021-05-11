@@ -120,7 +120,8 @@ namespace BH.Engine.UI
                 .Concat(new List<Type> { typeof(Type), typeof(Enum),
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),
-                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),})
+                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),
+                    typeof(DateTime)})
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
         }
 
