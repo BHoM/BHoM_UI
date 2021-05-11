@@ -82,17 +82,18 @@ namespace BH.UI.Base.Global
             if (events == null)
                 return;
 
-            string message = $"The file was upgraded from version {events.First().OldVersion} to version {events.First().NewVersion}.";
+            string message = $"The file was upgraded from BHoM version {events.First().OldVersion} to version {events.First().NewVersion}.";
             message += "\nPlease review the file before saving it.";
             message += "\n\nHere's the list of components that have been modified:";
 
             Form form = new Form
             {
-                Text = "Versioning report",
+                Text = "BHoM versioning report",
                 AutoSize = true,
                 BackColor = System.Drawing.Color.White,
                 MaximumSize = new System.Drawing.Size(1200, 900),
-                AutoScroll = true
+                AutoScroll = true,
+                Icon = Properties.Resources.BHoM_Icon
             };
 
             FlowLayoutPanel layout = new FlowLayoutPanel

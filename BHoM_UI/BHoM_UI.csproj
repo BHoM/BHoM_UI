@@ -213,6 +213,8 @@
     <Content Include="Properties\Resources\BHoM_FromJSON.png" />
     <Content Include="Properties\Resources\BHoM_GetProperty.png" />
     <Content Include="Properties\Resources\BHoM_GetPropertyNames.png" />
+    <None Include="Properties\Resources\BHoM_Logo.png" />
+    <None Include="Properties\Resources\BHoM_Icon.ico" />
     <Content Include="Properties\Resources\BHoM_Read _CustomData.png" />
     <Content Include="Properties\Resources\BHoM_SetProperty.png" />
     <Content Include="Properties\Resources\BHoM_ToJSON.png" />
