@@ -77,13 +77,16 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
-        public static void OnDocumentClosing()
+        public static void OnDocumentClosing(string documentName)
         {
             if (m_VersioningFormThead != null)
             {
                 m_VersioningFormThead.Abort();
                 m_VersioningFormThead = null;
-            }   
+            }
+
+            if (m_OpeningTimes.ContainsKey(documentName))
+                m_OpeningTimes.Remove(documentName);
         }
 
 
@@ -131,6 +134,7 @@ namespace BH.UI.Base.Global
 
             form.ShowDialog();
         }
+
 
         /*************************************/
 
@@ -197,10 +201,6 @@ namespace BH.UI.Base.Global
             
         }
 
-        private static void sendere(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         /*************************************/
         /**** Private Fields              ****/
