@@ -61,7 +61,7 @@ namespace BH.UI.Base.Global
 
         public static void OnDocumentEndOpening(string documentName)
         {
-            if (!m_OpeningTimes.ContainsKey(documentName))
+            if (string.IsNullOrEmpty(documentName) || !m_OpeningTimes.ContainsKey(documentName))
                 return;
 
             long openingStartTicks = m_OpeningTimes[documentName];
@@ -88,7 +88,7 @@ namespace BH.UI.Base.Global
                 m_VersioningFormThead = null;
             }
 
-            if (m_OpeningTimes.ContainsKey(documentName))
+            if (!string.IsNullOrEmpty(documentName) && m_OpeningTimes.ContainsKey(documentName))
                 m_OpeningTimes.Remove(documentName);
         }
 
