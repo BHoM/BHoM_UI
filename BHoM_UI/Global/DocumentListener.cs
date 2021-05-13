@@ -67,9 +67,23 @@ namespace BH.UI.Base.Global
 
             if (events.Count > 0)
             {
-                Thread newThread = new Thread(ShowForm);
-                newThread.Start(events);
+                if (m_VersioningFormThead != null)
+                    m_VersioningFormThead.Abort();
+
+                m_VersioningFormThead = new Thread(ShowForm);
+                m_VersioningFormThead.Start(events);
             }
+        }
+
+        /*************************************/
+
+        public static void OnDocumentClosing()
+        {
+            if (m_VersioningFormThead != null)
+            {
+                m_VersioningFormThead.Abort();
+                m_VersioningFormThead = null;
+            }   
         }
 
 
@@ -132,6 +146,10 @@ namespace BH.UI.Base.Global
                 Margin = new Padding(5, 20, 5, 20)
             };
 
+            string newDoc = e.NewDocument;
+            if (newDoc != null && newDoc == e.OldDocument)
+                newDoc += " (the properties of this object have been updated)";
+
             table.Controls.AddRange(new Control[] {
                 new Label(),
                 GetCell("Version"),
@@ -141,7 +159,7 @@ namespace BH.UI.Base.Global
                 GetCell(e.OldDocument),
                 GetCell("New"),
                 GetCell(e.NewVersion),
-                GetCell(e.NewDocument ?? e.Message)
+                GetCell(newDoc ?? e.Message)
             });
 
             if (e.NewDocument == null)
@@ -189,6 +207,7 @@ namespace BH.UI.Base.Global
         /*************************************/
 
         private static Dictionary<string, long> m_OpeningTimes = new Dictionary<string, long>();
+        private static Thread m_VersioningFormThead = null;
 
 
         /*************************************/
