@@ -50,6 +50,9 @@ namespace BH.UI.Base.Global
 
         public static void OnDocumentBeginOpening(string documentName)
         {
+            if (string.IsNullOrEmpty(documentName))
+                return;
+
             m_OpeningTimes[documentName] = DateTime.Now.Ticks;
             Debug.WriteLine($"DocumentBeginOpening at {DateTime.Now.ToString("HH:mm:ss.ffffzzz")}");
         }
