@@ -71,7 +71,6 @@
     <Compile Include="Updates\CallerUpdate.cs" />
     <Compile Include="Updates\CallerUpdateCause.cs" />
     <Compile Include="Interfaces\IInitialisationSettings.cs" />
-    <Compile Include="Interfaces\ISettings.cs" />
     <Compile Include="ProjectIDEvent.cs" />
     <Compile Include="UsageLogEntry.cs" />
     <Compile Include="ParamOldIndexFragment.cs" />
@@ -81,6 +80,9 @@
     <Compile Include="ParamKind.cs" />
     <Compile Include="ParamInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Versioning_42.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
