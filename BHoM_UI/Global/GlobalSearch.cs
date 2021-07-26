@@ -21,6 +21,7 @@
  */
 
 using BH.Adapter;
+using BH.Engine.Base;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.UI;
@@ -158,7 +159,7 @@ namespace BH.UI.Base.Global
             {
                 m_SearchMenu.PossibleItems = m_PossibleItems.Select(x =>
                 {
-                    SearchItem withWeight = x.GetShallowClone() as SearchItem;
+                    SearchItem withWeight = x.ShallowClone() as SearchItem;
                     withWeight.Weight = withWeight.Weight(config);
                     return withWeight;
                 }).Where(x => x.Weight > 0).ToList();
