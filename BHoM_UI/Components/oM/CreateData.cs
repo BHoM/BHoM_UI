@@ -34,6 +34,7 @@ using BH.Engine.Data;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
+using System.Windows;
 
 namespace BH.UI.Base.Components
 {
@@ -98,6 +99,44 @@ namespace BH.UI.Base.Components
         public override List<string> GetChoiceNames()
         {
             return Choices.Cast<IBHoMObject>().Select(x => x.Name).ToList();
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(ToolStripDropDown menu)
+        {
+            base.AddToMenu(menu);
+
+            if (FileName != null)
+            {
+                string sourceLink = Engine.Library.Query.Source(FileName)?.First()?.SourceLink;
+                if (!string.IsNullOrWhiteSpace(sourceLink))
+                {
+                    ToolStripLabel linkLabel = new ToolStripLabel("Source link");
+                    linkLabel.IsLink = true;
+                    linkLabel.Click += (object sender, EventArgs e) => System.Diagnostics.Process.Start(sourceLink);
+                    menu.Items.Add(linkLabel);
+                }
+            }
+        }
+
+        /*************************************/
+
+        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        {
+            base.AddToMenu(menu);
+
+            if (FileName != null)
+            {
+                string sourceLink = Engine.Library.Query.Source(FileName)?.First()?.SourceLink;
+                if (!string.IsNullOrWhiteSpace(sourceLink))
+                {
+                    System.Windows.Controls.MenuItem linkLabel = new System.Windows.Controls.MenuItem();
+                    linkLabel.Header = "Source Link";
+                    linkLabel.Click += (object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(sourceLink);
+                    menu.Items.Add(linkLabel);
+                }
+            }
         }
 
         /*************************************/
