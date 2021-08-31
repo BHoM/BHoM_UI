@@ -91,6 +91,8 @@ namespace BH.UI.Base.Components
                 Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
                 Name = FileName.Split(new char[] { '\\' }).Last();
                 Description = BH.Engine.Library.Query.SourceAndDisclaimer(FileName);
+                if (m_menu != null)
+                    AddSourceLinkToMenu(m_menu as dynamic);
             }
         }
 
@@ -103,16 +105,26 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        public override void AddToMenu(ToolStripDropDown menu)
+        public override void AddToMenu(object menu)
         {
             base.AddToMenu(menu);
+            m_menu = menu;  //Store the menu to be able to add source link in case of presistent menu
+            AddSourceLinkToMenu(menu as dynamic);  //Try add link now for volatile menu
+        }
 
-            if (FileName != null)
+        /*************************************/
+        /**** Private methods             ****/
+        /*************************************/
+
+        private void AddSourceLinkToMenu(ToolStripDropDown menu)
+        {
+            if (FileName != null && !menu.Items.ContainsKey("SourceLink"))
             {
                 string sourceLink = Engine.Library.Query.Source(FileName)?.First()?.SourceLink;
                 if (!string.IsNullOrWhiteSpace(sourceLink))
                 {
                     ToolStripLabel linkLabel = new ToolStripLabel("Source link");
+                    linkLabel.Name = "SourceLink";
                     linkLabel.IsLink = true;
                     linkLabel.Click += (object sender, EventArgs e) => System.Diagnostics.Process.Start(sourceLink);
                     menu.Items.Add(linkLabel);
@@ -122,22 +134,34 @@ namespace BH.UI.Base.Components
 
         /*************************************/
 
-        public override void AddToMenu(System.Windows.Controls.ContextMenu menu)
+        private void AddSourceLinkToMenu(System.Windows.Controls.ContextMenu menu)
         {
-            base.AddToMenu(menu);
-
-            if (FileName != null)
+            if (FileName != null && !menu.Items.SourceCollection.OfType<MenuItem>().Any(x => x.Name == "SourceLink"))
             {
                 string sourceLink = Engine.Library.Query.Source(FileName)?.First()?.SourceLink;
                 if (!string.IsNullOrWhiteSpace(sourceLink))
                 {
                     System.Windows.Controls.MenuItem linkLabel = new System.Windows.Controls.MenuItem();
                     linkLabel.Header = "Source Link";
+                    linkLabel.Name = "SourceLink";
                     linkLabel.Click += (object sender, RoutedEventArgs e) => System.Diagnostics.Process.Start(sourceLink);
                     menu.Items.Add(linkLabel);
                 }
             }
         }
+
+        /*************************************/
+
+        private void AddSourceLinkToMenu(object menu)
+        {
+            //fallback method
+        }
+
+        /*************************************/
+        /**** Private fields              ****/
+        /*************************************/
+
+        private object m_menu = null;
 
         /*************************************/
     }
