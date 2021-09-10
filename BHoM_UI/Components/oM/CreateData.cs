@@ -91,8 +91,8 @@ namespace BH.UI.Base.Components
                 Choices = BH.Engine.Library.Query.Library(FileName).ToList<object>();
                 Name = FileName.Split(new char[] { '\\' }).Last();
                 Description = BH.Engine.Library.Query.SourceAndDisclaimer(FileName);
-                if (m_menu != null)
-                    AddSourceLinkToMenu(m_menu as dynamic);
+                if (m_Menu != null)
+                    AddSourceLinkToMenu(m_Menu as dynamic);
             }
         }
 
@@ -108,7 +108,7 @@ namespace BH.UI.Base.Components
         public override void AddToMenu(object menu)
         {
             base.AddToMenu(menu);
-            m_menu = menu;  //Store the menu to be able to add source link in case of presistent menu
+            m_Menu = menu;  //Store the menu to be able to add source link in case of presistent menu
             AddSourceLinkToMenu(menu as dynamic);  //Try add link now for volatile menu
         }
 
@@ -161,7 +161,7 @@ namespace BH.UI.Base.Components
         /**** Private fields              ****/
         /*************************************/
 
-        private object m_menu = null;
+        private object m_Menu = null;
 
         /*************************************/
     }
