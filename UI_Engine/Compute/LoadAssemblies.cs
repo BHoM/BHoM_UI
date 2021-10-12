@@ -45,7 +45,7 @@ namespace BH.Engine.UI
                 if (uiAssemblies.Count() == 1)
                 {
                     string folder = Path.GetDirectoryName(uiAssemblies.First().Location);
-                    BH.Engine.Reflection.Compute.LoadAssemblies(folder);
+                    BH.Engine.Reflection.Compute.LoadAllAssemblies(folder);
                 }
             }
         }
