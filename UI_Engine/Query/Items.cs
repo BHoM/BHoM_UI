@@ -116,7 +116,7 @@ namespace BH.Engine.UI
         public static IEnumerable<Type> TypeItems()
         {
             return Engine.Reflection.Query.BHoMTypeList()
-                .Concat(Engine.Reflection.Query.BHoMInterfaceList())
+                .Concat(Engine.Reflection.Query.BHoMInterfaceTypeList())
                 .Concat(new List<Type> { typeof(Type), typeof(Enum),
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),
