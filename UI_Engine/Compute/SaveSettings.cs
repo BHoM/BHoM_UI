@@ -38,7 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [PreviousVersion("BH.Engine.UI.Compute.SaveSettings(BH.oM.Base.ISettings)")]
+        [PreviousVersion("5.1", "BH.Engine.UI.Compute.SaveSettings(BH.oM.Base.ISettings)")]
         [Description("Saves toolkit settings into a given path. If no path is provided, the settings will be saved to C:/ProgramData/BHoM/Settings/{ToolkitName}. Any previously saved settings under given path will be overwritten.")]
         [Input("settings", "Toolkit settings to be saved to the file.")]
         [Input("filePath", "File path to save the settings to. If left blank, the settings will be saved to C:/ProgramData/BHoM/Settings/{ToolkitName}.")]
