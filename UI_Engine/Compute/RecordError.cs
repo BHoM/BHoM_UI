@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Serialiser;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace BH.Engine.UI
                 message += e.InnerException.Message;
             else
                 message += e.Message;
-            BH.Engine.Reflection.Compute.RecordError(message);
+            BH.Engine.Base.Compute.RecordError(message);
         }
 
         /*******************************************/
@@ -71,7 +71,7 @@ namespace BH.Engine.UI
 
             message += "\n- Are you sure you have the correct type of inputs? Check their description for more details.";
 
-            Engine.Reflection.Compute.RecordError(message);
+            Engine.Base.Compute.RecordError(message);
         }
 
         /*************************************/

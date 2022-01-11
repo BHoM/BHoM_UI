@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Reflection;
-using BH.oM.Reflection;
+using BH.Engine.Base;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -30,9 +30,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
-using BH.oM.Base;
 using System.Collections;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base.Debugging;
 
 namespace BH.UI.Base
 {
@@ -44,7 +43,7 @@ namespace BH.UI.Base
 
         public virtual bool Run()
         {
-            BH.Engine.Reflection.Compute.ClearCurrentEvents();
+            BH.Engine.Base.Compute.ClearCurrentEvents();
 
             // Get all the inputs
             List<object> inputs = CollectInputs();
@@ -87,7 +86,7 @@ namespace BH.UI.Base
                     if (originalMethod != null && originalMethod.IsGenericMethod)
                     {
                         // Try to update the generic method to fit the input types
-                        MethodInfo method = Engine.Reflection.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
+                        MethodInfo method = Engine.Base.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
                         return m_CompiledFunc(inputs.ToArray());
                     }
@@ -97,12 +96,12 @@ namespace BH.UI.Base
             }
             else if (InputParams.Count <= 0)
             {
-                BH.Engine.Reflection.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
+                BH.Engine.Base.Compute.RecordWarning("This is a magic component. Right click on it and <Select a method>");
                 return null;
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordError("The component is not linked to a method.");
+                BH.Engine.Base.Compute.RecordError("The component is not linked to a method.");
                 return null;
             }
         }
@@ -123,7 +122,7 @@ namespace BH.UI.Base
                     object input = null;
                     if (InputParams[i].IsSelected)
                     {
-                        int preGetterEventCount = Engine.Reflection.Query.CurrentEvents().Where(x => x.Type == EventType.Error).Count();
+                        int preGetterEventCount = Engine.Base.Query.CurrentEvents().Where(x => x.Type == EventType.Error).Count();
 
                         try
                         {
@@ -133,11 +132,11 @@ namespace BH.UI.Base
                             {
                                 string warning = InputParams[i].DefaultValueWarning;
                                 if (!string.IsNullOrEmpty(warning))
-                                    Engine.Reflection.Compute.RecordNote(warning);
+                                    Engine.Base.Compute.RecordNote(warning);
 
                                 // Temporary solution to handle error casting events that didn't throw an exception. 
                                 // Long term, we need Events of different types to better identify them instead of relying on message content.
-                                int newErrorCount = Engine.Reflection.Query.CurrentEvents().Skip(preGetterEventCount).Where(x => x.Type == EventType.Error).Where(x => x.Message.StartsWith("Failed to cast")).Count();
+                                int newErrorCount = Engine.Base.Query.CurrentEvents().Skip(preGetterEventCount).Where(x => x.Type == EventType.Error).Where(x => x.Message.StartsWith("Failed to cast")).Count();
                                 if (newErrorCount > 0)
                                     throw new Exception();
                             }
@@ -148,7 +147,7 @@ namespace BH.UI.Base
                             MethodInfo originalMethod = m_OriginalItem as MethodInfo;
                             if (originalInputType != null && originalInputType.IsGenericType && originalMethod != null && originalMethod.IsGenericMethod)
                             {
-                                Engine.Reflection.Compute.RemoveEvents(Engine.Reflection.Query.CurrentEvents().Skip(preGetterEventCount).ToList());
+                                Engine.Base.Compute.RemoveEvents(Engine.Base.Query.CurrentEvents().Skip(preGetterEventCount).ToList());
                                 UpdateInputGenericType(i);
                                 input = m_CompiledGetters[i](m_DataAccessor, index);
                             }
@@ -161,7 +160,7 @@ namespace BH.UI.Base
                     {
                         string warning = InputParams[i].DefaultValueWarning;
                         if (!string.IsNullOrEmpty(warning))
-                            Engine.Reflection.Compute.RecordNote(warning);
+                            Engine.Base.Compute.RecordNote(warning);
                         input = InputParams[i].DefaultValue;
                     }
                         
@@ -192,7 +191,7 @@ namespace BH.UI.Base
                 for (int i = 0; i < m_CompiledSetters.Count; i++)
                 {
                     // There is a problem when the output is a list of one apparently (try to explode a tree with a single branch on the first level)
-                    object output = (m_CompiledSetters.Count == 1) ? result : BH.Engine.Reflection.Query.IItem(result, i);
+                    object output = (m_CompiledSetters.Count == 1) ? result : BH.Engine.Base.Query.IItem(result, i);
 
                     try
                     {

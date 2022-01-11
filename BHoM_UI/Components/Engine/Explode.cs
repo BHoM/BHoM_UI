@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using BH.oM.UI;
 using BH.oM.Base;
-using BH.Engine.Reflection;
+using BH.Engine.Base;
 using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -77,7 +77,7 @@ namespace BH.UI.Base.Components
         {
             if (inputs.Count != 1)
             {
-                BH.Engine.Reflection.Compute.RecordError("The number of inputs is invalid.");
+                BH.Engine.Base.Compute.RecordError("The number of inputs is invalid.");
                 return null;
             }
             else
@@ -97,8 +97,8 @@ namespace BH.UI.Base.Components
         {
             if (!base.PushOutputs(result))
             {
-                Engine.Reflection.Compute.ClearCurrentEvents();
-                Engine.Reflection.Compute.RecordWarning("Output paramters do not match object properties. Please right click and <Update Outputs>");
+                Engine.Base.Compute.ClearCurrentEvents();
+                Engine.Base.Compute.RecordWarning("Output paramters do not match object properties. Please right click and <Update Outputs>");
                 return false;
             }
             else

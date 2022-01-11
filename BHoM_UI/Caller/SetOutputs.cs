@@ -21,7 +21,8 @@
  */
 
 using BH.Engine.Reflection;
-using BH.oM.Reflection;
+using BH.Engine.Base;
+using BH.oM.Base;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
-using BH.oM.Base;
 using System.Collections;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.UI.Base
 {

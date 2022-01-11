@@ -27,10 +27,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using BH.Adapter;
-using BH.oM.Reflection;
+using BH.oM.Base;
 
 namespace BH.UI.Base.Components
 {
@@ -79,22 +79,22 @@ namespace BH.UI.Base.Components
                 + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n\n"
                 + "To find out more about our collective experiment go to https://bhom.xyz";
 
-            string version = Engine.Reflection.Query.BHoMVersion();
+            string version = Engine.Base.Query.BHoMVersion();
             string installer = ""; //TODO: assign properly when that information is made available by the installer
 
-            List<string> libraries = Engine.Reflection.Query.BHoMAssemblyList()
+            List<string> libraries = Engine.Base.Query.BHoMAssemblyList()
                 .Select(x => x.GetName().Name)
                 .OrderBy(x => x).ToList();
 
-            List<Type> types = Engine.Reflection.Query.BHoMTypeList();
-            List<MethodInfo> methods = Engine.Reflection.Query.BHoMMethodList();
-            List<Type> adapters = Engine.Reflection.Query.AdapterTypeList().ToList();
+            List<Type> types = Engine.Base.Query.BHoMTypeList();
+            List<MethodInfo> methods = Engine.Base.Query.BHoMMethodList();
+            List<Type> adapters = Engine.Base.Query.AdapterTypeList().ToList();
 
             string website = "https://bhom.xyz/";
             string github = "https://github.com/BHoM";
             string wiki = "https://github.com/BHoM/documentation/wiki";
 
-            return Engine.Reflection.Create.Output
+            return Engine.Base.Create.Output
             (
                 description,
                 version,
