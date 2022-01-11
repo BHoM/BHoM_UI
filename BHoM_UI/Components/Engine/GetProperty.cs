@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -86,7 +86,7 @@ namespace BH.UI.Base.Components
         [Output("Value", "Extracted values.")]
         public static object GetProperty(object obj, string propName)
         {
-            return Engine.Reflection.Query.PropertyValue(obj, propName);
+            return Engine.Base.Query.PropertyValue(obj, propName);
         }
 
         /*************************************/

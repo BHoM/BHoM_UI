@@ -20,9 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.Engine.Base;
+using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;

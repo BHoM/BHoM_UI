@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using System.Windows.Controls;
 using BH.oM.Test.UnitTests;
 using BH.oM.UI;
-using BH.oM.Reflection.Interface;
+using BH.oM.Base;
 using BH.Engine.Base;
 
 namespace BH.UI.Base.Components

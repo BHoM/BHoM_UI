@@ -24,7 +24,7 @@ using BH.Adapter;
 using BH.oM.Base;
 using BH.oM.Adapter;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -83,14 +83,14 @@ namespace BH.UI.Base.Components
             IRequest actualRequest = null;
             if (!adapter.SetupRemoveRequest(request, out actualRequest))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(request)}` input.");
+                BH.Engine.Base.Compute.RecordError($"Invalid `{nameof(request)}` input.");
                 return 0;
             }
 
             ActionConfig removeConfig = null;
             if (!adapter.SetupRemoveConfig(actionConfig, out removeConfig))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                BH.Engine.Base.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
                 return 0;
             }
 

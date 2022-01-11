@@ -21,7 +21,6 @@
  */
 
 using BH.Engine.Reflection;
-using BH.oM.Reflection;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -78,7 +77,7 @@ namespace BH.UI.Base
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError($"{this} failed to deserialise itself.");
+                BH.Engine.Base.Compute.RecordError($"{this} failed to deserialise itself.");
                 return false;
             }
         }
@@ -137,7 +136,7 @@ namespace BH.UI.Base
             // Record warnings if changes happened
             List<IParamUpdate> paramUpdates = update.InputUpdates.Concat(update.OutputUpdates).ToList();
             if (paramUpdates.Count > 0)
-                Engine.Reflection.Compute.RecordWarning("This component was upgraded. Here's the resulting changes: \n" 
+                Engine.Base.Compute.RecordWarning("This component was upgraded. Here's the resulting changes: \n" 
                     + paramUpdates.Select(x => "  - " + x.IToText()).Aggregate((a, b) => a + "\n" + b));
 
             // Send the notification 

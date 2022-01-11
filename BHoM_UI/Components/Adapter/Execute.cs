@@ -24,14 +24,13 @@ using BH.Adapter;
 using BH.oM.Base;
 using BH.oM.Adapter;
 using BH.oM.Data.Requests;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Reflection;
 
 namespace BH.UI.Base.Components
 {
@@ -97,7 +96,7 @@ namespace BH.UI.Base.Components
             ActionConfig executeConfig = null;
             if (!adapter.SetupExecuteConfig(actionConfig, out executeConfig))
             {
-                BH.Engine.Reflection.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
+                BH.Engine.Base.Compute.RecordError($"Invalid `{nameof(actionConfig)}` input.");
                 return result;
             }
 

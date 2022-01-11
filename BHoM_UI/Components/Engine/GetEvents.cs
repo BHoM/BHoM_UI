@@ -27,11 +27,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using BH.Adapter;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base;
+using BH.oM.Base.Debugging;
 using BH.UI.Base.Global;
 
 namespace BH.UI.Base.Components
@@ -72,7 +72,7 @@ namespace BH.UI.Base.Components
         [MultiOutput(3, "startup", "All events that occured during startup.")]
         public static Output<List<Event>, List<Event>, List<Event>, List<Event>> GetEvents(DateTime? since = null)
         {
-            List<Event> events = Engine.Reflection.Query.AllEvents().ToList();
+            List<Event> events = Engine.Base.Query.AllEvents().ToList();
 
             List<Event> startupEvents = new List<Event>();
             if (Initialisation.CompletionTime != null)
@@ -84,7 +84,7 @@ namespace BH.UI.Base.Components
             if (since != null)
                 events = events.Where(x => x.Time > since).ToList();
 
-            return Engine.Reflection.Create.Output
+            return Engine.Base.Create.Output
             (
                 events.Where(x => x.Type == EventType.Error).ToList(),
                 events.Where(x => x.Type == EventType.Warning).ToList(),

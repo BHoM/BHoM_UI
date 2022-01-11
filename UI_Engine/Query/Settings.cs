@@ -22,7 +22,7 @@
 
 using BH.Engine.Reflection;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace BH.Engine.UI
         {
             if (type == null)
             {
-                Engine.Reflection.Compute.RecordError("Settings type is null.");
+                Engine.Base.Compute.RecordError("Settings type is null.");
                 return null;
             }
 
@@ -55,7 +55,7 @@ namespace BH.Engine.UI
             string[] splittedNamespace = type.Namespace.Split(new char[] { '.' });
             if (splittedNamespace.Length != 3)
             {
-                Engine.Reflection.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
+                Engine.Base.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
                 return null;
             }
 
@@ -74,7 +74,7 @@ namespace BH.Engine.UI
             string filePath = Path.Combine(@"C:\ProgramData\BHoM\Settings", toolkitName + ".cfg");
             if (!File.Exists(filePath))
             {
-                Engine.Reflection.Compute.RecordWarning("There is no setting file for toolkit " + toolkitName + ".");
+                Engine.Base.Compute.RecordWarning("There is no setting file for toolkit " + toolkitName + ".");
                 return null;
             }
 
@@ -86,7 +86,7 @@ namespace BH.Engine.UI
             }
             catch
             {
-                Reflection.Compute.RecordError("There setting file " + filePath + " cannot be read. Make sure it isn't locked by another program.");
+                Base.Compute.RecordError("There setting file " + filePath + " cannot be read. Make sure it isn't locked by another program.");
                 return null;
             }
 
@@ -96,7 +96,7 @@ namespace BH.Engine.UI
                 return settings as ISettings;
             else
             {
-                Reflection.Compute.RecordError("The content of the file" + filePath + " doesn't contain a valid ISettings object.");
+                Base.Compute.RecordError("The content of the file" + filePath + " doesn't contain a valid ISettings object.");
                 return null;
             }
         }

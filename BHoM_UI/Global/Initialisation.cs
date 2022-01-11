@@ -69,7 +69,7 @@ namespace BH.UI.Base.Global
         {
             if (!Directory.Exists(@"C:\ProgramData\BHoM\Settings"))
             {
-                Engine.Reflection.Compute.RecordWarning(@"C:\ProgramData\BHoM\Settings doesn't exist. Toolkits setting are not loaded.");
+                Engine.Base.Compute.RecordWarning(@"C:\ProgramData\BHoM\Settings doesn't exist. Toolkits setting are not loaded.");
                 return false;
             }
 
@@ -87,7 +87,7 @@ namespace BH.UI.Base.Global
                 }
                 catch (Exception e)
                 {
-                    Engine.Reflection.Compute.RecordWarning(@"Failed to load one of the config file. Error:\n" + e.Message);
+                    Engine.Base.Compute.RecordWarning(@"Failed to load one of the config file. Error:\n" + e.Message);
                 }
             }
 
@@ -105,10 +105,10 @@ namespace BH.UI.Base.Global
 
 
             // Get method declaring type
-            List<Type> typeCandidates = Engine.Reflection.Create.AllTypes(typeName).Where(x => x.FullName == typeName).ToList();
+            List<Type> typeCandidates = Engine.Base.Create.AllTypes(typeName).Where(x => x.FullName == typeName).ToList();
             if (typeCandidates.Count == 0)
             {
-                Engine.Reflection.Compute.RecordWarning("Type " + typeName + " is unknown");
+                Engine.Base.Compute.RecordWarning("Type " + typeName + " is unknown");
                 return false;
             }
             Type type = typeCandidates.First();
@@ -117,7 +117,7 @@ namespace BH.UI.Base.Global
             MethodInfo method = Engine.Reflection.Create.MethodInfo(type, methodName, new List<Type>());
             if (method == null)
             {
-                Engine.Reflection.Compute.RecordWarning("A static method with no argument could not be found for " + settings.InitialisationMethod);
+                Engine.Base.Compute.RecordWarning("A static method with no argument could not be found for " + settings.InitialisationMethod);
                 return false;
             }
 
@@ -129,7 +129,7 @@ namespace BH.UI.Base.Global
             }
             catch (Exception e)
             {
-                Engine.Reflection.Compute.RecordWarning("Method " + settings.InitialisationMethod + " failed to run properly during toolkit initialisation. Error: \n" + e.Message);
+                Engine.Base.Compute.RecordWarning("Method " + settings.InitialisationMethod + " failed to run properly during toolkit initialisation. Error: \n" + e.Message);
                 return false;
             }
         }

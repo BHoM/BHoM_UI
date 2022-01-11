@@ -22,7 +22,7 @@
 
 using BH.Engine.Serialiser;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace BH.Engine.UI
         {
             if (settings == null)
             {
-                Engine.Reflection.Compute.RecordError("Settings object is null.");
+                Engine.Base.Compute.RecordError("Settings object is null.");
                 return false;
             }
                 
@@ -55,7 +55,7 @@ namespace BH.Engine.UI
             string[] splittedNamespace = settings.GetType().Namespace.Split(new char[] { '.' });
             if (splittedNamespace.Length != 3)
             {
-                Engine.Reflection.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
+                Engine.Base.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
                 return false;
             }
 

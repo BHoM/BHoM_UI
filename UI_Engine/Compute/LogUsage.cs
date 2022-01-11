@@ -22,8 +22,8 @@
 
 using BH.Engine.Serialiser;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base.Attributes;
+using BH.oM.Base.Debugging;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -147,7 +147,7 @@ namespace BH.Engine.UI
         public static string BHoMVersion()
         {
             if (m_BHoMVersion == null)
-                m_BHoMVersion = Engine.Reflection.Query.BHoMVersion();
+                m_BHoMVersion = Engine.Base.Query.BHoMVersion();
 
             return m_BHoMVersion;
         }

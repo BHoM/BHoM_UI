@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Serialiser;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -46,11 +46,11 @@ namespace BH.Engine.UI
         {
             if (projectID == "")
             {
-                Engine.Reflection.Compute.RecordWarning("Please enter the project number your work in this script relates to");
+                Engine.Base.Compute.RecordWarning("Please enter the project number your work in this script relates to");
                 return false;
             }
                 
-            Engine.Reflection.Compute.RecordEvent(new ProjectIDEvent
+            Engine.Base.Compute.RecordEvent(new ProjectIDEvent
             {
                 Message = "The project ID for this file is now set to " + projectID,
                 ProjectID = projectID

@@ -66,7 +66,7 @@ namespace BH.UI.Base.Global
 
             long openingStartTicks = m_OpeningTimes[documentName];
             List<VersioningEvent> events = BH.Engine.Versioning.Query.VersioningEvents().Where(x => x.Time.Ticks >= openingStartTicks).ToList();
-            BH.Engine.Reflection.Compute.ClearCurrentEvents();
+            BH.Engine.Base.Compute.ClearCurrentEvents();
 
             if (events.Count > 0)
             {

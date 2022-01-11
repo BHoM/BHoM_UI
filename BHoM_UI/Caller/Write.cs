@@ -21,7 +21,6 @@
  */
 
 using BH.Engine.Reflection;
-using BH.oM.Reflection;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -53,7 +52,7 @@ namespace BH.UI.Base
             }
             catch
             {
-                BH.Engine.Reflection.Compute.RecordError($"{this} failed to serialise itself.");
+                BH.Engine.Base.Compute.RecordError($"{this} failed to serialise itself.");
                 return "";
             }
         }

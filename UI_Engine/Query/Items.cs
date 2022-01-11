@@ -22,7 +22,7 @@
 
 using BH.Adapter;
 using BH.Engine.Reflection;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,7 +41,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Engine items.")]
         public static IEnumerable<MethodBase> EngineItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList().Where(x => x.IsExposed());
+            return Engine.Base.Query.BHoMMethodList().Where(x => x.IsExposed());
         }
 
         /***************************************************/
@@ -50,7 +50,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Create items.")]
         public static IEnumerable<MethodBase> CreateItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList()
+            return Engine.Base.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Create");
         }
 
@@ -60,7 +60,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Compute items.")]
         public static IEnumerable<MethodBase> ComputeItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList()
+            return Engine.Base.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Compute");
         }
 
@@ -70,7 +70,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Convert items.")]
         public static IEnumerable<MethodBase> ConvertItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList()
+            return Engine.Base.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Convert");
         }
 
@@ -80,7 +80,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Modify items.")]
         public static IEnumerable<MethodBase> ModifyItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList()
+            return Engine.Base.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Modify");
         }
 
@@ -90,7 +90,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM methods to be grouped as Query items.")]
         public static IEnumerable<MethodBase> QueryItems()
         {
-            return Engine.Reflection.Query.BHoMMethodList()
+            return Engine.Base.Query.BHoMMethodList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated() && x.DeclaringType.Name == "Query");
         }
 
@@ -100,7 +100,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM type constructors to be grouped as Create Adapter items.")]
         public static IEnumerable<MethodBase> AdapterConstructorItems()
         {
-            return Engine.Reflection.Query.AdapterTypeList()
+            return Engine.Base.Query.AdapterTypeList()
                 .Where(x => x.IsSubclassOf(typeof(BHoMAdapter)))
                 .SelectMany(x => x.GetConstructors())
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
@@ -112,7 +112,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM type constructors to be grouped as Create Request items.")]
         public static IEnumerable<MethodBase> CreateRequestItems()
         {
-            return BH.Engine.Reflection.Query.BHoMMethodList()
+            return BH.Engine.Base.Query.BHoMMethodList()
                 .Where(x => x.DeclaringType.Name == "Create"
                 && typeof(BH.oM.Data.Requests.IRequest).IsAssignableFrom(x.ReturnType)
                 && !x.IsDeprecated())
@@ -125,7 +125,7 @@ namespace BH.Engine.UI
         [Output("items", "All BHoM types that implement IRequest interface and have a valid public constructor.")]
         public static IEnumerable<Type> ConstructableRequestItems()
         {
-            return Engine.Reflection.Query.BHoMTypeList()
+            return Engine.Base.Query.BHoMTypeList()
                 .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && !x.IsEnum && !x.IsAbstract)
                 .Where(x => typeof(BH.oM.Data.Requests.IRequest).IsAssignableFrom(x) && x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
         }
@@ -136,8 +136,8 @@ namespace BH.Engine.UI
         [Output("items", "All types valid in BHoM.")]
         public static IEnumerable<Type> TypeItems()
         {
-            return Engine.Reflection.Query.BHoMTypeList()
-                .Concat(Engine.Reflection.Query.BHoMInterfaceTypeList())
+            return Engine.Base.Query.BHoMTypeList()
+                .Concat(Engine.Base.Query.BHoMInterfaceTypeList())
                 .Concat(new List<Type> { typeof(Type), typeof(Enum),
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),
@@ -152,7 +152,7 @@ namespace BH.Engine.UI
         [Output("items", "All types that have a valid public constructor.")]
         public static IEnumerable<Type> ConstructableTypeItems()
         {
-            return Engine.Reflection.Query.BHoMTypeList()
+            return Engine.Base.Query.BHoMTypeList()
                 .Where(x => x != null && !x.IsNotImplemented() && !x.IsDeprecated() && x.IsAutoConstructorAllowed() && !x.IsEnum && !x.IsAbstract)
                 .Where(x => x.GetConstructors().Where(c => c.GetParameters().Count() > 0).Count() == 0);
         }
@@ -163,7 +163,7 @@ namespace BH.Engine.UI
         [Output("items", "All enum types valid in BHoM.")]
         public static IEnumerable<Type> EnumItems()
         {
-            return Engine.Reflection.Query.BHoMEnumList()
+            return Engine.Base.Query.BHoMEnumList()
                 .Where(x => !x.IsNotImplemented() && !x.IsDeprecated());
         }
 
@@ -182,7 +182,7 @@ namespace BH.Engine.UI
         [Output("items", "All external methods in BHoM.")]
         public static List<MethodBase> ExternalItems()
         {
-            return Engine.Reflection.Query.ExternalMethodList();
+            return Engine.Base.Query.ExternalMethodList();
         }
 
         /***************************************************/
