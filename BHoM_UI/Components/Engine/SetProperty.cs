@@ -54,7 +54,7 @@ namespace BH.UI.Base.Components
         /**** Constructors                ****/
         /*************************************/
 
-        public SetPropertyCaller() : base(typeof(Engine.Reflection.Modify).GetMethod("SetPropertyValue")) { }
+        public SetPropertyCaller() : base(typeof(Engine.Base.Modify).GetMethod("SetPropertyValue")) { }
 
 
         /*************************************/
