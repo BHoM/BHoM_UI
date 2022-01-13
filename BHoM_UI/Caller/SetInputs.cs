@@ -30,7 +30,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
-using BH.oM.Base;
 using System.Collections;
 using BH.Engine.UI;
 using BH.oM.Base.Attributes;
