@@ -195,6 +195,13 @@ namespace BH.UI.Base
                             string key = parameter.Name.ToLower();
                             if (properties.ContainsKey(key) && parameter.DataType == properties[key].PropertyType)
                                 parameter.Name = properties[key].Name;
+                            else
+                            {
+                                List<PropertyInfo> typeProps = properties.Values.Where(x => x.PropertyType == parameter.DataType).ToList();
+                                if(typeProps.Count == 1)
+                                    parameter.Name = typeProps[0].Name;
+                            }
+
                         }
 
                         // Set the type item 
