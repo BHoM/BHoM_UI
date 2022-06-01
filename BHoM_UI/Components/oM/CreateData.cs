@@ -116,6 +116,15 @@ namespace BH.UI.Base.Components
         /**** Private methods             ****/
         /*************************************/
 
+        protected override bool RestoreItem(object selectedItem, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        {
+            if (selectedItem is string)
+                selectedItem = Engine.Library.Query.ValidatePath(selectedItem as string);
+            return base.RestoreItem(selectedItem, inputParams, outputParams);
+        }
+
+        /*************************************/
+
         private void AddSourceLinkToMenu(ToolStripDropDown menu)
         {
             if (FileName != null && !menu.Items.ContainsKey("SourceLink"))
