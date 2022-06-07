@@ -113,7 +113,7 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        protected virtual bool RestoreItem(object selectedItem, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        protected bool RestoreItem(object selectedItem, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
         {
             // Finally Set the item 
             SetItem(selectedItem, false);

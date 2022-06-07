@@ -116,14 +116,16 @@ namespace BH.UI.Base.Components
         /**** Private methods             ****/
         /*************************************/
 
-        protected override bool RestoreItem(object selectedItem, List<ParamInfo> inputParams, List<ParamInfo> outputParams)
+        protected override void ExtractSavedData(CustomObject data, out object selectedItem, out List<ParamInfo> inputParams, out List<ParamInfo> outputParams)
         {
-            if (selectedItem is string)
-                selectedItem = Engine.Library.Query.ValidatePath(selectedItem as string);
-            return base.RestoreItem(selectedItem, inputParams, outputParams);
-        }
+            base.ExtractSavedData(data, out selectedItem, out inputParams, out outputParams);
 
-        /*************************************/
+            if (selectedItem is string)
+            {
+                //Validate that the selected item is a valid path to the library. If old string that is versioned, the string will be upgraded.
+                selectedItem = Engine.Library.Query.ValidatePath(selectedItem as string);
+            }
+        }
 
         private void AddSourceLinkToMenu(ToolStripDropDown menu)
         {
