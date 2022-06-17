@@ -57,7 +57,7 @@ namespace BH.Test.UI
             }
             catch (Exception e)
             {
-                Engine.Reflection.Compute.RecordError($"Failed to instantiate {item.Text}.\nError: {e.Message}");
+                Engine.Base.Compute.RecordError($"Failed to instantiate {item.Text}.\nError: {e.Message}");
                 return null;
             }
         }
@@ -75,7 +75,7 @@ namespace BH.Test.UI
             }
             catch (Exception e)
             {
-                Engine.Reflection.Compute.RecordError($"Failed to instantiate {type.IToText()}.\nError: {e.Message}");
+                Engine.Base.Compute.RecordError($"Failed to instantiate {type.IToText()}.\nError: {e.Message}");
                 return null;
             }
         }
