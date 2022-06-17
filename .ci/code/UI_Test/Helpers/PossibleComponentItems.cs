@@ -39,7 +39,7 @@ namespace BH.Test.UI
 
         public static List<SearchItem> PossibleComponentItems()
         {
-            Engine.Reflection.Compute.LoadAllAssemblies();
+            Engine.Base.Compute.LoadAllAssemblies();
             SearchMenu_WinForm searchMenu = new SearchMenu_WinForm();
             return searchMenu.PossibleItems.Where(x => !(x.Item is string && (x.Item as string).StartsWith("TestSets"))).ToList();
         }

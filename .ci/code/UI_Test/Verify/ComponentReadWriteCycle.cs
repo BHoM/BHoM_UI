@@ -22,8 +22,7 @@
 
 using BH.Engine.Test;
 using BH.oM.Base;
-using BH.oM.Reflection;
-using BH.oM.Reflection.Debugging;
+using BH.oM.Base.Debugging;
 using BH.oM.Test;
 using BH.oM.Test.Results;
 using BH.oM.UI;
@@ -70,7 +69,7 @@ namespace BH.Test.UI
 
         public static TestResult ComponentReadWriteCycle(SearchItem item)
         {
-            Engine.Reflection.Compute.ClearCurrentEvents();
+            Engine.Base.Compute.ClearCurrentEvents();
             Caller caller = Helpers.InstantiateCaller(item);
             if (caller == null)
                 return new TestResult
@@ -78,7 +77,7 @@ namespace BH.Test.UI
                     Description = item.Text,
                     Status = TestStatus.Error,
                     Message = $"Error: Failed to instatiate {item.Text}.",
-                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                    Information = Engine.Base.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
                 };
 
             Caller copy = null;
@@ -90,13 +89,13 @@ namespace BH.Test.UI
             }
             catch (Exception e)
             {
-                Engine.Reflection.Compute.RecordError(e.Message);
+                Engine.Base.Compute.RecordError(e.Message);
                 return new TestResult
                 {
                     Description = item.Text,
                     Status = TestStatus.Error,
                     Message = $"Error: Failed to copy {item.Text}.",
-                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                    Information = Engine.Base.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
                 };
             }
 
@@ -113,18 +112,18 @@ namespace BH.Test.UI
                         Description = item.Text,
                         Status = TestStatus.Error,
                         Message = $"Error: Incorrect copy of {item.Text}.",
-                        Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                        Information = Engine.Base.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
                     };
             }
             catch (Exception e)
             {
-                Engine.Reflection.Compute.RecordError(e.Message);
+                Engine.Base.Compute.RecordError(e.Message);
                 return new TestResult
                 {
                     Description = item.Text,
                     Status = TestStatus.Error,
                     Message = $"Error: Failed to test equality of {item.Text}.",
-                    Information = Engine.Reflection.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
+                    Information = Engine.Base.Query.CurrentEvents().Select(x => x.ToEventMessage()).ToList<ITestInformation>()
                 };
             }
         }
