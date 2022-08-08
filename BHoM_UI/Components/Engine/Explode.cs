@@ -86,7 +86,23 @@ namespace BH.UI.Base.Components
                 if (obj == null)
                     return Enumerable.Repeat<object>(null, m_CompiledSetters.Count).ToList();
 
-                List<object> result = OutputParams.Select(x => obj.PropertyValue(x.Name)).ToList();
+                List<object> result = new List<object>();
+
+                foreach (var x in OutputParams)
+                {
+                    object propValue = null;
+                    try
+                    {
+                        propValue = obj.PropertyValue(x.Name);
+                    }
+                    catch
+                    {
+                        Engine.Base.Compute.RecordWarning($"Value of the property `{x.Name}` could not be retrieved.");
+                    }
+
+                    result.Add(propValue);
+                }
+
                 return (result.Count == 1) ? result[0] : result;
             }
         }
