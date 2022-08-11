@@ -46,12 +46,14 @@ namespace BH.Engine.UI
 
         public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
+            //TODO REFACTOR THIS SO IT DOESN'T TRIGGER WHEN GRASSHOPPER TEMPLATE OPENS
             TriggerUsageLog(null);
 
             // If a projectID event is available, save the project code for this file
-            if (events != null)
+            var allEvents = BH.Engine.Base.Query.AllEvents();            
+            if (allEvents != null)
             {
-                ProjectIDEvent e = events.OfType<ProjectIDEvent>().FirstOrDefault();
+                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
                 if (e != null && !string.IsNullOrEmpty(fileId))
                     m_ProjectIDPerFile[fileId] = e.ProjectID;
             }
