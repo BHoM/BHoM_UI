@@ -34,6 +34,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.ComponentModel;
+
 namespace BH.Engine.UI
 {
     public static partial class Compute
@@ -44,6 +46,8 @@ namespace BH.Engine.UI
 
         public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
+            TriggerUsageLog(null);
+
             // If a projectID event is available, save the project code for this file
             if (events != null)
             {
@@ -152,6 +156,13 @@ namespace BH.Engine.UI
             return m_BHoMVersion;
         }
 
+        /*************************************/
+
+        private static void TriggerUsageLog(EventArgs e)
+        {
+            if (m_UsageLogTriggered != null)
+                m_UsageLogTriggered.Invoke(null, e);
+        }
 
         /*************************************/
         /**** Static Fields               ****/
@@ -164,6 +175,8 @@ namespace BH.Engine.UI
         private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
 
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
+
+        public static event EventHandler m_UsageLogTriggered;
 
         /*************************************/
     }
