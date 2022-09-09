@@ -61,9 +61,13 @@ namespace BH.Engine.UI
             if (allEvents != null)
             {
                 //ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
-                var e = allEvents.OfType<ProjectIDEvent>().Where(x => !m_ProjectIDPerFile.ContainsValue(x.ProjectID)).FirstOrDefault();
-                if ((e != null && !string.IsNullOrEmpty(fileId)) && !m_ProjectIDPerFile.ContainsKey(fileId))
+                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().Where(x => !m_ProjectIDPerFile.ContainsValue(x.ProjectID)).LastOrDefault() ?? allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
+                var _ = allEvents.OfType<ProjectIDEvent>().Select(x => x as Event).ToList();
+                if (e != null && !string.IsNullOrEmpty(fileId))
+                {
                     m_ProjectIDPerFile[fileId] = e.ProjectID;
+                    BH.Engine.Base.Compute.RemoveEvents(_);
+                }
             }
 
             try
