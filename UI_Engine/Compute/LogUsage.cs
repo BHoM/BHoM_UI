@@ -57,11 +57,12 @@ namespace BH.Engine.UI
             TriggerUsageLog(args);
 
             // If a projectID event is available, save the project code for this file
-            var allEvents = BH.Engine.Base.Query.AllEvents();            
+            var allEvents = BH.Engine.Base.Query.AllEvents();
             if (allEvents != null)
             {
-                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
-                if (e != null && !string.IsNullOrEmpty(fileId))
+                //ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
+                var e = allEvents.OfType<ProjectIDEvent>().Where(x => !m_ProjectIDPerFile.ContainsValue(x.ProjectID)).FirstOrDefault();
+                if ((e != null && !string.IsNullOrEmpty(fileId)) && !m_ProjectIDPerFile.ContainsKey(fileId))
                     m_ProjectIDPerFile[fileId] = e.ProjectID;
             }
 
@@ -128,9 +129,9 @@ namespace BH.Engine.UI
         private static void RemoveDeprecatedLogs(string logFolder)
         {
             long currentTicks = DateTime.UtcNow.Ticks;
-            List<string> logFiles = Directory.GetFiles(logFolder).Where(x => x.Contains("Usage_")).ToList(); 
+            List<string> logFiles = Directory.GetFiles(logFolder).Where(x => x.Contains("Usage_")).ToList();
 
-            foreach( string file in logFiles)
+            foreach (string file in logFiles)
             {
                 string[] parts = file.Split(new char[] { '_', '.' });
                 if (parts.Length >= 4)
@@ -143,7 +144,7 @@ namespace BH.Engine.UI
                     }
                 }
             }
-                
+
         }
 
         /*************************************/
