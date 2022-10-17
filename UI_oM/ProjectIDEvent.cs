@@ -37,6 +37,7 @@ namespace BH.oM.UI
         /***************************************************/
 
         public virtual string ProjectID { get; set; } = "";
+        public virtual string FileID { get; set; } = "";
 
         public override EventType Type { get; set; } = EventType.Note;
 
