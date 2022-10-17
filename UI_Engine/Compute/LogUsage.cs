@@ -61,7 +61,7 @@ namespace BH.Engine.UI
             var allEvents = BH.Engine.Base.Query.AllEvents();            
             if (allEvents != null)
             {
-                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().FirstOrDefault();
+                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().Where(x => x.FileID == fileId).FirstOrDefault();
                 if (e != null && !string.IsNullOrEmpty(fileId))
                     m_ProjectIDPerFile[fileId] = e.ProjectID;
             }
