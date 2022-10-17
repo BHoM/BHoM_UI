@@ -53,6 +53,7 @@ namespace BH.Engine.UI
                 ComponentID = componentId,
                 CallerName = callerName,
                 SelectedItem = selectedItem,
+                FileID = fileId,
             };
             TriggerUsageLog(args);
 

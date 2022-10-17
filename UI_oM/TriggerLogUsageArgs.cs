@@ -37,5 +37,6 @@ namespace BH.oM.UI
         public virtual string UIName { get; set; } = "";
         public virtual string UIVersion { get; set; } = "";
         public virtual Guid ComponentID { get; set; } = Guid.Empty;
+        public virtual string FileID { get; set; } = "";
     }
 }
