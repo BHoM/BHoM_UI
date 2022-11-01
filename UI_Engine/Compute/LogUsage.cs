@@ -179,7 +179,7 @@ namespace BH.Engine.UI
 
         private static string m_BHoMVersion = null;
 
-        private static long m_DeprecationPeriod = 7 * TimeSpan.TicksPerDay; // 7 days in ticks
+        private static long m_DeprecationPeriod = 28 * TimeSpan.TicksPerDay; // 28 days in ticks
 
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
