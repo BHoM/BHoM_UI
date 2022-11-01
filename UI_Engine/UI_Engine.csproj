@@ -101,6 +101,8 @@
     <Compile Include="Query\Settings.cs" />
     <Compile Include="Query\Hits.cs" />
     <Compile Include="Query\Items.cs" />
+    <Compile Include="Query\UsageLogFileName.cs" />
+    <Compile Include="Query\UsageLogFolder.cs" />
     <Compile Include="Query\Weight.cs" />
     <Compile Include="Query\SubType.cs" />
     <Compile Include="Query\Depth.cs" />

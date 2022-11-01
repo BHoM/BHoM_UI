@@ -6,10 +6,16 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.ComponentModel;
+using BH.oM.Base.Attributes;
+
 namespace BH.Engine.UI
 {
     public static partial class Query
     {
+        [Description("Obtain the file name of the current instance of a usage log file for the provided UI.")]
+        [Input("uiName", "The UI currently using the usage log to obtain the log file name for.")]
+        [Output("usageLogFileName", "The full file path to the current usage log file for the given UI.")]
         public static string UsageLogFileName(string uiName)
         {
             if (!string.IsNullOrEmpty(m_usageLogFileName))
