@@ -104,16 +104,13 @@ namespace BH.Engine.UI
         {
             if (m_UsageLog == null)
             {
-                // Make sure teh folder exists
-                string logFolder = @"C:\ProgramData\BHoM\Logs";
-                if (!Directory.Exists(logFolder))
-                    Directory.CreateDirectory(logFolder);
+                string logFolder = Query.UsageLogFolder();
 
                 // Get rid of log files old enough to be deleted
                 RemoveDeprecatedLogs(logFolder);
 
                 // Create the new log file
-                string filePath = Path.Combine(logFolder, "Usage_" + uiName + "_" + DateTime.UtcNow.Ticks + ".log");
+                string filePath = Query.UsageLogFileName(uiName);
                 FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read);
                 m_UsageLog = new StreamWriter(stream);
 
