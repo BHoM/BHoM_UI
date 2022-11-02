@@ -151,6 +151,8 @@ namespace BH.Engine.UI
             // The file seems to be writable after the UI closed even without this but better safe than sorry.
             if (m_UsageLog != null)
                 m_UsageLog.Close();
+
+            TriggerUIClose();
         }
 
         /*************************************/
@@ -172,6 +174,14 @@ namespace BH.Engine.UI
         }
 
         /*************************************/
+
+        private static void TriggerUIClose()
+        {
+            if (m_UIClosed != null)
+                m_UIClosed.Invoke(null, null);
+        }
+
+        /*************************************/
         /**** Static Fields               ****/
         /*************************************/
 
@@ -184,6 +194,7 @@ namespace BH.Engine.UI
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
         public static event EventHandler m_UsageLogTriggered;
+        public static event EventHandler m_UIClosed;
 
         /*************************************/
     }
