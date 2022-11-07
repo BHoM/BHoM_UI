@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Base;
-using BH.oM.Base;
+using BH.oM.Base.Reflection;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
