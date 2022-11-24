@@ -172,7 +172,7 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null && (!Compute.m_documentOpening || e.SelectedItem.ToString() == "Boolean SetProjectID(System.String)"))
+            if (m_UsageLogTriggered != null && !Compute.m_documentOpening)
                 m_UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
         }
 
