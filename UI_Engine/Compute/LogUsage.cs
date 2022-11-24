@@ -55,7 +55,11 @@ namespace BH.Engine.UI
                 SelectedItem = selectedItem,
                 FileID = fileId,
             };
-            TriggerUsageLog(args);
+
+            if (m_documentOpening)
+                TriggerUIOpening(args);
+            else
+                TriggerUsageLog(args);
 
             // If a projectID event is available, save the project code for this file
             var allEvents = BH.Engine.Base.Query.AllEvents();            
@@ -141,7 +145,6 @@ namespace BH.Engine.UI
                     }
                 }
             }
-                
         }
 
         /*************************************/
@@ -169,8 +172,8 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null && !Compute.m_documentOpening)
-                m_UsageLogTriggered.Invoke(null, e);
+            if (m_UsageLogTriggered != null && (!Compute.m_documentOpening || e.SelectedItem.ToString() == "Boolean SetProjectID(System.String)"))
+                m_UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
         }
 
         /*************************************/
@@ -179,6 +182,14 @@ namespace BH.Engine.UI
         {
             if (m_UIClosed != null)
                 m_UIClosed.Invoke(null, null);
+        }
+
+        /*************************************/
+
+        private static void TriggerUIOpening(TriggerLogUsageArgs e)
+        {
+            if (m_UIOpening != null)
+                m_UIOpening.Invoke(null, e);
         }
 
         /*************************************/
@@ -195,6 +206,7 @@ namespace BH.Engine.UI
 
         public static event EventHandler m_UsageLogTriggered;
         public static event EventHandler m_UIClosed;
+        public static event EventHandler m_UIOpening;
 
         /*************************************/
     }
