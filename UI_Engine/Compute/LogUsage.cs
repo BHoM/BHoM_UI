@@ -169,7 +169,7 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null)
+            if (m_UsageLogTriggered != null && !Compute.m_documentOpening)
                 m_UsageLogTriggered.Invoke(null, e);
         }
 
