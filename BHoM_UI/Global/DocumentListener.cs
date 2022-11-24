@@ -55,6 +55,8 @@ namespace BH.UI.Base.Global
 
             m_OpeningTimes[documentName] = DateTime.Now.Ticks;
             Debug.WriteLine($"DocumentBeginOpening at {DateTime.Now.ToString("HH:mm:ss.ffffzzz")}");
+
+            BH.Engine.UI.Compute.SetDocumentOpeningState(true);
         }
 
         /*************************************/
@@ -76,6 +78,8 @@ namespace BH.UI.Base.Global
                 m_VersioningFormThead = new Thread(ShowForm);
                 m_VersioningFormThead.Start(events);
             }
+
+            BH.Engine.UI.Compute.SetDocumentOpeningState(false);
         }
 
         /*************************************/
@@ -90,6 +94,8 @@ namespace BH.UI.Base.Global
 
             if (!string.IsNullOrEmpty(documentName) && m_OpeningTimes.ContainsKey(documentName))
                 m_OpeningTimes.Remove(documentName);
+
+            BH.Engine.UI.Compute.SetDocumentOpeningState(false);
         }
 
 
@@ -211,7 +217,6 @@ namespace BH.UI.Base.Global
 
         private static Dictionary<string, long> m_OpeningTimes = new Dictionary<string, long>();
         private static Thread m_VersioningFormThead = null;
-
 
         /*************************************/
     }
