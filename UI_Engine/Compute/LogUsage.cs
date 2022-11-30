@@ -193,6 +193,14 @@ namespace BH.Engine.UI
         }
 
         /*************************************/
+
+        private static void TriggerUIEndOpening()
+        {
+            if(m_UIEndOpening != null)
+                m_UIEndOpening.Invoke(null, null);
+        }
+
+        /*************************************/
         /**** Static Fields               ****/
         /*************************************/
 
@@ -207,6 +215,7 @@ namespace BH.Engine.UI
         public static event EventHandler m_UsageLogTriggered;
         public static event EventHandler m_UIClosed;
         public static event EventHandler m_UIOpening;
+        public static event EventHandler m_UIEndOpening;
 
         /*************************************/
     }

@@ -34,6 +34,9 @@ namespace BH.Engine.UI
 
         public static void SetDocumentOpeningState(bool state)
         {
+            if (m_documentOpening && !state)
+                TriggerUIEndOpening();
+
             m_documentOpening = state;
         }
     }
