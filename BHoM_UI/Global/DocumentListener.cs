@@ -63,6 +63,8 @@ namespace BH.UI.Base.Global
 
         public static void OnDocumentEndOpening(string documentName)
         {
+            BH.Engine.UI.Compute.SetDocumentOpeningState(false);
+
             if (string.IsNullOrEmpty(documentName) || !m_OpeningTimes.ContainsKey(documentName))
                 return;
 
@@ -78,8 +80,6 @@ namespace BH.UI.Base.Global
                 m_VersioningFormThead = new Thread(ShowForm);
                 m_VersioningFormThead.Start(events);
             }
-
-            BH.Engine.UI.Compute.SetDocumentOpeningState(false);
         }
 
         /*************************************/
