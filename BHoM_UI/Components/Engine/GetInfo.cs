@@ -75,37 +75,26 @@ namespace BH.UI.Base.Components
         [MultiOutput(9, "wiki", "Need more details on how to use the BHoM or how to contribute? This is the place to go.")]
         public static Output<string, string, string, List<string>, List<Type>, List<MethodInfo>, List<Type>, string, string, string> GetInfo()
         {
-            string description = "This is the Buildings and Habitats object Model. A collaborative computational development project for the built environment.\n\n"
-                + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n\n"
-                + "To find out more about our collective experiment go to https://bhom.xyz";
-
-            string version = Engine.Base.Query.BHoMVersion();
-            string installer = ""; //TODO: assign properly when that information is made available by the installer
-
-            List<string> libraries = Engine.Base.Query.BHoMAssemblyList()
-                .Select(x => x.GetName().Name)
-                .OrderBy(x => x).ToList();
+            var info = BH.Engine.UI.Query.Information();
 
             List<Type> types = Engine.Base.Query.BHoMTypeList();
             List<MethodInfo> methods = Engine.Base.Query.BHoMMethodList();
             List<Type> adapters = Engine.Base.Query.AdapterTypeList().ToList();
 
-            string website = "https://bhom.xyz/";
             string github = "https://github.com/BHoM";
-            string wiki = "https://github.com/BHoM/documentation/wiki";
 
             return Engine.Base.Create.Output
             (
-                description,
-                version,
-                installer,
-                libraries,
+                info.Description,
+                info.Version,
+                info.InstallDate,
+                info.Assemblies,
                 types,
                 methods,
                 adapters,
-                website,
+                info.BHoMWebsite,
                 github,
-                wiki
+                info.WikiLink
             );
         }
 
