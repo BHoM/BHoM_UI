@@ -81,7 +81,7 @@ namespace BH.Engine.UI
             }
             catch { }
 
-            if (!string.IsNullOrEmpty(version))
+            if (string.IsNullOrEmpty(version))
                 version = BH.Engine.Base.Query.BHoMVersion();
 
             if (!string.IsNullOrEmpty(installDate))
