@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BHoMInformation.cs" />
     <Compile Include="ComponentRequest.cs" />
     <Compile Include="Interfaces\IDataAccessor.cs" />
     <Compile Include="PreviousNamesFragment.cs" />
