@@ -97,11 +97,10 @@ namespace BH.UI.Base.Components
 
         public override List<string> GetChoiceNames()
         {
-            List<string> names = new List<string>();
             if (EnumType != null)
-                names.AddRange(Enum.GetValues(EnumType).OfType<Enum>().Select(x => x.IToText()));
-
-            return names;
+                return Enum.GetValues(EnumType).OfType<Enum>().Select(x => x.ToText()).ToList();
+            else
+                return new List<string>();
         }
 
         /*************************************/
