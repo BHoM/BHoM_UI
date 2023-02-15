@@ -31,11 +31,20 @@ using BH.Engine.Serialiser;
 using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
+using BH.UI.Base.Menus;
+using BH.Engine.Base;
 
 namespace BH.UI.Base
 {
     public abstract class MultiChoiceCaller : Caller
     {
+        /*************************************/
+        /**** Public Events               ****/
+        /*************************************/
+
+        public event EventHandler<int> ValueSelected;
+
+
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
@@ -82,6 +91,48 @@ namespace BH.UI.Base
         /*************************************/
 
         public abstract List<string> GetChoiceNames();
+
+        /*************************************/
+
+        public override void AddToMenu(object menu)
+        {
+            base.AddToMenu(menu);
+
+            if (SelectedItem != null)
+            {
+                if (m_EnumSearchMenu == null)
+                    SetEnumSearchMenu();
+
+                m_EnumSearchMenu.FillMenu(menu);
+            }
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private void SetEnumSearchMenu()
+        {
+            List<SearchItem> items = Choices.Zip(GetChoiceNames(), (x, y) => new SearchItem { Item = x, Text = y }).ToList();
+            ItemSelectorMenu_WinForm enumSearchMenu = new ItemSelectorMenu_WinForm(items, null);
+            enumSearchMenu.ItemSelected += EnumValueSelected;
+            m_EnumSearchMenu = enumSearchMenu;
+        }
+
+        /*************************************/
+
+        private void EnumValueSelected(object sender, object e)
+        {
+            ValueSelected?.Invoke(this, Choices.IndexOf(e));
+        }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private IItemSelectorMenu m_EnumSearchMenu = null;
 
         /*************************************/
     }

@@ -49,7 +49,8 @@ namespace BH.UI.Base.Menus
 
         protected override void AddTree(ToolStripDropDown menu, Tree<object> itemTree)
         {
-            AppendMenuTree(itemTree, menu);
+            if (itemTree != null)
+                AppendMenuTree(itemTree, menu);
         }
 
         /*************************************/
