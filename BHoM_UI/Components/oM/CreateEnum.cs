@@ -99,12 +99,7 @@ namespace BH.UI.Base.Components
         {
             List<string> names = new List<string>();
             if (EnumType != null)
-            {
-                foreach (var item in Enum.GetValues(EnumType))
-                {
-                    names.Add(item.IToText());
-                }
-            }
+                names.AddRange(Enum.GetValues(EnumType).OfType<Enum>().Select(x => x.IToText()));
 
             return names;
         }
