@@ -33,6 +33,7 @@ using BH.Engine.Reflection;
 using BH.Engine.Data;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
+using BH.Engine.Base;
 
 namespace BH.UI.Base.Components
 {
@@ -96,10 +97,16 @@ namespace BH.UI.Base.Components
 
         public override List<string> GetChoiceNames()
         {
+            List<string> names = new List<string>();
             if (EnumType != null)
-                return Enum.GetNames(EnumType).ToList();
-            else
-                return new List<string>();
+            {
+                foreach (var item in Enum.GetValues(EnumType))
+                {
+                    names.Add(item.IToText());
+                }
+            }
+
+            return names;
         }
 
         /*************************************/
