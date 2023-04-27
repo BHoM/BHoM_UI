@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public interface IParamUpdate : IUpdate
+    public interface IParamUpdate : IUpdate, IObject
     {
         /***************************************************/
         /**** Properties                                ****/
@@ -41,7 +41,3 @@ namespace BH.oM.UI
         /***************************************************/
     }
 }
-
-
-
-

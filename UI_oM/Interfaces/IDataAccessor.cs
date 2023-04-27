@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public interface IDataAccessor
+    public interface IDataAccessor : IObject
     {
         /*************************************/
         /**** Input Getter Methods        ****/
@@ -66,7 +67,3 @@ namespace BH.oM.UI
         /*************************************/
     }
 }
-
-
-
-
