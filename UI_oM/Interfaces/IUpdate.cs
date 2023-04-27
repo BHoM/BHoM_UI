@@ -30,12 +30,8 @@ using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public interface IUpdate
+    public interface IUpdate : IObject
     {
 
     }
 }
-
-
-
-
