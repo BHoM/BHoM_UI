@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using System.Collections;
 using BH.Engine.UI;
 using BH.oM.Base.Attributes;
+using BH.oM.Base.Attributes.Enums;
 
 namespace BH.UI.Base
 {
@@ -60,9 +61,14 @@ namespace BH.UI.Base
             {
                 List< PreviousInputNamesAttribute> previousNames = method.GetCustomAttributes<PreviousInputNamesAttribute>().ToList();
                 Dictionary<string, string> descriptions = method.InputDescriptions();
+                Dictionary<string, UIExposure> exposures = method.InputExposure();
                 InputParams = method.GetParameters().Select(x =>
                 {
                     ParamInfo p = Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "");
+
+                    if (exposures.ContainsKey(x.Name) && exposures[x.Name] == UIExposure.Hidden)
+                        p.IsExposed = false;
+
                     PreviousInputNamesAttribute match = previousNames.FirstOrDefault(a => a.Name == p.Name);
                     if (match != null)
                         p.Fragments.Add(new PreviousNamesFragment { OldNames = match.PreviousNames });
