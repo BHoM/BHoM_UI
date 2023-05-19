@@ -51,8 +51,6 @@ namespace BH.oM.UI
 
         public virtual string DefaultValueWarning { get; set; } = "";
 
-        public virtual bool IsExposed { get; set; } = true;
-
         /***************************************************/
     }
 }
