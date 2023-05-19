@@ -67,7 +67,7 @@ namespace BH.UI.Base
                     ParamInfo p = Engine.UI.Create.ParamInfo(x, descriptions.ContainsKey(x.Name) ? descriptions[x.Name] : "");
 
                     if (exposures.ContainsKey(x.Name) && exposures[x.Name] == UIExposure.Hidden)
-                        p.IsExposed = false;
+                        p.IsSelected = false;
 
                     PreviousInputNamesAttribute match = previousNames.FirstOrDefault(a => a.Name == p.Name);
                     if (match != null)
