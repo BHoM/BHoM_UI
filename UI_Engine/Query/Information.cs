@@ -97,12 +97,12 @@ namespace BH.Engine.UI
             {
                 Version = version,
                 InstallDate = installDate,
-                BHoMWebsite = "https://bhom.xyz",
-                WikiLink = "https://bhom.xyz/documentation",
+                BHoMWebsite = Base.Query.BHoMWebsiteURL(),
+                WikiLink = Base.Query.DocumentationURL(),
                 Assemblies = BH.Engine.Base.Query.BHoMAssemblyList().Select(x => x.GetName().Name).OrderBy(x => x).ToList(),
                 Description = "This is the Buildings and Habitats object Model. A collaborative computational development project for the built environment.\n\n"
                 + "It is crafted as transdisciplinary, software-agnostic and office/region/country independent, and therefore would be nothing without our active community and wide range of contributors.\n\n"
-                + "To find out more about our collective experiment go to https://bhom.xyz",
+                + $"To find out more about our collective experiment go to {Base.Query.BHoMWebsiteURL()}",
             };
         }
     }
