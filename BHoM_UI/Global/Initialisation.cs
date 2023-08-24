@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -67,27 +68,29 @@ namespace BH.UI.Base.Global
 
         public static bool LoadToolkitSettings()
         {
-            if (!Directory.Exists(@"C:\ProgramData\BHoM\Settings"))
+            string directory = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "BHoM", "Settings");
+            if(!Directory.Exists(directory))
             {
-                Engine.Base.Compute.RecordWarning(@"C:\ProgramData\BHoM\Settings doesn't exist. Toolkits setting are not loaded.");
+                BH.Engine.Base.Compute.RecordWarning($"{directory} doesn't exist. Toolkit settings are not loaded.");
                 return false;
             }
 
+            BH.Engine.Settings.Compute.LoadSettings(directory);
+            BH.Engine.Settings.Compute.LoadSettings(directory, "*.cfg"); //Legacy cfg files to be loaded in
+
+            List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
+            List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
+
             bool success = true;
-            foreach (string file in Directory.GetFiles(@"C:\ProgramData\BHoM\Settings", "*.cfg"))
+            foreach(var settings in initialisationSettings)
             {
                 try
                 {
-                    string fileName = Path.GetFileNameWithoutExtension(file);
-                    ISettings settings = Engine.UI.Query.Settings(fileName);
-
-                    // Initialise the toolkit if needed
-                    if (settings is IInitialisationSettings)
-                        success = InitialiseToolkit(settings as IInitialisationSettings);
+                    success &= InitialiseToolkit(settings);
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
-                    Engine.Base.Compute.RecordWarning(@"Failed to load one of the config file. Error:\n" + e.Message);
+                    BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load settings of type {settings.GetType().Name}.");
                 }
             }
 
