@@ -102,6 +102,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Settings_Engine">
+      <HintPath>..\..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Settings_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
