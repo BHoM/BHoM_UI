@@ -38,10 +38,14 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType)
+        public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType, ParamInfo info = null)
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
+
+            if (info != null && info.IsNestedProperty && methodName != "SetDataTree")
+                methodName = "SetDataTree"; //Force override for CustomObject data which may be a nested list
+
             MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(subType.Type.IsByRef ? subType.Type.GetElementType() : subType.Type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");

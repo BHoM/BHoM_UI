@@ -94,6 +94,7 @@
     <Compile Include="Objects\DocumentLoading.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\Information.cs" />
+    <Compile Include="Query\LevelsOfNesting.cs" />
     <Compile Include="Query\MatchWith.cs" />
     <Compile Include="Query\Changes.cs" />
     <Compile Include="Query\SelectionIndex.cs" />

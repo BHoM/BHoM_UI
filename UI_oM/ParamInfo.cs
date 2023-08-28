@@ -51,6 +51,8 @@ namespace BH.oM.UI
 
         public virtual string DefaultValueWarning { get; set; } = "";
 
+        public virtual bool IsNestedProperty { get; set; } = false;
+
         /***************************************************/
     }
 }

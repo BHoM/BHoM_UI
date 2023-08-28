@@ -197,6 +197,9 @@ namespace BH.UI.Base
                     {
                         if (OutputParams[i].IsSelected)
                         {
+                            if (OutputParams[i].IsNestedProperty)
+                                output = ((IEnumerable<object>)output).Cast<List<object>>(); //Force the object to cast correctly for the Data Tree param
+
                             m_CompiledSetters[i](m_DataAccessor, output, index);
                             index++;
                         }

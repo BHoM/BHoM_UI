@@ -87,6 +87,7 @@ namespace BH.Engine.UI
         private static List<ParamInfo> OutputFromMultipleGroups(IEnumerable<IGrouping<Type, object>> groups)
         {
             Dictionary<string, List<Type>> properties = new Dictionary<string, List<Type>>();
+            Dictionary<string, bool> nestedProperties = new Dictionary<string, bool>();
 
             // Collect the properties types and names
             foreach (var group in groups)
@@ -94,7 +95,7 @@ namespace BH.Engine.UI
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
                     CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
                 else if (group.Key == typeof(CustomObject))
-                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
+                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties, ref nestedProperties);
                 else
                     CollectOutputTypes(group.Key, ref properties);
             }
@@ -105,11 +106,16 @@ namespace BH.Engine.UI
             {
                 IEnumerable<Type> uniqueTypes = kvp.Value.Distinct();
                 Type commonType = uniqueTypes.Count() > 1 ? typeof(object) : uniqueTypes.FirstOrDefault();
+                bool isNested = false;
+                if (nestedProperties.ContainsKey(kvp.Key) && nestedProperties[kvp.Key])
+                    isNested = true;
+
                 outputParams.Add(new ParamInfo
                 {
                     DataType = commonType ?? typeof(object),
                     Name = kvp.Key,
-                    Kind = ParamKind.Output
+                    Kind = ParamKind.Output,
+                    IsNestedProperty = isNested,
                 });
             }
             return outputParams;
@@ -146,14 +152,21 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties)
+        private static void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties, ref Dictionary<string, bool> nestedProperties)
         {
             foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData).Distinct())
             {
                 if (!properties.ContainsKey(prop.Key))
                     properties[prop.Key] = new List<Type>();
+
+                if (!nestedProperties.ContainsKey(prop.Key))
+                    nestedProperties[prop.Key] = false;
+
                 if (prop.Value != null)
+                {
+                    nestedProperties[prop.Key] = Query.LevelsOfNesting(prop.Value) > 1; //If the object has more than 1 level of nesting (i.e. is not a flat list) then it will need to be a datatree access on display in the UIs
                     properties[prop.Key].Add(prop.Value.GetType() ?? null);
+                }
             }
             if (!properties.ContainsKey("Name"))
                 properties["Name"] = new List<Type> { typeof(string) };
