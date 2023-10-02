@@ -75,8 +75,6 @@ namespace BH.UI.Base.Components
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(bool), Kind = ParamKind.Output, Name = Name, Description = Description, IsRequired = true } };
         }
 
-
-
         /*************************************/
         /**** Public Method               ****/
         /*************************************/
