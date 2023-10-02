@@ -72,8 +72,6 @@ namespace BH.UI.Base.Components
         public FalseStartToggleCaller() : base()
         {
             SelectedItem = false;
-            Description = "Boolean toggle";
-            Name = "";
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(bool), Kind = ParamKind.Output, Name = Name, Description = Description, IsRequired = true } };
         }
 
