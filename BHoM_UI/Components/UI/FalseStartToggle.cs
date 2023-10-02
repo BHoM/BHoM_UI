@@ -48,7 +48,7 @@ namespace BH.UI.Base.Components
 
         public override string Category { get; protected set; } = "UI";
 
-        public override string Name { get; protected set; } = "FalseStart";
+        public override string Name { get; protected set; } = "FalseStartToggle";
 
         public override string Description { get; protected set; } = "A boolean toggle that changes to false on load.";
 
