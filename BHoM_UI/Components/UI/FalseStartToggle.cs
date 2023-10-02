@@ -48,9 +48,9 @@ namespace BH.UI.Base.Components
 
         public override string Category { get; protected set; } = "UI";
 
-        public override string Name { get; protected set; } = "FalseStartToggle";
+        public override string Name { get; protected set; } = "";
 
-        public override string Description { get; protected set; } = "A boolean toggle that defaults to false on load.";
+        public override string Description { get; protected set; } = "";
 
         public bool Value
         {
@@ -63,7 +63,6 @@ namespace BH.UI.Base.Components
                 SelectedItem = value;
             }
         }
-
 
         /*************************************/
         /**** Constructors                ****/
