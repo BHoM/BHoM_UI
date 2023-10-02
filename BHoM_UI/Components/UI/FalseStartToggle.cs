@@ -106,6 +106,3 @@ namespace BH.UI.Base.Components
     }
 }
 
-
-
-
