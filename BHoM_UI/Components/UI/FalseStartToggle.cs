@@ -33,6 +33,7 @@ using BH.Engine.Reflection;
 using BH.Engine.Data;
 using BH.Engine.Serialiser;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace BH.UI.Base.Components
 {
@@ -42,7 +43,7 @@ namespace BH.UI.Base.Components
         /**** Properties                  ****/
         /*************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.BooleanToggle;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.BooleanToggleOff;
 
         public override Guid Id { get; protected set; } = new Guid("e1e0d75f-41b0-4268-ae5c-a55673d77851");
 
@@ -83,6 +84,11 @@ namespace BH.UI.Base.Components
             if (updateOriginal)
                 m_OriginalItem = value;
             SelectedItem = (bool)value;
+
+            if (Value)
+                Icon_24x24 = Properties.Resources.BooleanToggleOn;
+            else
+                Icon_24x24 = Properties.Resources.BooleanToggleOff;
 
             if (sendNotification)
             {
