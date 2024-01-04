@@ -148,7 +148,7 @@ namespace BH.Engine.UI
 
         private static void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties)
         {
-            foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData).Distinct())
+            foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData))
             {
                 if (!properties.ContainsKey(prop.Key))
                     properties[prop.Key] = new List<Type>();
