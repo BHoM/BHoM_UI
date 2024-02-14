@@ -68,7 +68,6 @@
     <Compile Include="Updates\CallerUpdate.cs" />
     <Compile Include="Updates\CallerUpdateCause.cs" />
     <Compile Include="ProjectIDEvent.cs" />
-    <Compile Include="UsageLogEntry.cs" />
     <Compile Include="ParamOldIndexFragment.cs" />
     <Compile Include="CustomItem.cs" />
     <Compile Include="SearchConfig.cs" />
