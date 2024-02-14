@@ -67,7 +67,6 @@
     <Compile Include="Updates\ComponentUpdate.cs" />
     <Compile Include="Updates\CallerUpdate.cs" />
     <Compile Include="Updates\CallerUpdateCause.cs" />
-    <Compile Include="Interfaces\IInitialisationSettings.cs" />
     <Compile Include="ProjectIDEvent.cs" />
     <Compile Include="UsageLogEntry.cs" />
     <Compile Include="ParamOldIndexFragment.cs" />
