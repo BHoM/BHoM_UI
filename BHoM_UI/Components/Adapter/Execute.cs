@@ -100,7 +100,16 @@ namespace BH.UI.Base.Components
                 return result;
             }
 
+            if(!adapter.BeforeExecute(command, executeConfig))
+            {
+                BH.Engine.Base.Compute.RecordError($"An error occurred within the setup actions for the Execute. Please rectify those issues to use the Execute component.");
+                return result;
+            }
+
             result = adapter.Execute(command, executeConfig); // Item1 is the result of the Execute; Item2 the `success` bool.
+
+            if (!adapter.AfterExecute(command, executeConfig))
+                BH.Engine.Base.Compute.RecordWarning($"An error occurred during the tear down operation for the Execute. Please take note of any additional warnings/errors received from the Execute component.");
 
             return result != null ? result : new Output<List<object>, bool>() { Item1 = null, Item2 = false };
         }

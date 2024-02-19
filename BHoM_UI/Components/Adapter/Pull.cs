@@ -117,7 +117,18 @@ namespace BH.UI.Base.Components
                 return null;
             }
 
-            return adapter.Pull(actualRequest, pullType, pullConfig);
+            if(!adapter.BeforePull(actualRequest, pullType, pullConfig))
+            {
+                BH.Engine.Base.Compute.RecordError($"An error occurred within the setup actions for the Pull. Please rectify those issues to use the Pull component.");
+                return null;
+            }
+
+            IEnumerable<object> result = adapter.Pull(actualRequest, pullType, pullConfig);
+
+            if(!adapter.AfterPull(actualRequest, pullType, pullConfig))
+                BH.Engine.Base.Compute.RecordWarning($"An error occurred during the tear down operation for the Pull. Please take note of any additional warnings/errors received from the Pull component.");
+
+            return result;
         }
 
         /*************************************/
