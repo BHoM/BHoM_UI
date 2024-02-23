@@ -17,7 +17,6 @@
             <RowDefinition Height="100"/>
             <RowDefinition Height="75"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -52,10 +51,7 @@
             <Button Content="Save"  Width="50" Background="#5CB85C" Click="SaveAll "/>
         </StackPanel>
         
-        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Include?" TextAlignment="Center" FontWeight="Bold" />
-        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Toolkit" TextAlignment="Center" FontWeight="Bold" />
-
-        <ScrollViewer Grid.Row="4" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
