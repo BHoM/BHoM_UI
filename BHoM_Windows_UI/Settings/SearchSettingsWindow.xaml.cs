@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,7 +24,9 @@ namespace BH.UI.Base.Windows.Settings
 
     public partial class SearchSettingsWindow : Window
     {
-        public SearchSettingsWindow()
+        private ISettingsWindow UIParent { get; set; }
+
+        public SearchSettingsWindow(ISettingsWindow parent)
         {
             InitializeComponent();
             LoadSettings();
@@ -31,6 +34,8 @@ namespace BH.UI.Base.Windows.Settings
 
             m_ToolkitItems = m_ToolkitItems.OrderBy(x => x.Toolkit).ToList();
             m_ToolkitItems.ForEach(x => ConvertToCheckbox(x));
+
+            UIParent = parent;
 
             this.ShowDialog();
         }
@@ -49,7 +54,7 @@ namespace BH.UI.Base.Windows.Settings
 
         private void LoadFromLoadedAssemblies()
         {
-            var allTypes = BH.Engine.Base.Query.AllTypeList();
+            var allTypes = BH.Engine.Base.Query.BHoMTypeList();
             var fullNames = allTypes.Select(x => x.FullName).ToList();
 
             var toolkits = fullNames.Select(x =>
@@ -112,11 +117,6 @@ namespace BH.UI.Base.Windows.Settings
             }
             else if(m_PanelIndex == 1)
             {
-                ToolkitCheckboxGridMiddle.Children.Add(childPanel);
-                m_PanelIndex++;
-            }
-            else if(m_PanelIndex == 2)
-            {
                 ToolkitCheckboxGridRight.Children.Add(childPanel);
                 m_PanelIndex = 0;
             }
@@ -132,6 +132,12 @@ namespace BH.UI.Base.Windows.Settings
             m_Settings.Toolkits = m_ToolkitItems.Select(x => x.ToItem()).ToList();
             BH.Engine.Settings.Compute.SaveSettings(m_Settings, true);
             this.Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            UIParent.CloseSelf();
+            base.OnClosed(e);
         }
 
         private int m_PanelIndex = 0;
