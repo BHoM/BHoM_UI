@@ -155,9 +155,20 @@ namespace BH.UI.Base.Global
 
         private static void ShowWithConstraint(SearchConfig config)
         {
+            var settings = BH.Engine.Settings.Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
+            List<string> excludedToolkits = new List<string>();
+            if (settings != null)
+                excludedToolkits = settings.Toolkits.Where(x => !x.Include).Select(x => x.Toolkit).ToList();
+
             if (config != null)
             {
-                m_SearchMenu.PossibleItems = m_PossibleItems.Select(x =>
+                m_SearchMenu.PossibleItems = m_PossibleItems.Where(x =>
+                {
+                    if (excludedToolkits.Any(y => x.Text.Contains(y)))
+                        return false;
+
+                    return true; //If the text does not contain any of the excluded toolkits then include it in this display
+                }).Select(x =>
                 {
                     SearchItem withWeight = x.ShallowClone() as SearchItem;
                     withWeight.Weight = withWeight.Weight(config);
@@ -166,7 +177,13 @@ namespace BH.UI.Base.Global
             }
             else
             {
-                m_SearchMenu.PossibleItems = m_PossibleItems;
+                m_SearchMenu.PossibleItems = m_PossibleItems.Where(x =>
+                {
+                    if (excludedToolkits.Any(y => x.Text.Contains(y)))
+                        return false;
+
+                    return true; //If the text does not contain any of the excluded toolkits then include it in this display
+                }).ToList();
             }
 
             m_SearchMenu.HitsOnEmptySearch = config != null;
