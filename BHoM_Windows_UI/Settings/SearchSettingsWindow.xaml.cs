@@ -24,7 +24,6 @@ namespace BH.UI.Base.Windows.Settings
 
     public partial class SearchSettingsWindow : Window
     {
-        private ISettingsWindow UIParent { get; set; }
 
         public SearchSettingsWindow(ISettingsWindow parent)
         {
@@ -40,6 +39,8 @@ namespace BH.UI.Base.Windows.Settings
             this.ShowDialog();
         }
 
+        /*************************************/
+
         private void LoadSettings()
         {
             var existingSettings = Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
@@ -51,6 +52,8 @@ namespace BH.UI.Base.Windows.Settings
             else
                 m_Settings = new SearchSettings();
         }
+
+        /*************************************/
 
         private void LoadFromLoadedAssemblies()
         {
@@ -82,6 +85,8 @@ namespace BH.UI.Base.Windows.Settings
             toolkitItems = toolkitItems.Where(x => !m_ToolkitItems.Any(y => y.Toolkit == x.Toolkit)).ToList();
             m_ToolkitItems.AddRange(toolkitItems.Select(x => new ToolkitSelectItemModel(x)));
         }
+
+        /*************************************/
 
         private void ConvertToCheckbox(ToolkitSelectItemModel toolkitItem)
         {
@@ -122,10 +127,16 @@ namespace BH.UI.Base.Windows.Settings
             }
         }
 
+        /*************************************/
+
         private void ResetAll(object sender, EventArgs e)
         {
             m_ToolkitItems.ForEach(x => x.Include = true);
+            m_SelectAll = true;
+            SelectAllBtn.Content = "Unselect all";
         }
+
+        /*************************************/
 
         private void SaveAll(object sender, EventArgs e)
         {
@@ -134,15 +145,36 @@ namespace BH.UI.Base.Windows.Settings
             this.Close();
         }
 
+        /*************************************/
+
+        private void SelectAll(object sender, EventArgs e)
+        {
+            m_SelectAll = !m_SelectAll;
+            m_ToolkitItems.ForEach(x => x.Include = m_SelectAll);
+
+            if (m_SelectAll)
+                SelectAllBtn.Content = "Unselect all";
+            else
+                SelectAllBtn.Content = "Select all";
+        }
+
+        /*************************************/
+
         protected override void OnClosed(EventArgs e)
         {
             UIParent.OnPopUpClose();
             base.OnClosed(e);
         }
 
+        /***************************************************/
+        /**** Private Properties                        ****/
+        /***************************************************/
+
         private int m_PanelIndex = 0;
+        private bool m_SelectAll = true;
 
         private List<ToolkitSelectItemModel> m_ToolkitItems = new List<ToolkitSelectItemModel>();
         private SearchSettings m_Settings = null;
+        private ISettingsWindow UIParent { get; set; }
     }
 }
