@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BH.UI.Base.Windows.Settings"
              mc:Ignorable="d" 
-             Title="Confirm Project Data" Height="500" Width="350"
+             Title="Confirm Project Data" Height="500" Width="375"
             ShowInTaskbar="False"
             ResizeMode="NoResize"
             WindowStartupLocation="CenterOwner"
@@ -39,19 +39,20 @@
             </TextBlock>
         </StackPanel>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Refine your search results in the BHoM search menu (ctrl + shift + b) to only show items from toolkits selected below. Uncheck the box next to a toolkit to exclude that toolkit from your search results." HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Refine your search results in the BHoM search menu (ctrl + shift + b) to only show items from toolkits selected below. Uncheck the box next to a toolkit to exclude that toolkit from your search results." HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center" Padding="2" />
 
         <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <StackPanel.Resources>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="10,0,0,0"/>
+                    <Setter Property="Padding" Value="2" />
                 </Style>
             </StackPanel.Resources>
             <Button Content="Reset" Width="50" Background="#F0AD4E" Click="ResetAll" />
             <Button Content="Save"  Width="50" Background="#5CB85C" Click="SaveAll "/>
         </StackPanel>
         
-        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden">
+        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Padding="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />

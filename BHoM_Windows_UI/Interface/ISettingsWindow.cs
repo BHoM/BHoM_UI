@@ -8,6 +8,6 @@ namespace BH.UI.Base.Windows
 {
     public interface ISettingsWindow
     {
-        void CloseSelf();
+        void OnPopUpClose();
     }
 }

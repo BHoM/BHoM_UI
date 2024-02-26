@@ -136,7 +136,7 @@ namespace BH.UI.Base.Windows.Settings
 
         protected override void OnClosed(EventArgs e)
         {
-            UIParent.CloseSelf();
+            UIParent.OnPopUpClose();
             base.OnClosed(e);
         }
 
