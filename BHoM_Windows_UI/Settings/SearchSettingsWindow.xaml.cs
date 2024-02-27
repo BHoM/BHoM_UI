@@ -190,7 +190,7 @@ namespace BH.UI.Base.Windows.Settings
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"An error occurred in loading that settings file. The error recorded was {ex.Message}. Settings have not been loaded.", "Error loading settings file.", MessageBoxButton.OK);
+                    MessageBox.Show($"An error occurred in loading that settings file. Settings have not been loaded. The error recorded was {ex.Message}", "Error loading settings file.", MessageBoxButton.OK);
                     BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Just in case - belt and braces
                 }
             }
