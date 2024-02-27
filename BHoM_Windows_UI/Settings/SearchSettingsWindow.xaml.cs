@@ -165,7 +165,7 @@ namespace BH.UI.Base.Windows.Settings
                 try
                 {
                     BH.Engine.Base.Compute.ThrowErrorsAsExceptions(true);
-                    BH.Engine.Settings.Compute.LoadSettings(filePath);
+                    BH.Engine.Settings.Compute.LoadSettingsFromFile(filePath);
                     BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false);
 
                     var existingSettings = Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
