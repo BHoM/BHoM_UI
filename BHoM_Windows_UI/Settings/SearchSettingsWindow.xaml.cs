@@ -151,11 +151,34 @@ namespace BH.UI.Base.Windows.Settings
 
         /*************************************/
 
-        private void ResetAll(object sender, EventArgs e)
+        private void LoadSettings(object sender, EventArgs e)
         {
-            m_ToolkitItems.ForEach(x => x.Include = true);
-            m_SelectAll = true;
-            SelectAllBtn.Content = "Unselect all";
+            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+            openFileDlg.DefaultExt = ".json";
+            openFileDlg.Filter = "JSON Files (*json)|*json";
+
+            bool? result = openFileDlg.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                var filePath = openFileDlg.FileName;
+                try
+                {
+                    BH.Engine.Settings.Compute.LoadSettings(filePath);
+                    var existingSettings = Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
+                    if (existingSettings != null)
+                    {
+                        m_Settings = existingSettings;
+                        existingSettings.Toolkits.ForEach(x =>
+                        {
+                            m_ToolkitItems.Where(y => y.Toolkit == x.Toolkit).FirstOrDefault().Include = x.Include;
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred in loading that settings file. The error recorded was {ex.Message}. Settings have not been loaded.", "Error loading settings file.", MessageBoxButton.OK);
+                }
+            }
         }
 
         /*************************************/
@@ -175,9 +198,15 @@ namespace BH.UI.Base.Windows.Settings
             m_ToolkitItems.ForEach(x => x.Include = m_SelectAll);
 
             if (m_SelectAll)
+            {
                 SelectAllBtn.Content = "Unselect all";
+                SelectAllBtn.ToolTip = "Clicking this will uncheck all toolkits currently selected.";
+            }
             else
+            {
                 SelectAllBtn.Content = "Select all";
+                SelectAllBtn.ToolTip = "Clicking this will check all toolkits currently not selected.";
+            }
         }
 
         /*************************************/
