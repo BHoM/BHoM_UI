@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -151,11 +152,48 @@ namespace BH.UI.Base.Windows.Settings
 
         /*************************************/
 
-        private void ResetAll(object sender, EventArgs e)
+        private void LoadSettings(object sender, EventArgs e)
         {
-            m_ToolkitItems.ForEach(x => x.Include = true);
-            m_SelectAll = true;
-            SelectAllBtn.Content = "Unselect all";
+            Microsoft.Win32.OpenFileDialog openFileDlg = new Microsoft.Win32.OpenFileDialog();
+            openFileDlg.DefaultExt = ".json";
+            openFileDlg.Filter = "JSON Files (*json)|*json";
+
+            bool? result = openFileDlg.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                var filePath = openFileDlg.FileName;
+                try
+                {
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(true);
+                    BH.Engine.Settings.Compute.LoadSettingsFromFile(filePath);
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false);
+
+                    var existingSettings = Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
+                    if (existingSettings != null)
+                    {
+                        m_Settings = existingSettings;
+                        existingSettings.Toolkits.ForEach(x =>
+                        {
+                            var item = m_ToolkitItems.Where(y => y.Toolkit == x.Toolkit).FirstOrDefault();
+                            if (item == null)
+                            {
+                                var newModel = new ToolkitSelectItemModel(x);
+                                ConvertToCheckbox(newModel);
+                                m_ToolkitItems.Add(newModel);
+                            }
+                            else
+                                item.Include = x.Include;
+                        });
+
+                        m_ToolkitItems = m_ToolkitItems.OrderBy(x => x.Toolkit).ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occurred in loading that settings file. Settings have not been loaded. The error recorded was {ex.Message}", "Error loading settings file.", MessageBoxButton.OK);
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Just in case - belt and braces
+                }
+            }
         }
 
         /*************************************/
@@ -175,9 +213,15 @@ namespace BH.UI.Base.Windows.Settings
             m_ToolkitItems.ForEach(x => x.Include = m_SelectAll);
 
             if (m_SelectAll)
+            {
                 SelectAllBtn.Content = "Unselect all";
+                SelectAllBtn.ToolTip = "Clicking this will uncheck all toolkits currently selected.";
+            }
             else
+            {
                 SelectAllBtn.Content = "Select all";
+                SelectAllBtn.ToolTip = "Clicking this will check all toolkits currently not selected.";
+            }
         }
 
         /*************************************/

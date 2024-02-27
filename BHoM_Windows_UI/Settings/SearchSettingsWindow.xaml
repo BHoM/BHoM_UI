@@ -48,9 +48,9 @@
                     <Setter Property="Padding" Value="2" />
                 </Style>
             </StackPanel.Resources>
-            <Button Name="SelectAllBtn" Content="Unselect all" Width="70" Background="#0DCAF0" Click="SelectAll"/>
-            <Button Content="Reset" Width="50" Background="#F0AD4E" Click="ResetAll" />
-            <Button Content="Save"  Width="50" Background="#5CB85C" Click="SaveAll "/>
+            <Button Name="SelectAllBtn" Content="Unselect all" Width="70" Background="#0DCAF0" Click="SelectAll" ToolTip="Clicking this will uncheck all toolkits currently selected."/>
+            <Button Content="Load" Width="50" Background="#F0AD4E" Click="LoadSettings" ToolTip="Select a settings file from your system to load in. You will have the chance to inspect those settings before they are used. You will need to hit the Save button to confirm those settings." />
+            <Button Content="Save"  Width="50" Background="#5CB85C" Click="SaveAll" ToolTip="Save the settings currently selected. This will export settings to your harddrive so they can be loaded again next time you use BHoM, as well as loaded into memory to take effect from the point you hit this button. The settings window will close once settings are saved."/>
         </StackPanel>
         
         <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Hidden" Padding="2">
