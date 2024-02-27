@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -170,8 +171,18 @@ namespace BH.UI.Base.Windows.Settings
                         m_Settings = existingSettings;
                         existingSettings.Toolkits.ForEach(x =>
                         {
-                            m_ToolkitItems.Where(y => y.Toolkit == x.Toolkit).FirstOrDefault().Include = x.Include;
+                            var item = m_ToolkitItems.Where(y => y.Toolkit == x.Toolkit).FirstOrDefault();
+                            if (item == null)
+                            {
+                                var newModel = new ToolkitSelectItemModel(x);
+                                ConvertToCheckbox(newModel);
+                                m_ToolkitItems.Add(newModel);
+                            }
+                            else
+                                item.Include = x.Include;
                         });
+
+                        m_ToolkitItems = m_ToolkitItems.OrderBy(x => x.Toolkit).ToList();
                     }
                 }
                 catch (Exception ex)
