@@ -164,7 +164,10 @@ namespace BH.UI.Base.Windows.Settings
                 var filePath = openFileDlg.FileName;
                 try
                 {
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(true);
                     BH.Engine.Settings.Compute.LoadSettings(filePath);
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false);
+
                     var existingSettings = Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
                     if (existingSettings != null)
                     {
@@ -188,6 +191,7 @@ namespace BH.UI.Base.Windows.Settings
                 catch (Exception ex)
                 {
                     MessageBox.Show($"An error occurred in loading that settings file. The error recorded was {ex.Message}. Settings have not been loaded.", "Error loading settings file.", MessageBoxButton.OK);
+                    BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Just in case - belt and braces
                 }
             }
         }
