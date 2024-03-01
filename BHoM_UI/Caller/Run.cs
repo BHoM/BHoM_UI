@@ -79,7 +79,7 @@ namespace BH.UI.Base
                 try
                 {
                     var result = m_CompiledFunc(inputs.ToArray());
-                    BH.Engine.Base.Compute.StopSuppressRecordingEvents();
+                    ResetLogSuppression();
                     return result;
                 }
                 catch (InvalidCastException e)
@@ -91,12 +91,12 @@ namespace BH.UI.Base
                         MethodInfo method = Engine.Base.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
                         var result = m_CompiledFunc(inputs.ToArray());
-                        BH.Engine.Base.Compute.StopSuppressRecordingEvents();
+                        ResetLogSuppression();
                         return result;
                     }
                     else
                     {
-                        BH.Engine.Base.Compute.StopSuppressRecordingEvents();
+                        ResetLogSuppression();
                         throw e;
                     }
                 }
@@ -312,6 +312,15 @@ namespace BH.UI.Base
         {
             return true;
         }
+
+        /*************************************/
+
+        protected void ResetLogSuppression()
+        {
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents(); //Ensure suppression is reset in case the calling method forgot to do it
+            BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Reset throwing errors to whatever the user may have set it to prior to running this method
+        }
+
 
         /*************************************/
         /**** Private Fields              ****/
