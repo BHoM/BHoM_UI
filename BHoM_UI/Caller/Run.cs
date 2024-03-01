@@ -78,7 +78,9 @@ namespace BH.UI.Base
             {
                 try
                 {
-                    return m_CompiledFunc(inputs.ToArray());
+                    var result = m_CompiledFunc(inputs.ToArray());
+                    ResetLogSuppression();
+                    return result;
                 }
                 catch (InvalidCastException e)
                 {
@@ -88,10 +90,15 @@ namespace BH.UI.Base
                         // Try to update the generic method to fit the input types
                         MethodInfo method = Engine.Base.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
-                        return m_CompiledFunc(inputs.ToArray());
+                        var result = m_CompiledFunc(inputs.ToArray());
+                        ResetLogSuppression();
+                        return result;
                     }
                     else
+                    {
+                        ResetLogSuppression();
                         throw e;
+                    }
                 }
             }
             else if (InputParams.Count <= 0)
@@ -304,6 +311,14 @@ namespace BH.UI.Base
         protected virtual bool ShouldCalculateNewResult(List<object> inputs, ref object result)
         {
             return true;
+        }
+
+        /*************************************/
+
+        protected void ResetLogSuppression()
+        {
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents(); //Ensure suppression is reset in case the calling method forgot to do it
+            BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Reset throwing errors to whatever the user may have set it to prior to running this method
         }
 
 
