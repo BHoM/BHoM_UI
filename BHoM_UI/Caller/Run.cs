@@ -76,9 +76,16 @@ namespace BH.UI.Base
         {
             if (m_CompiledFunc != null)
             {
+                bool suppressingErrors = BH.Engine.Base.Query.IsSuppressingErrors();
+                bool suppressingWarnings = BH.Engine.Base.Query.IsSuppressingWarnings();
+                bool suppressingNotes = BH.Engine.Base.Query.IsSuppressingNotes();
+                bool throwingErrors = BH.Engine.Base.Query.IsThrowingErrors();
+
                 try
                 {
-                    return m_CompiledFunc(inputs.ToArray());
+                    var result = m_CompiledFunc(inputs.ToArray());
+                    ResetLogSuppression(suppressingErrors, suppressingWarnings, suppressingNotes, throwingErrors);
+                    return result;
                 }
                 catch (InvalidCastException e)
                 {
@@ -88,10 +95,15 @@ namespace BH.UI.Base
                         // Try to update the generic method to fit the input types
                         MethodInfo method = Engine.Base.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
-                        return m_CompiledFunc(inputs.ToArray());
+                        var result = m_CompiledFunc(inputs.ToArray());
+                        ResetLogSuppression(suppressingErrors, suppressingWarnings, suppressingNotes, throwingErrors);
+                        return result;
                     }
                     else
+                    {
+                        ResetLogSuppression(suppressingErrors, suppressingWarnings, suppressingNotes, throwingErrors);
                         throw e;
+                    }
                 }
             }
             else if (InputParams.Count <= 0)
@@ -304,6 +316,15 @@ namespace BH.UI.Base
         protected virtual bool ShouldCalculateNewResult(List<object> inputs, ref object result)
         {
             return true;
+        }
+
+        /*************************************/
+
+        protected void ResetLogSuppression(bool suppressingErrors, bool suppressingWarnings, bool suppressingNotes, bool throwingErrors)
+        {
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents(); //Ensure suppression is reset in case the calling method forgot to do it
+            BH.Engine.Base.Compute.StartSuppressRecordingEvents(suppressingErrors, suppressingWarnings, suppressingNotes); //Set the suppression back to what the user may have set it to prior to running this method
+            BH.Engine.Base.Compute.ThrowErrorsAsExceptions(throwingErrors); //Reset throwing errors to whatever the user may have set it to prior to running this method
         }
 
 
