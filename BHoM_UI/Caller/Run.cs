@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -78,7 +78,9 @@ namespace BH.UI.Base
             {
                 try
                 {
-                    return m_CompiledFunc(inputs.ToArray());
+                    var result = m_CompiledFunc(inputs.ToArray());
+                    ResetLogSuppression();
+                    return result;
                 }
                 catch (InvalidCastException e)
                 {
@@ -88,10 +90,15 @@ namespace BH.UI.Base
                         // Try to update the generic method to fit the input types
                         MethodInfo method = Engine.Base.Compute.MakeGenericFromInputs(originalMethod, inputs.Select(x => x?.GetType()).ToList());
                         m_CompiledFunc = method.ToFunc();
-                        return m_CompiledFunc(inputs.ToArray());
+                        var result = m_CompiledFunc(inputs.ToArray());
+                        ResetLogSuppression();
+                        return result;
                     }
                     else
+                    {
+                        ResetLogSuppression();
                         throw e;
+                    }
                 }
             }
             else if (InputParams.Count <= 0)
@@ -306,6 +313,14 @@ namespace BH.UI.Base
             return true;
         }
 
+        /*************************************/
+
+        protected void ResetLogSuppression()
+        {
+            BH.Engine.Base.Compute.StopSuppressRecordingEvents(); //Ensure suppression is reset in case the calling method forgot to do it
+            BH.Engine.Base.Compute.ThrowErrorsAsExceptions(false); //Reset throwing errors to whatever the user may have set it to prior to running this method
+        }
+
 
         /*************************************/
         /**** Private Fields              ****/
@@ -316,6 +331,7 @@ namespace BH.UI.Base
         /*************************************/
     }
 }
+
 
 
 

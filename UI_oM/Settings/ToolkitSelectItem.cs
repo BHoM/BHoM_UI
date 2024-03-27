@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -21,48 +21,22 @@
  */
 
 using BH.oM.Base;
-using BH.oM.Base.Debugging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
-    public class UsageLogEntry : BHoMObject
+    [Description("For each toolkit in BHoM, allocate a boolean flag for whether it should appear in search results or not.")]
+    public class ToolkitSelectItem : BHoMObject
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        [Description("The name of the toolkit that this item refers to.")]
+        public virtual string Toolkit { get; set; }
 
-        public virtual DateTime Time { get; set; } = DateTime.UtcNow;
-
-        public virtual string UI { get; set; } = "";
-
-        public virtual string UiVersion { get; set; } = "";
-
-        public virtual string BHoMVersion { get; set; } = "";
-
-        public virtual Guid ComponentId { get; set; } = Guid.Empty;
-
-        public virtual string CallerName { get; set; } = "";
-
-        public virtual object SelectedItem { get; set; } = null;
-
-        public virtual string FileId { get; set; } = "";
-
-        public virtual string FileName { get; set; } = "";
-
-        public virtual string ProjectID { get; set; } = "";
-
-        public virtual List<Event> Errors { get; set; } = new List<Event>();
-
-
-        /***************************************************/
+        [Description("Determine whether to include the toolkit in search results or not.")]
+        public virtual bool Include { get; set; } = true;
     }
 }
-
-
-
-

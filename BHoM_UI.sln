@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1169
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BHoM_UI", "BHoM_UI\BHoM_UI.csproj", "{69F4F042-E23A-4673-AB32-3D787CFA976C}"
 EndProject
@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI_Engine", "UI_Engine\UI_E
 	ProjectSection(ProjectDependencies) = postProject
 		{50D4C1ED-C16C-4365-A742-938BF49EC4B0} = {50D4C1ED-C16C-4365-A742-938BF49EC4B0}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BHoM_Windows_UI", "BHoM_Windows_UI\BHoM_Windows_UI.csproj", "{9BA156D1-851D-4267-A94F-6F238D17B634}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +32,10 @@ Global
 		{565DDBD0-5C04-4BE9-B57D-CE54C2124ABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{565DDBD0-5C04-4BE9-B57D-CE54C2124ABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{565DDBD0-5C04-4BE9-B57D-CE54C2124ABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BA156D1-851D-4267-A94F-6F238D17B634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA156D1-851D-4267-A94F-6F238D17B634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BA156D1-851D-4267-A94F-6F238D17B634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BA156D1-851D-4267-A94F-6F238D17B634}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

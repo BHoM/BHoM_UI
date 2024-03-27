@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -111,13 +111,25 @@ namespace BH.UI.Base.Components
                 return false;
             }
 
+            if(!source.BeforeMove(target, actualRequest, pullType, pullCfg, pushType, pushCfg))
+            {
+                BH.Engine.Base.Compute.RecordError($"An error occurred within the setup actions for the Move. Please rectify those issues to use the Move component.");
+                return false;
+            }
 
-            return source.Move(target, actualRequest, pullType, pullCfg, pushType, pushCfg);
+
+            bool result = source.Move(target, actualRequest, pullType, pullCfg, pushType, pushCfg);
+
+            if(!source.AfterMove(target, actualRequest, pullType, pullCfg, pushType, pushCfg))
+                BH.Engine.Base.Compute.RecordWarning($"An error occurred during the tear down operation for the Move. Please take note of any additional warnings/errors received from the Move component.");
+
+            return result;
         }
 
         /*************************************/
     }
 }
+
 
 
 
