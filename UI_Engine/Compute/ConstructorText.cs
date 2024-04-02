@@ -37,10 +37,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Input("type", "The type of object to create a constructor for")]
-        [Input("maxParams", "The maximum number of parameters to include in the text")]
-        [Input("maxChars", "The maximum number of characters for the output text")]
-        [Output("text", "The text corresponding to the description of the constructor generated for that type")]
+        [Input("type", "The type of object to create a constructor for.")]
+        [Input("maxParams", "The maximum number of parameters to include in the text.")]
+        [Input("maxChars", "The maximum number of characters for the output text.")]
+        [Output("text", "The text corresponding to the description of the constructor generated for that type.")]
         public static string ConstructorText(this Type type, int maxParams = 5, int maxChars = 40)
         {
             string text = type.Namespace + "." + type.Name + "." + type.Name + "() {";

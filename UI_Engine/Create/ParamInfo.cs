@@ -34,10 +34,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Input("name", "The name of the parameter")]
-        [Input("type", "The framework type of the parameter, e.g. BH.oM.Base.BHoMObject")]
-        [Input("kind", "Whether the parameter is an input of an output. Input is the default value")]
-        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
+        [Input("name", "The name of the parameter.")]
+        [Input("type", "The framework type of the parameter, e.g. BH.oM.Base.BHoMObject.")]
+        [Input("kind", "Whether the parameter is an input of an output. Input is the default value.")]
+        [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(string name, Type type = null, ParamKind kind = ParamKind.Input)
         {
             if (type == null)
@@ -53,8 +53,8 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        [Input("property", "The system property to convert to bhom")]
-        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
+        [Input("property", "The system property to convert to bhom.")]
+        [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(this PropertyInfo property, object instance = null)
         {
             ParamInfo info = new ParamInfo
@@ -78,8 +78,8 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        [Input("property", "The system property to convert to bhom")]
-        [Output("parameter", "The bhom parameter used in the bhom abstract syntax")]
+        [Input("parameter", "The system parameter to convert to bhom.")]
+        [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(this ParameterInfo parameter, string description = "")
         {
             Type paramType = parameter.ParameterType;
