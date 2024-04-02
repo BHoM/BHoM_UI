@@ -37,7 +37,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static bool AreMatching(List<ParamInfo> newList, List<ParamInfo> oldList)
+        public static bool AreMatching(this List<ParamInfo> newList, List<ParamInfo> oldList)
         {
             if (newList.Count != oldList.Count)
                 return false;
@@ -48,7 +48,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static bool AreMatching(List<PropertyInfo> props, List<ParamInfo> oldList)
+        public static bool AreMatching(this List<PropertyInfo> props, List<ParamInfo> oldList)
         {
             return oldList.All(x => props.Exists(p => p.Name == x.Name && p.PropertyType == x.DataType));
         }
