@@ -43,7 +43,7 @@ namespace BH.Engine.UI
         [Description(@"Extract settings of a given type from C:/ProgramData/BHoM/Settings.")]
         [Input("type", "Object type of the settings you want to recover.")]
         [Output("settings", @"Settings recovered from the corresponding file in C:/ProgramData/BHoM/Settings.")]
-        public static ISettings Settings(Type type)
+        public static ISettings Settings(this Type type)
         {
             if (type == null)
             {
