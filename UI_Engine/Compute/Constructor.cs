@@ -36,9 +36,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Input("type", "The type of object to create a constructor for")]
-        [Input("parameters", "The properties that should be used as parameters for the constructor")]
-        [Output("constructor", "The compiled constructor")]
+        [Input("type", "The type of object to create a constructor for.")]
+        [Input("parameters", "The properties that should be used as parameters for the constructor.")]
+        [Output("constructor", "The compiled constructor.")]
         public static Func<object[], object> Constructor(Type type, List<ParamInfo> parameters)
         {
             ParameterExpression lambdaInput = Expression.Parameter(typeof(object[]), "x");
