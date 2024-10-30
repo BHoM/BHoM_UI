@@ -44,12 +44,13 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
+        public static void LogUsage(string uiName, string uiVersion, string productVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
         {
             TriggerLogUsageArgs args = new TriggerLogUsageArgs()
             {
                 UIName = uiName,
                 UIVersion = uiVersion,
+                ProductVersion = productVersion,
                 ComponentID = componentId,
                 CallerName = callerName,
                 SelectedItem = selectedItem,
