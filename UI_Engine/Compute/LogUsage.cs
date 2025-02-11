@@ -65,6 +65,7 @@ namespace BH.Engine.UI
                     CallerName = callerName,
                     SelectedItem = selectedItem,
                     FileID = fileId,
+                    FileName = fileName,
                 };
 
                 if (m_documentOpening)
