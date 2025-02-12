@@ -40,6 +40,12 @@ namespace BH.Engine.UI
     public static partial class Compute
     {
         /*************************************/
+        /**** Public Events               ****/
+        /*************************************/
+
+        public static event EventHandler UsageLogTriggered;
+
+        /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
@@ -48,16 +54,13 @@ namespace BH.Engine.UI
         {
             //Special case for a component setting the project ID explicitly
             HandleSetProjectId(uiName, fileId, events);
+            m_FilesTriedToBeLogged.Add(fileId); //Add to files that have had anything atempted to logged to them to check for end of document opening
 
             if (string.IsNullOrWhiteSpace(projectId))
             {
                 lock (m_LogLock)
                 {
-                    if (!m_ProjectIDPerFile.TryGetValue(fileId, out projectId))
-                    {
-                        projectId = "";
-                        m_ProjectIDPerFile[fileId] = projectId; //Set as an indicator that the a BHoM method has been tried to be logged
-                    }
+                    m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
                 }
 
                 if (!m_documentOpening)     //If not during project opening, call events
@@ -79,6 +82,8 @@ namespace BH.Engine.UI
                     }
                 }
             }
+            else
+                m_ProjectIDPerFile[fileId] = projectId;
 
             LogToFile(uiName, uiVersion, componentId, callerName, selectedItem, events, fileId, fileName, projectId);
         }
@@ -100,22 +105,23 @@ namespace BH.Engine.UI
         {
             if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
             {
-                string projectId;
-                if (m_ProjectIDPerFile.TryGetValue(fileId, out projectId))  //Only try to do this is something has been atempted to be logged
+                if (m_FilesTriedToBeLogged.Contains(fileId))  //Only try to do this is something has been atempted to be logged
                 {
+                    string projectId;
+                    m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
+
                     if (string.IsNullOrEmpty(projectId))    //Only run if projectId is not set
                     {
-
                         TriggerLogUsageArgs args = new TriggerLogUsageArgs()
                         {
                             UIName = uiName,
                             FileID = fileId,
-                            FileName = fileName,
-                            SelectedItem = "UIEndOpening"   //Need to be set to something.
+                            FileName = fileName
                         };
 
                         TriggerUsageLog(args);
                     }
+
                 }
             }
         }
@@ -307,8 +313,7 @@ namespace BH.Engine.UI
         private static string m_BHoMVersion = null;
         private static long m_DeprecationPeriod = 28 * TimeSpan.TicksPerDay; // 28 days in ticks
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
-
-        public static event EventHandler UsageLogTriggered;
+        private static HashSet<string> m_FilesTriedToBeLogged = new HashSet<string>();
 
         /*************************************/
     }
