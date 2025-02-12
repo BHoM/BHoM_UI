@@ -91,53 +91,7 @@ namespace BH.Engine.UI
             {
                 m_ProjectIDPerFile[fileID] = projectID;
             }
-            Task.Run(() =>
-            {
-                lock (m_LogLock)
-                {
-                    try
-                    {
-                        FileStream log = GetUsageLog(uiName);
-                        log.Position = 0;   //Set stream to start to read from top of file
-                        List<string> logLines = new List<string>();
-                        //Read all content
-                        using (StreamReader reader = new StreamReader(log, Encoding.UTF8, true, 4096, true))
-                        {
-                            while (!reader.EndOfStream)
-                            {
-                                logLines.Add(reader.ReadLine());
-                            }
-                        }
-
-                        //Update project ID for any items exiting before event triggered
-                        var objects = logLines.Select(x => BH.Engine.Serialiser.Convert.FromJson(x) as UsageLogEntry).ToList();
-                        foreach (var o in objects)
-                        {
-                            if (o != null)
-                            {
-                                if (o.FileId == fileID)
-                                    o.ProjectID = projectID;
-                            }
-                        }
-
-                        //Write lines back to the file
-                        logLines = objects.Select(x => x.ToJson()).ToList();
-                        log.Position = 0;
-                        using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
-                        {
-                            foreach (var line in logLines)
-                            {
-                                writer.WriteLine(line);
-                            }
-                            writer.Flush();
-                        }
-                    }
-                    catch (Exception)
-                    {
-
-                    }
-                }
-            });
+            Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileID, projectID));
         }
 
         /*************************************/
@@ -207,6 +161,56 @@ namespace BH.Engine.UI
 
             }
             catch { }
+        }
+
+        /*************************************/
+
+        private static void UpdateProjectIdsInLogFile(string uiName, string fileID, string projectID)
+        {
+            lock (m_LogLock)
+            {
+                try
+                {
+                    FileStream log = GetUsageLog(uiName);
+                    log.Position = 0;   //Set stream to start to read from top of file
+                    List<string> logLines = new List<string>();
+                    //Read all content
+                    using (StreamReader reader = new StreamReader(log, Encoding.UTF8, true, 4096, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            logLines.Add(reader.ReadLine());
+                        }
+                    }
+
+                    //Update project ID for any items exiting before event triggered
+                    var objects = logLines.Select(x => BH.Engine.Serialiser.Convert.FromJson(x) as UsageLogEntry).ToList();
+                    foreach (var o in objects)
+                    {
+                        if (o != null)
+                        {
+                            if (o.FileId == fileID)
+                                o.ProjectID = projectID;
+                        }
+                    }
+
+                    //Write lines back to the file
+                    logLines = objects.Select(x => x.ToJson()).ToList();
+                    log.Position = 0;
+                    using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
+                    {
+                        foreach (var line in logLines)
+                        {
+                            writer.WriteLine(line);
+                        }
+                        writer.Flush();
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            }
         }
 
         /*************************************/
