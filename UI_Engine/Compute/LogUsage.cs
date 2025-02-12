@@ -294,8 +294,8 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null)
-                m_UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
+            if (UsageLogTriggered != null)
+                UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
         }
 
         /*************************************/
@@ -311,7 +311,7 @@ namespace BH.Engine.UI
 
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
-        public static event EventHandler m_UsageLogTriggered;
+        public static event EventHandler UsageLogTriggered;
 
         /*************************************/
     }
