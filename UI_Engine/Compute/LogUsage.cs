@@ -111,7 +111,7 @@ namespace BH.Engine.UI
                             UIName = uiName,
                             FileID = fileId,
                             FileName = fileName,
-                            SelectedItem = "UIEndOpening"
+                            SelectedItem = "UIEndOpening"   //Need to be set to something.
                         };
 
                         TriggerUsageLog(args);
@@ -278,8 +278,6 @@ namespace BH.Engine.UI
             // The file seems to be writable after the UI closed even without this but better safe than sorry.
             if (m_UsageLogStream != null)
                 m_UsageLogStream.Close();
-
-            TriggerUIClose();
         }
 
         /*************************************/
@@ -301,30 +299,6 @@ namespace BH.Engine.UI
         }
 
         /*************************************/
-
-        private static void TriggerUIClose()
-        {
-            if (m_UIClosed != null)
-                m_UIClosed.Invoke(null, null);
-        }
-
-        /*************************************/
-
-        private static void TriggerUIOpening(TriggerLogUsageArgs e)
-        {
-            if (m_UIOpening != null)
-                m_UIOpening.Invoke(null, e);
-        }
-
-        /*************************************/
-
-        private static void TriggerUIEndOpening()
-        {
-            if (m_UIEndOpening != null)
-                m_UIEndOpening.Invoke(null, null);
-        }
-
-        /*************************************/
         /**** Static Fields               ****/
         /*************************************/
 
@@ -338,9 +312,6 @@ namespace BH.Engine.UI
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
         public static event EventHandler m_UsageLogTriggered;
-        public static event EventHandler m_UIClosed;
-        public static event EventHandler m_UIOpening;
-        public static event EventHandler m_UIEndOpening;
 
         /*************************************/
     }
