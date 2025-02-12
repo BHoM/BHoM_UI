@@ -105,12 +105,12 @@ namespace BH.Engine.UI
         {
             if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
             {
-                if (m_FilesTriedToBeLogged.Contains(fileId))  //Only try to do this is something has been atempted to be logged
+                if (m_FilesTriedToBeLogged.Contains(fileId))  //Only call when file has been atempted to be logged to
                 {
                     string projectId;
                     m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
 
-                    if (string.IsNullOrEmpty(projectId))    //Only run if projectId is not set
+                    if (string.IsNullOrEmpty(projectId))    //Only call when projectId is not set
                     {
                         TriggerLogUsageArgs args = new TriggerLogUsageArgs()
                         {
