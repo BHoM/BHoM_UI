@@ -54,32 +54,117 @@ namespace BH.Engine.UI
                 lock (m_LogLock)
                 {
                     if (!m_ProjectIDPerFile.TryGetValue(fileId, out projectId))
+                    {
                         projectId = "";
+                        m_ProjectIDPerFile[fileId] = projectId; //Set as an indicator that the a BHoM method has been tried to be logged
+                    }
                 }
 
-                if (string.IsNullOrWhiteSpace(projectId))
+                if (!m_documentOpening)     //If not during project opening, call events
                 {
-                    TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                    if (string.IsNullOrWhiteSpace(projectId))
                     {
-                        UIName = uiName,
-                        UIVersion = uiVersion,
-                        ComponentID = componentId,
-                        CallerName = callerName,
-                        SelectedItem = selectedItem,
-                        FileID = fileId,
-                        FileName = fileName,
-                    };
+                        TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                        {
+                            UIName = uiName,
+                            UIVersion = uiVersion,
+                            ComponentID = componentId,
+                            CallerName = callerName,
+                            SelectedItem = selectedItem,
+                            FileID = fileId,
+                            FileName = fileName,
+                        };
 
-                    if (m_documentOpening)
-                        TriggerUIOpening(args);
-                    else
                         TriggerUsageLog(args);
+                    }
                 }
             }
 
             LogToFile(uiName, uiVersion, componentId, callerName, selectedItem, events, fileId, fileName, projectId);
         }
 
+        /*************************************/
+
+        public static void UpdateProjectId(string uiName, string fileID, string projectID)
+        {
+            lock (m_LogLock)
+            {
+                m_ProjectIDPerFile[fileID] = projectID;
+            }
+            Task.Run(() =>
+            {
+                lock (m_LogLock)
+                {
+                    try
+                    {
+                        FileStream log = GetUsageLog(uiName);
+                        log.Position = 0;   //Set stream to start to read from top of file
+                        List<string> logLines = new List<string>();
+                        //Read all content
+                        using (StreamReader reader = new StreamReader(log, Encoding.UTF8, true, 4096, true))
+                        {
+                            while (!reader.EndOfStream)
+                            {
+                                logLines.Add(reader.ReadLine());
+                            }
+                        }
+
+                        //Update project ID for any items exiting before event triggered
+                        var objects = logLines.Select(x => BH.Engine.Serialiser.Convert.FromJson(x) as UsageLogEntry).ToList();
+                        foreach (var o in objects)
+                        {
+                            if (o != null)
+                            {
+                                if (o.FileId == fileID)
+                                    o.ProjectID = projectID;
+                            }
+                        }
+
+                        //Write lines back to the file
+                        logLines = objects.Select(x => x.ToJson()).ToList();
+                        log.Position = 0;
+                        using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
+                        {
+                            foreach (var line in logLines)
+                            {
+                                writer.WriteLine(line);
+                            }
+                            writer.Flush();
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            });
+        }
+
+        /*************************************/
+
+        public static void CheckLogOnUiEndOpening(string uiName, string fileId, string fileName)
+        {
+            if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
+            {
+                string projectId;
+                if (m_ProjectIDPerFile.TryGetValue(fileId, out projectId))  //Only try to do this is something has been atempted to be logged
+                {
+                    if (string.IsNullOrEmpty(projectId))    //Only run if projectId is not set
+                    {
+
+                        TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                        {
+                            UIName = uiName,
+                            FileID = fileId,
+                            FileName = fileName,
+                            SelectedItem = "UIEndOpening"
+                        };
+
+                        TriggerUsageLog(args);
+                    }
+                }
+            }
+        }
 
         /*************************************/
         /**** Helper Methods              ****/
@@ -128,21 +213,12 @@ namespace BH.Engine.UI
 
         private static void HandleSetProjectId(string uiName, string fileId, List<Event> events)
         {
-            if (!string.IsNullOrEmpty(fileId))
+            if (!string.IsNullOrEmpty(fileId) && !string.IsNullOrEmpty(uiName))
             {
-                ProjectIDEvent projectIDEvent = events?.OfType<ProjectIDEvent>().FirstOrDefault();
-                if (projectIDEvent != null)
+                string projectId = events?.OfType<ProjectIDEvent>().FirstOrDefault()?.ProjectID;
+                if (!string.IsNullOrEmpty(projectId))
                 {
-                    if (string.IsNullOrEmpty(projectIDEvent.UIName) || string.IsNullOrEmpty(projectIDEvent.FileID))
-                    {
-                        if (!string.IsNullOrEmpty(projectIDEvent.ProjectID))
-                        {
-                            Base.Query.AllEvents().Remove(projectIDEvent);
-                            projectIDEvent.UIName = uiName;
-                            projectIDEvent.FileID = fileId;
-                            Base.Compute.RecordEvent(projectIDEvent);
-                        }
-                    }
+                    UpdateProjectId(uiName, fileId, projectId);
                 }
             }
         }
@@ -193,79 +269,6 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        static Compute()
-        {
-            Base.Compute.EventRecorded += EventRecorded;
-        }
-
-        /*************************************/
-
-        private static void EventRecorded(object sender, Event e)
-        {
-            if (e != null && e is ProjectIDEvent projIdEvent)
-            {
-                if (!string.IsNullOrEmpty(projIdEvent.UIName) && !string.IsNullOrEmpty(projIdEvent.ProjectID) && !string.IsNullOrEmpty(projIdEvent.FileID))
-                    Task.Run(() => UpdateProjectId(projIdEvent.UIName, projIdEvent.FileID, projIdEvent.ProjectID));
-            }
-        }
-
-        /*************************************/
-
-        private static void UpdateProjectId(string uiName, string fileID, string projectID)
-        {
-            lock (m_LogLock)
-            {
-                m_ProjectIDPerFile[fileID] = projectID;
-
-                try
-                {
-                    FileStream log = GetUsageLog(uiName);
-                    log.Position = 0;   //Set stream to start to read from top of file
-                    List<string> logLines = new List<string>();
-                    //Read all content
-                    using (StreamReader reader = new StreamReader(log, Encoding.UTF8, true, 4096, true))
-                    {
-                        while (!reader.EndOfStream)
-                        {
-                            logLines.Add(reader.ReadLine());
-                        }
-                    }
-
-                    //Update project ID for any items exiting before event triggered
-                    var objects = logLines.Select(x => BH.Engine.Serialiser.Convert.FromJson(x) as UsageLogEntry).ToList();
-                    foreach (var o in objects)
-                    {
-                        if (o != null)
-                        {
-                            if (o.FileId == fileID)
-                                o.ProjectID = projectID;
-                        }
-                    }
-
-                    //Write lines back to the file
-                    logLines = objects.Select(x => x.ToJson()).ToList();
-                    log.Position = 0;
-                    using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
-                    {
-                        foreach (var line in logLines)
-                        {
-                            writer.WriteLine(line);
-                        }
-                        writer.Flush();
-                    }
-                }
-                catch (Exception)
-                {
-
-                }
-
-
-
-            }
-        }
-
-        /*************************************/
-
         private static void OnProcessExit(object sender, EventArgs e)
         {
             // The file seems to be writable after the UI closed even without this but better safe than sorry.
@@ -289,7 +292,7 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null && !Compute.m_documentOpening)
+            if (m_UsageLogTriggered != null)
                 m_UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
         }
 
