@@ -90,19 +90,25 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        public static void UpdateProjectId(string uiName, string fileID, string projectID)
+        public static void UpdateProjectId(string uiName, string fileId, string projectID)
         {
+            if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
+                return;
+
             lock (m_LogLock)
             {
-                m_ProjectIDPerFile[fileID] = projectID;
+                m_ProjectIDPerFile[fileId] = projectID;
             }
-            Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileID, projectID));
+            Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileId, projectID));
         }
 
         /*************************************/
 
         public static void CheckLogOnUiEndOpening(string uiName, string fileId, string fileName)
         {
+            if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
+                return;
+
             if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
             {
                 if (m_FilesTriedToBeLogged.Contains(fileId))  //Only call when file has been atempted to be logged to
@@ -171,7 +177,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static void UpdateProjectIdsInLogFile(string uiName, string fileID, string projectID)
+        private static void UpdateProjectIdsInLogFile(string uiName, string fileId, string projectID)
         {
             lock (m_LogLock)
             {
@@ -195,7 +201,7 @@ namespace BH.Engine.UI
                     {
                         if (o != null)
                         {
-                            if (o.FileId == fileID)
+                            if (o.FileId == fileId)
                                 o.ProjectID = projectID;
                         }
                     }
