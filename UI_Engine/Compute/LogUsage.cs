@@ -304,11 +304,8 @@ namespace BH.Engine.UI
 
         private static object m_LogLock = new object();
         private static FileStream m_UsageLogStream = null;
-
         private static string m_BHoMVersion = null;
-
         private static long m_DeprecationPeriod = 28 * TimeSpan.TicksPerDay; // 28 days in ticks
-
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
 
         public static event EventHandler UsageLogTriggered;
