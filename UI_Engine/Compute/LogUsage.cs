@@ -83,23 +83,30 @@ namespace BH.Engine.UI
                 }
             }
             else
-                m_ProjectIDPerFile[fileId] = projectId;
+                UpdateProjectId(uiName, fileId, projectId);
 
             LogToFile(uiName, uiVersion, componentId, callerName, selectedItem, events, fileId, fileName, projectId);
         }
 
         /*************************************/
 
-        public static void UpdateProjectId(string uiName, string fileId, string projectID)
+        public static void UpdateProjectId(string uiName, string fileId, string projectId)
         {
             if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
                 return;
 
+            bool wasUpdated = true;
             lock (m_LogLock)
             {
-                m_ProjectIDPerFile[fileId] = projectID;
+                string prevPojectId;
+                if (m_ProjectIDPerFile.TryGetValue(fileId, out prevPojectId) && projectId == prevPojectId)  //Check if the ID changed from previous cached value
+                    wasUpdated = false;
+
+                m_ProjectIDPerFile[fileId] = projectId; //Set the project Id to the cached dictionary
             }
-            Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileId, projectID));
+
+            if(wasUpdated)  //If changed from previous value, make sure the logfiles are updated
+                Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileId, projectId));
         }
 
         /*************************************/
