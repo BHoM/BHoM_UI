@@ -1,36 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{69F4F042-E23A-4673-AB32-3D787CFA976C}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BH.UI</RootNamespace>
-    <AssemblyName>BHoM_UI</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Build\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<AssemblyVersion>8.0.0.0</AssemblyVersion>
+		<Description>https://github.com/BHoM/BHoM_UI</Description>
+		<Version>5.0.0</Version>
+		<Authors>BHoM</Authors>
+		<Copyright>Copyright © https://github.com/BHoM</Copyright>
+		<RootNamespace>BH.UI</RootNamespace>
+		<FileVersion>8.1.0.0</FileVersion>
+		<OutputPath>..\Build\</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\UI_Engine\UI_Engine.csproj" />
+		<ProjectReference Include="..\UI_oM\UI_oM.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
     <Reference Include="Adapter_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Adapter_oM.dll</HintPath>
       <Private>False</Private>
@@ -159,137 +146,9 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Caller\IO_CRUD.cs" />
-    <Compile Include="Caller\AddToMenu.cs" />
-    <Compile Include="Caller\Read.cs" />
-    <Compile Include="Caller\Compile.cs" />
-    <Compile Include="Caller\SetParamSelectionMenu.cs" />
-    <Compile Include="Caller\SetOutputs.cs" />
-    <Compile Include="Caller\SetInputs.cs" />
-    <Compile Include="Caller\SetComponentDetails.cs" />
-    <Compile Include="CallerTemplates\MultiChoiceCaller.cs" />
-    <Compile Include="Caller\Write.cs" />
-    <Compile Include="Caller\SetItem.cs" />
-    <Compile Include="Caller\Run.cs" />
-    <Compile Include="Components\Engine\External.cs" />
-    <Compile Include="Components\Adapter\CreateRequest.cs" />
-    <Compile Include="Components\Adapter\CreateAdapter.cs" />
-    <Compile Include="Components\Adapter\Move.cs" />
-    <Compile Include="Components\Adapter\Execute.cs" />
-    <Compile Include="Components\Adapter\Pull.cs" />
-    <Compile Include="Components\Adapter\Remove.cs" />
-    <Compile Include="Components\Adapter\Push.cs" />
-    <Compile Include="Components\Engine\Explode.cs" />
-    <Compile Include="Components\Engine\GetEvents.cs" />
-    <Compile Include="Components\Engine\GetInfo.cs" />
-    <Compile Include="Components\Engine\Query.cs" />
-    <Compile Include="Components\Engine\Modify.cs" />
-    <Compile Include="Components\Engine\Convert.cs" />
-    <Compile Include="Components\Engine\Compute.cs" />
-    <Compile Include="Components\Engine\SetProperty.cs" />
-    <Compile Include="Components\Engine\GetProperty.cs" />
-    <Compile Include="Components\Engine\FromJson.cs" />
-    <Compile Include="Components\Engine\ToJson.cs" />
-    <Compile Include="Components\oM\CreateCustom.cs" />
-    <Compile Include="Components\oM\CreateData.cs" />
-    <Compile Include="Components\oM\CreateEnum.cs" />
-    <Compile Include="Components\oM\CreateType.cs" />
-    <Compile Include="Components\oM\CreateObject.cs" />
-    <Compile Include="Components\oM\CreateDictionary.cs" />
-    <Compile Include="Components\UI\FalseStartToggle.cs" />
-    <Compile Include="Components\UI\UnitTest.cs" />
-    <Compile Include="Global\DocumentListener.cs" />
-    <Compile Include="Global\Initialisation.cs" />
-    <Compile Include="Global\GlobalSearch.cs" />
-    <Compile Include="Global\SearchMenu.cs" />
-    <Compile Include="Global\SearchMenu_WinForm.cs" />
-    <Compile Include="Global\SearchMenu_Wpf.cs" />
-    <Compile Include="Menus\ParamSelectorMenu.cs" />
-    <Compile Include="Menus\IItemSelectorMenu.cs" />
-    <Compile Include="Menus\ItemSelector.cs" />
-    <Compile Include="Caller\Core.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs" />
-    <Compile Include="Menus\ItemSelectorMenu.cs" />
-    <Compile Include="Menus\ItemSelectorMenu_WinForm.cs" />
-    <Compile Include="Menus\ItemSelectorMenu_Wpf.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Properties\Resources\Adapter.png" />
-    <Content Include="Properties\Resources\BHoM_Alligator_Icon.png" />
-    <Content Include="Properties\Resources\BHoM_BHoM_Object.png" />
-    <Content Include="Properties\Resources\BHoM_Create_CustomData.png" />
-    <Content Include="Properties\Resources\BHoM_Filter.png" />
-    <Content Include="Properties\Resources\BHoM_FromJSON.png" />
-    <Content Include="Properties\Resources\BHoM_GetProperty.png" />
-    <Content Include="Properties\Resources\BHoM_GetPropertyNames.png" />
-    <None Include="Properties\Resources\BHoM_Logo.png" />
-    <None Include="Properties\Resources\BHoM_Icon.ico" />
-    <Content Include="Properties\Resources\BHoM_Read _CustomData.png" />
-    <Content Include="Properties\Resources\BHoM_SetProperty.png" />
-    <Content Include="Properties\Resources\BHoM_ToJSON.png" />
-    <Content Include="Properties\Resources\BooleanToggleOff.png" />
-    <Content Include="Properties\Resources\BooleanToggleOn.png" />
-    <Content Include="Properties\Resources\BS_Script.png" />
-    <Content Include="Properties\Resources\Compute.png" />
-    <Content Include="Properties\Resources\Convert.png" />
-    <Content Include="Properties\Resources\CreateBHoM.png" />
-    <Content Include="Properties\Resources\CustomObject.png" />
-    <Content Include="Properties\Resources\Data.png" />
-    <Content Include="Properties\Resources\Delete.png" />
-    <Content Include="Properties\Resources\Dictionary.png" />
-    <Content Include="Properties\Resources\Empty.png" />
-    <Content Include="Properties\Resources\Enum.png" />
-    <Content Include="Properties\Resources\Execute.png" />
-    <Content Include="Properties\Resources\Explode.png" />
-    <Content Include="Properties\Resources\External.png" />
-    <Content Include="Properties\Resources\FromJson.png" />
-    <Content Include="Properties\Resources\gator.png" />
-    <None Include="Properties\Resources\GetEvents.png" />
-    <Content Include="Properties\Resources\GetInfo.png" />
-    <Content Include="Properties\Resources\Modify.png" />
-    <Content Include="Properties\Resources\Move.png" />
-    <None Include="Properties\Resources\newBooleanToggle.png" />
-    <Content Include="Properties\Resources\Pull.png" />
-    <Content Include="Properties\Resources\Push.png" />
-    <Content Include="Properties\Resources\Query.png" />
-    <Content Include="Properties\Resources\CreateRequest.png" />
-    <Content Include="Properties\Resources\RunCode.png" />
-    <Content Include="Properties\Resources\ToJson.png" />
-    <Content Include="Properties\Resources\Type.png" />
-    <None Include="Properties\Resources\UnitTest.png" />
-    <Content Include="Properties\Resources\UpdateProperty.png" />
-    <Content Include="Properties\Resources\VBH_Script.png" />
-    <Content Include="Properties\Resources\VS_Script.png" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\UI_Engine\UI_Engine.csproj">
-      <Project>{565ddbd0-5c04-4be9-b57d-ce54c2124abb}</Project>
-      <Name>UI_Engine</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\UI_oM\UI_oM.csproj">
-      <Project>{50d4c1ed-c16c-4365-a742-938bf49ec4b0}</Project>
-      <Name>UI_oM</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)$(TargetFileName)"  "$(ProgramData)\BHoM\Assemblies" /Y</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y" />
+	</Target>
 </Project>

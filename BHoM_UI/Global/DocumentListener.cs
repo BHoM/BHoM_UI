@@ -61,9 +61,11 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
-        public static void OnDocumentEndOpening(string documentName)
+        public static void OnDocumentEndOpening(string documentName, string uiName, string fileId)
         {
             BH.Engine.UI.Compute.SetDocumentOpeningState(false);
+
+            BH.Engine.UI.Compute.CheckLogOnUiEndOpening(uiName, fileId, documentName);
 
             if (string.IsNullOrEmpty(documentName) || !m_OpeningTimes.ContainsKey(documentName))
                 return;

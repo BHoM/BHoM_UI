@@ -36,6 +36,7 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
+        public virtual string UIName { get; set; } = "";
         public virtual string ProjectID { get; set; } = "";
         public virtual string FileID { get; set; } = "";
 
