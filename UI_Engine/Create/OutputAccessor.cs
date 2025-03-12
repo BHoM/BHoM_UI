@@ -42,7 +42,12 @@ namespace BH.Engine.UI
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
-            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(subType.Type.IsByRef ? subType.Type.GetElementType() : subType.Type);
+
+            Type type = subType.Type;
+            if (typeof(BH.oM.Quantities.IQuantity).IsAssignableFrom(type))
+                type = typeof(double);
+
+            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(type.IsByRef ? type.GetElementType() : type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");
             ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
