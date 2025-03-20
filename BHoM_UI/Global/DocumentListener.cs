@@ -76,11 +76,14 @@ namespace BH.UI.Base.Global
 
             if (events.Count > 0)
             {
-                if (m_VersioningFormThead != null)
-                    m_VersioningFormThead.Abort();
+                if (m_VersioningForm != null)
+                {
+                    m_VersioningForm.Close();
+                    m_VersioningForm.Dispose();
+                    m_VersioningForm = null;
+                }
 
-                m_VersioningFormThead = new Thread(ShowForm);
-                m_VersioningFormThead.Start(events);
+                ShowForm(events);
             }
         }
 
@@ -88,10 +91,11 @@ namespace BH.UI.Base.Global
 
         public static void OnDocumentClosing(string documentName)
         {
-            if (m_VersioningFormThead != null)
+            if (m_VersioningForm != null)
             {
-                m_VersioningFormThead.Abort();
-                m_VersioningFormThead = null;
+                m_VersioningForm.Close();
+                m_VersioningForm.Dispose();
+                m_VersioningForm = null;
             }
 
             if (!string.IsNullOrEmpty(documentName) && m_OpeningTimes.ContainsKey(documentName))
@@ -115,7 +119,7 @@ namespace BH.UI.Base.Global
             message += "\nPlease review the file before saving it.";
             message += "\n\nHere's the list of components that have been modified:";
 
-            Form form = new Form
+            m_VersioningForm = new Form
             {
                 Text = "BHoM versioning report",
                 AutoSize = true,
@@ -130,7 +134,7 @@ namespace BH.UI.Base.Global
                 FlowDirection = FlowDirection.TopDown,
                 AutoSize = true
             };
-            form.Controls.Add(layout);
+            m_VersioningForm.Controls.Add(layout);
 
             layout.Controls.Add(new Label
             {
@@ -143,7 +147,9 @@ namespace BH.UI.Base.Global
             foreach (VersioningEvent e in events)
                 layout.Controls.Add(GetTable(e));
 
-            form.ShowDialog();
+            m_VersioningForm.Show();
+            m_VersioningForm.Focus();
+            m_VersioningForm.BringToFront();
         }
 
 
@@ -218,7 +224,7 @@ namespace BH.UI.Base.Global
         /*************************************/
 
         private static Dictionary<string, long> m_OpeningTimes = new Dictionary<string, long>();
-        private static Thread m_VersioningFormThead = null;
+        private static Form m_VersioningForm = null;
 
         /*************************************/
     }
