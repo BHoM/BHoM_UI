@@ -139,6 +139,12 @@ namespace BH.Engine.UI
                         };
 
                         TriggerUsageLog(args);
+                        //Check if the projectID has been set to the args
+                        if (!string.IsNullOrWhiteSpace(args.ProjectID))
+                        {
+                            projectId = args.ProjectID; //Set the project ID
+                            UpdateProjectId(uiName, fileId, projectId); //Ensure the project ID is udpated
+                        }
                     }
 
                 }
