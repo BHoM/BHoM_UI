@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -33,7 +33,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
 using System.ComponentModel;
 
 namespace BH.Engine.UI
@@ -41,72 +40,229 @@ namespace BH.Engine.UI
     public static partial class Compute
     {
         /*************************************/
+        /**** Public Events               ****/
+        /*************************************/
+
+        public static event EventHandler UsageLogTriggered;
+
+        /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "")
+        [PreviousVersion("8.1", "BH.Engine.UI.Compute.LogUsage(System.String, System.String, System.Guid, System.String, System.Object, System.Collections.Generic.List<BH.oM.Base.Debugging.Event>, System.String, System.String)")]
+        public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "", string projectId = "")
         {
-            TriggerLogUsageArgs args = new TriggerLogUsageArgs()
-            {
-                UIName = uiName,
-                UIVersion = uiVersion,
-                ComponentID = componentId,
-                CallerName = callerName,
-                SelectedItem = selectedItem,
-                FileID = fileId,
-            };
+            //Special case for a component setting the project ID explicitly
+            HandleSetProjectId(uiName, fileId, events);
+            m_FilesTriedToBeLogged.Add(fileId); //Add to files that have had anything atempted to logged to them to check for end of document opening
 
-            if (m_documentOpening)
-                TriggerUIOpening(args);
-            else
-                TriggerUsageLog(args);
-
-            // If a projectID event is available, save the project code for this file
-            var allEvents = BH.Engine.Base.Query.AllEvents();            
-            if (allEvents != null)
+            if (string.IsNullOrWhiteSpace(projectId))
             {
-                ProjectIDEvent e = allEvents.OfType<ProjectIDEvent>().Where(x => x.FileID == fileId).FirstOrDefault();
-                if (e != null && !string.IsNullOrEmpty(fileId))
-                    m_ProjectIDPerFile[fileId] = e.ProjectID;
-            }
-
-            try
-            {
-                // Create the log item
-                UsageLogEntry info = new UsageLogEntry
+                lock (m_LogLock)
                 {
-                    UI = uiName,
-                    UiVersion = uiVersion,
-                    BHoMVersion = BHoMVersion(),
-                    ComponentId = componentId,
-                    CallerName = callerName,
-                    SelectedItem = selectedItem,
-                    FileId = fileId,
-                    FileName = fileName,
-                    Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
-                };
+                    m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
+                }
 
-                // Record the project code if it exists
-                if (m_ProjectIDPerFile.ContainsKey(fileId))
-                    info.ProjectID = m_ProjectIDPerFile[fileId];
+                if (!m_documentOpening)     //If not during project opening, call events
+                {
+                    if (string.IsNullOrWhiteSpace(projectId))
+                    {
+                        TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                        {
+                            UIName = uiName,
+                            UIVersion = uiVersion,
+                            ComponentID = componentId,
+                            CallerName = callerName,
+                            SelectedItem = selectedItem,
+                            FileID = fileId,
+                            FileName = fileName,
+                        };
 
-                // Write to the log file
-                string json = info.ToJson();
-                StreamWriter log = GetUsageLog(uiName);
-                log.WriteLine(json);
-                log.Flush();
+                        TriggerUsageLog(args);
+                        //Check if the projectID has been set to the args
+                        if (!string.IsNullOrWhiteSpace(args.ProjectID))
+                        {
+                            projectId = args.ProjectID; //Set the project ID
+                            UpdateProjectId(uiName, fileId, projectId); //Ensure the project ID is udpated
+                        }
+                    }
+                }
             }
-            catch { }
+            else
+                UpdateProjectId(uiName, fileId, projectId);
+
+            LogToFile(uiName, uiVersion, componentId, callerName, selectedItem, events, fileId, fileName, projectId);
         }
 
+        /*************************************/
+
+        public static void UpdateProjectId(string uiName, string fileId, string projectId)
+        {
+            if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
+                return;
+
+            bool wasUpdated = true;
+            lock (m_LogLock)
+            {
+                string prevPojectId;
+                if (m_ProjectIDPerFile.TryGetValue(fileId, out prevPojectId) && projectId == prevPojectId)  //Check if the ID changed from previous cached value
+                    wasUpdated = false;
+
+                m_ProjectIDPerFile[fileId] = projectId; //Set the project Id to the cached dictionary
+            }
+
+            if(wasUpdated)  //If changed from previous value, make sure the logfiles are updated
+                Task.Run(() => UpdateProjectIdsInLogFile(uiName, fileId, projectId));
+        }
+
+        /*************************************/
+
+        public static void CheckLogOnUiEndOpening(string uiName, string fileId, string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
+                return;
+
+            if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
+            {
+                if (m_FilesTriedToBeLogged.Contains(fileId))  //Only call when file has been atempted to be logged to
+                {
+                    string projectId;
+                    m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
+
+                    if (string.IsNullOrEmpty(projectId))    //Only call when projectId is not set
+                    {
+                        TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                        {
+                            UIName = uiName,
+                            FileID = fileId,
+                            FileName = fileName
+                        };
+
+                        TriggerUsageLog(args);
+                        //Check if the projectID has been set to the args
+                        if (!string.IsNullOrWhiteSpace(args.ProjectID))
+                        {
+                            projectId = args.ProjectID; //Set the project ID
+                            UpdateProjectId(uiName, fileId, projectId); //Ensure the project ID is udpated
+                        }
+                    }
+
+                }
+            }
+        }
 
         /*************************************/
         /**** Helper Methods              ****/
         /*************************************/
 
-        private static StreamWriter GetUsageLog(string uiName)
+        private static void LogToFile(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events, string fileId, string fileName, string projectId)
         {
-            if (m_UsageLog == null)
+            try
+            {
+                Task.Run(() =>
+                {
+                    // Create the log item
+                    UsageLogEntry info = new UsageLogEntry
+                    {
+                        UI = uiName,
+                        UiVersion = uiVersion,
+                        BHoMVersion = BHoMVersion(),
+                        ComponentId = componentId,
+                        CallerName = callerName,
+                        SelectedItem = selectedItem,
+                        FileId = fileId,
+                        FileName = fileName,
+                        ProjectID = projectId,
+                        Errors = events == null ? new List<Event>() : events.Where(x => x.Type == EventType.Error).ToList()
+                    };
+
+                    string json = info.ToJson();
+
+                    lock (m_LogLock)
+                    {
+                        // Write to the log file
+                        FileStream log = GetUsageLog(uiName);
+                        using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
+                        {
+                            writer.WriteLine(json);
+                            writer.Flush();
+                        }
+                    }
+                });
+
+            }
+            catch { }
+        }
+
+        /*************************************/
+
+        private static void UpdateProjectIdsInLogFile(string uiName, string fileId, string projectID)
+        {
+            lock (m_LogLock)
+            {
+                try
+                {
+                    FileStream log = GetUsageLog(uiName);
+                    log.Position = 0;   //Set stream to start to read from top of file
+                    List<string> logLines = new List<string>();
+                    //Read all content
+                    using (StreamReader reader = new StreamReader(log, Encoding.UTF8, true, 4096, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            logLines.Add(reader.ReadLine());
+                        }
+                    }
+
+                    //Update project ID for any items exiting before event triggered
+                    var objects = logLines.Select(x => BH.Engine.Serialiser.Convert.FromJson(x) as UsageLogEntry).ToList();
+                    foreach (var o in objects)
+                    {
+                        if (o != null)
+                        {
+                            if (o.FileId == fileId)
+                                o.ProjectID = projectID;
+                        }
+                    }
+
+                    //Write lines back to the file
+                    logLines = objects.Select(x => x.ToJson()).ToList();
+                    log.Position = 0;
+                    using (StreamWriter writer = new StreamWriter(log, Encoding.UTF8, 4096, true))
+                    {
+                        foreach (var line in logLines)
+                        {
+                            writer.WriteLine(line);
+                        }
+                        writer.Flush();
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+        }
+
+        /*************************************/
+
+        private static void HandleSetProjectId(string uiName, string fileId, List<Event> events)
+        {
+            if (!string.IsNullOrEmpty(fileId) && !string.IsNullOrEmpty(uiName))
+            {
+                string projectId = events?.OfType<ProjectIDEvent>().FirstOrDefault()?.ProjectID;
+                if (!string.IsNullOrEmpty(projectId))
+                {
+                    UpdateProjectId(uiName, fileId, projectId);
+                }
+            }
+        }
+
+        /*************************************/
+
+        private static FileStream GetUsageLog(string uiName)
+        {
+            if (m_UsageLogStream == null)
             {
                 string logFolder = Query.UsageLogFolder();
 
@@ -115,14 +271,13 @@ namespace BH.Engine.UI
 
                 // Create the new log file
                 string filePath = Query.UsageLogFileName(uiName);
-                FileStream stream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read);
-                m_UsageLog = new StreamWriter(stream);
+                m_UsageLogStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
 
-                // Be ready to close the file when the UI is closed
+                // Be ready to close the file when the UI is closed              
                 AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             }
 
-            return m_UsageLog;
+            return m_UsageLogStream;
         }
 
         /*************************************/
@@ -130,9 +285,9 @@ namespace BH.Engine.UI
         private static void RemoveDeprecatedLogs(string logFolder)
         {
             long currentTicks = DateTime.UtcNow.Ticks;
-            List<string> logFiles = Directory.GetFiles(logFolder).Where(x => x.Contains("Usage_")).ToList(); 
+            List<string> logFiles = Directory.GetFiles(logFolder).Where(x => x.Contains("Usage_")).ToList();
 
-            foreach( string file in logFiles)
+            foreach (string file in logFiles)
             {
                 string[] parts = file.Split(new char[] { '_', '.' });
                 if (parts.Length >= 4)
@@ -152,10 +307,8 @@ namespace BH.Engine.UI
         private static void OnProcessExit(object sender, EventArgs e)
         {
             // The file seems to be writable after the UI closed even without this but better safe than sorry.
-            if (m_UsageLog != null)
-                m_UsageLog.Close();
-
-            TriggerUIClose();
+            if (m_UsageLogStream != null)
+                m_UsageLogStream.Close();
         }
 
         /*************************************/
@@ -172,54 +325,25 @@ namespace BH.Engine.UI
 
         private static void TriggerUsageLog(TriggerLogUsageArgs e)
         {
-            if (m_UsageLogTriggered != null && !Compute.m_documentOpening)
-                m_UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
-        }
-
-        /*************************************/
-
-        private static void TriggerUIClose()
-        {
-            if (m_UIClosed != null)
-                m_UIClosed.Invoke(null, null);
-        }
-
-        /*************************************/
-
-        private static void TriggerUIOpening(TriggerLogUsageArgs e)
-        {
-            if (m_UIOpening != null)
-                m_UIOpening.Invoke(null, e);
-        }
-
-        /*************************************/
-
-        private static void TriggerUIEndOpening()
-        {
-            if(m_UIEndOpening != null)
-                m_UIEndOpening.Invoke(null, null);
+            if (UsageLogTriggered != null)
+                UsageLogTriggered.Invoke(null, e); //Force the data to be set if the set project ID component is being run during the script load
         }
 
         /*************************************/
         /**** Static Fields               ****/
         /*************************************/
 
-        private static StreamWriter m_UsageLog = null;
-
+        private static object m_LogLock = new object();
+        private static FileStream m_UsageLogStream = null;
         private static string m_BHoMVersion = null;
-
         private static long m_DeprecationPeriod = 28 * TimeSpan.TicksPerDay; // 28 days in ticks
-
         private static Dictionary<string, string> m_ProjectIDPerFile = new Dictionary<string, string>();
-
-        public static event EventHandler m_UsageLogTriggered;
-        public static event EventHandler m_UIClosed;
-        public static event EventHandler m_UIOpening;
-        public static event EventHandler m_UIEndOpening;
+        private static HashSet<string> m_FilesTriedToBeLogged = new HashSet<string>();
 
         /*************************************/
     }
 }
+
 
 
 

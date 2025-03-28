@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -52,7 +52,7 @@ namespace BH.UI.Base
             {
                 ParamInfo param = Engine.UI.Create.ParamInfo(name, type);
                 InputParams.Insert(index, param);
-                m_CompiledGetters.Insert(index, Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), param.DataType));
+                m_CompiledGetters.Insert(index, Engine.UI.Compute.InputAccessor(m_DataAccessor.GetType(), param.DataType));
             }
 
             return true;
@@ -88,7 +88,7 @@ namespace BH.UI.Base
             if (type != null)
             {
                 if (type != InputParams[index].DataType)
-                    m_CompiledGetters[index] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), type);
+                    m_CompiledGetters[index] = Engine.UI.Compute.InputAccessor(m_DataAccessor.GetType(), type);
 
                 InputParams[index].DataType = type;
             }
@@ -193,6 +193,7 @@ namespace BH.UI.Base
         /*************************************/
     }
 }
+
 
 
 

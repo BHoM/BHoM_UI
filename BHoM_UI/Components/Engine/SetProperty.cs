@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -93,7 +93,7 @@ namespace BH.UI.Base.Components
                                 propType = typeof(object); // Fallback to object tpye in case of properties set on CustomData for example
                             if (propType.IsValueType)
                                 propType = typeof(object);
-                            m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);  
+                            m_CompiledGetters[2] = Engine.UI.Compute.InputAccessor(m_DataAccessor.GetType(), propType);  
                         }
                     }
 
@@ -187,6 +187,7 @@ namespace BH.UI.Base.Components
         /*************************************/
     }
 }
+
 
 
 
