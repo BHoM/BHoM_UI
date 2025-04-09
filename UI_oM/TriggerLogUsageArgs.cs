@@ -39,6 +39,7 @@ namespace BH.oM.UI
         public virtual Guid ComponentID { get; set; } = Guid.Empty;
         public virtual string FileID { get; set; } = "";
         public virtual string FileName { get; set; } = "";
+        public virtual string ProjectID { get; set; } = null;
     }
 }
 

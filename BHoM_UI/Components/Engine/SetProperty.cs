@@ -93,7 +93,7 @@ namespace BH.UI.Base.Components
                                 propType = typeof(object); // Fallback to object tpye in case of properties set on CustomData for example
                             if (propType.IsValueType)
                                 propType = typeof(object);
-                            m_CompiledGetters[2] = Engine.UI.Create.InputAccessor(m_DataAccessor.GetType(), propType);  
+                            m_CompiledGetters[2] = Engine.UI.Compute.InputAccessor(m_DataAccessor.GetType(), propType);  
                         }
                     }
 
