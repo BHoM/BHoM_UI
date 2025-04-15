@@ -72,7 +72,6 @@ namespace BH.Engine.UI
         private static List<ParamInfo> OutputFromSingleGroup(IGrouping<Type, object> group)
         {
             if (typeof(IDictionary).IsAssignableFrom(group.Key) 
-                || group.Key == typeof(CustomObject) 
                 || typeof(IDynamicObject).IsAssignableFrom(group.Key))
             {
                 return OutputFromMultipleGroups(new List<IGrouping<Type, object>> { group });
@@ -101,8 +100,6 @@ namespace BH.Engine.UI
             {
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
                     CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
-                else if (group.Key == typeof(CustomObject))
-                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
                 else if (typeof(IDynamicObject).IsAssignableFrom(group.Key))
                     CollectOutputTypes(group.Cast<IDynamicObject>(), ref properties, ref descriptions);
                 else
@@ -167,25 +164,6 @@ namespace BH.Engine.UI
                     properties["Values"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[1] }) };
                 }
             }
-        }
-
-        /*************************************/
-
-        private static void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties)
-        {
-            foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData))
-            {
-                if (!properties.ContainsKey(prop.Key))
-                    properties[prop.Key] = new List<Type>();
-                if (prop.Value != null)
-                    properties[prop.Key].Add(prop.Value.GetType() ?? null);
-            }
-            if (!properties.ContainsKey("Name"))
-                properties["Name"] = new List<Type> { typeof(string) };
-            if (!properties.ContainsKey("Tags"))
-                properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
-            if (!properties.ContainsKey("BHoM_Guid"))
-                properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
         }
 
         /*************************************/
