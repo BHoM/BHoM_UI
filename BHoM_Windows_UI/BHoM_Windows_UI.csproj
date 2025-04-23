@@ -10,6 +10,7 @@
 		<RootNamespace>BH.UI.Base.Windows</RootNamespace>
 		<FileVersion>8.2.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
 
