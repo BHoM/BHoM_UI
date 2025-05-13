@@ -206,7 +206,7 @@ namespace BH.Engine.UI
                             if (string.IsNullOrEmpty(typeDescription))
                                 typeDescription = dic.GetType().GenericTypeArguments[1].Description();
 
-                            foreach (Enum key in dic.Keys.OfType<Enum>())
+                            foreach (Enum key in dic.Keys.OfType<Enum>().OrderBy(x => x))
                             {
                                 string stringKey = key.IToText();
                                 if (key != null & !properties.ContainsKey(stringKey))
