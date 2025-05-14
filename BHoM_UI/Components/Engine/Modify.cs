@@ -48,6 +48,8 @@ namespace BH.UI.Base.Components
 
         public override string Description { get; protected set; } = "Modify a BHoM object";
 
+        public override bool QuantitiesAsDouble { get; protected set; } = false;
+
 
         /*************************************/
         /**** Constructors                ****/

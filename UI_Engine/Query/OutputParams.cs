@@ -20,12 +20,17 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.Engine.Reflection;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
+using BH.oM.Base.Reflection;
+using BH.oM.Quantities.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -66,7 +71,8 @@ namespace BH.Engine.UI
 
         private static List<ParamInfo> OutputFromSingleGroup(IGrouping<Type, object> group)
         {
-            if (typeof(IDictionary).IsAssignableFrom(group.Key) || group.Key == typeof(CustomObject))
+            if (typeof(IDictionary).IsAssignableFrom(group.Key) 
+                || typeof(IDynamicObject).IsAssignableFrom(group.Key))
             {
                 return OutputFromMultipleGroups(new List<IGrouping<Type, object>> { group });
             }
@@ -87,14 +93,15 @@ namespace BH.Engine.UI
         private static List<ParamInfo> OutputFromMultipleGroups(IEnumerable<IGrouping<Type, object>> groups)
         {
             Dictionary<string, List<Type>> properties = new Dictionary<string, List<Type>>();
+            Dictionary<string, string> descriptions = new Dictionary<string, string>();
 
             // Collect the properties types and names
             foreach (var group in groups)
             {
                 if (typeof(IDictionary).IsAssignableFrom(group.Key))
                     CollectOutputTypes(group.Cast<IDictionary>(), ref properties);
-                else if (group.Key == typeof(CustomObject))
-                    CollectOutputTypes(group.Cast<CustomObject>(), ref properties);
+                else if (typeof(IDynamicObject).IsAssignableFrom(group.Key))
+                    CollectOutputTypes(group.Cast<IDynamicObject>(), ref properties, ref descriptions);
                 else
                     CollectOutputTypes(group.Key, ref properties);
             }
@@ -105,9 +112,12 @@ namespace BH.Engine.UI
             {
                 IEnumerable<Type> uniqueTypes = kvp.Value.Distinct();
                 Type commonType = uniqueTypes.Count() > 1 ? typeof(object) : uniqueTypes.FirstOrDefault();
+                string description = descriptions.ContainsKey(kvp.Key) ? descriptions[kvp.Key] : commonType.IDescription();
+
                 outputParams.Add(new ParamInfo
                 {
                     DataType = commonType ?? typeof(object),
+                    Description = description,
                     Name = kvp.Key,
                     Kind = ParamKind.Output
                 });
@@ -136,6 +146,18 @@ namespace BH.Engine.UI
                             properties[key].Add(dic[key].GetType() ?? null);
                     }
                 }
+                else if (types[0].IsEnum)
+                {
+                    foreach (Enum key in dic.Keys.OfType<Enum>())
+                    {
+                        string stringKey = key.IToText();
+                        if (key != null & !properties.ContainsKey(stringKey))
+                            properties[stringKey] = new List<Type>();
+
+                        if (dic[key] != null)
+                            properties[stringKey].Add(dic[key].GetType() ?? null);
+                    }
+                }
                 else
                 {
                     properties["Keys"] = new List<Type> { typeof(List<>).MakeGenericType(new Type[] { types[0] }) };
@@ -146,21 +168,71 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static void CollectOutputTypes(IEnumerable<CustomObject> objects, ref Dictionary<string, List<Type>> properties)
+        private static void CollectOutputTypes(IEnumerable<IDynamicObject> objects, ref Dictionary<string, List<Type>> properties, ref Dictionary<string, string> descriptions)
         {
-            foreach (KeyValuePair<string, object> prop in objects.SelectMany(x => x.CustomData))
+            foreach (IDynamicObject obj in objects)
             {
-                if (!properties.ContainsKey(prop.Key))
-                    properties[prop.Key] = new List<Type>();
-                if (prop.Value != null)
-                    properties[prop.Key].Add(prop.Value.GetType() ?? null);
+                object result;
+
+                if (obj is IDynamicPropertyProvider)
+                {
+                    bool success = BH.Engine.Base.Compute.TryRunExtensionMethod(obj, "GetProperties", new object[] { }, out result);
+
+                    if (success && result is List<Property>)
+                    {
+                        foreach (var prop in result as List<Property>)
+                        {
+                            if (!properties.ContainsKey(prop.Name))
+                            {
+                                properties[prop.Name] = new List<Type>();
+                                descriptions[prop.Name] = prop.Description;
+                            }
+                            
+                            properties[prop.Name].Add(prop.Type);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (PropertyInfo prop in obj.GetType().GetProperties())
+                    {
+                        if (prop.GetCustomAttribute<DynamicPropertyAttribute>() != null 
+                            && typeof(IDictionary).IsAssignableFrom(prop.PropertyType) 
+                            && prop.PropertyType.GenericTypeArguments.First().IsEnum)
+                        {
+                            IDictionary dic = prop.GetValue(obj) as IDictionary;
+
+                            string typeDescription = prop.GetCustomAttribute<QuantityAttribute>()?.Description();
+                            if (string.IsNullOrEmpty(typeDescription))
+                                typeDescription = dic.GetType().GenericTypeArguments[1].Description();
+
+                            foreach (Enum key in dic.Keys.OfType<Enum>().OrderBy(x => x))
+                            {
+                                string stringKey = key.IToText();
+                                if (key != null & !properties.ContainsKey(stringKey))
+                                {
+                                    properties[stringKey] = new List<Type>();
+                                    descriptions[stringKey] = key.IDescription() + "\n" + typeDescription;
+                                }
+                                    
+                                if (dic[key] != null)
+                                    properties[stringKey].Add(dic[key].GetType() ?? null);
+                            }
+                        }
+                        else
+                        {
+                            if (!properties.ContainsKey(prop.Name))
+                            {
+                                properties[prop.Name] = new List<Type>();
+                                descriptions[prop.Name] = prop.Description();
+                            }
+
+                            properties[prop.Name].Add(prop.PropertyType);
+                        }    
+                    }
+                }
             }
-            if (!properties.ContainsKey("Name"))
-                properties["Name"] = new List<Type> { typeof(string) };
-            if (!properties.ContainsKey("Tags"))
-                properties["Tags"] = new List<Type> { typeof(HashSet<string>) };
-            if (!properties.ContainsKey("BHoM_Guid"))
-                properties["BHoM_Guid"] = new List<Type> { typeof(Guid) };
+
         }
 
         /*************************************/

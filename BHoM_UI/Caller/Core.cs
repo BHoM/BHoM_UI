@@ -62,6 +62,8 @@ namespace BH.UI.Base
 
         public virtual int GroupIndex { get; protected set; } = 1;
 
+        public virtual bool QuantitiesAsDouble { get; protected set; } = true;
+
         public List<ParamInfo> InputParams { get; protected set; } = new List<ParamInfo>();
 
         public List<ParamInfo> OutputParams { get; protected set; } = new List<ParamInfo>();

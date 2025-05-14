@@ -213,7 +213,7 @@ namespace BH.UI.Base
                         Type originalOutputType = OutputType(m_OriginalItem, i);
                         if (originalOutputType != null && originalOutputType.IsGenericType)
                         {
-                            m_CompiledSetters[i] = Engine.UI.Compute.OutputAccessor(m_DataAccessor.GetType(), output.GetType());
+                            m_CompiledSetters[i] = Engine.UI.Compute.OutputAccessor(m_DataAccessor.GetType(), output.GetType(), QuantitiesAsDouble);
                             m_CompiledSetters[i](m_DataAccessor, output, 0);
                         }
                         else
