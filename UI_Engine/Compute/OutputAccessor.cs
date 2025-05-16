@@ -38,6 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [PreviousVersion("8.2", "BH.Engine.UI.Compute.OutputAccessor(System.Type, System.Type)")]
         public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType, bool quantitiesAsDouble = true)
         {
             UnderlyingType subType = dataType.UnderlyingType();
