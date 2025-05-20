@@ -28,6 +28,8 @@ using BH.oM.UI;
 using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
+using System.Configuration.Assemblies;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -84,6 +86,9 @@ namespace BH.UI.Base.Global
             bool success = true;
             foreach(var settings in initialisationSettings)
             {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 try
                 {
                     success &= InitialiseToolkit(settings);
@@ -92,6 +97,10 @@ namespace BH.UI.Base.Global
                 {
                     BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load settings of type {settings.GetType().Name}.");
                 }
+
+                stopwatch.Stop();
+                TimeSpan elapsed = stopwatch.Elapsed;
+                BH.Engine.Settings.Compute.AddSettingInitialisationTime(settings.InitialisationMethod, elapsed.TotalSeconds);
             }
 
             return success;

@@ -31,6 +31,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using BH.Engine.Base;
+using Microsoft.Data.Sqlite;
 
 namespace BH.UI.Base.Global
 {
@@ -62,7 +63,7 @@ namespace BH.UI.Base.Global
 
         public SearchMenu()
         {
-            PossibleItems = GetAllPossibleItems();
+            PossibleItems = GetAllItemsFromDatabase();
             Initialisation.CompletionTime = DateTime.UtcNow;
         }
 
@@ -150,6 +151,64 @@ namespace BH.UI.Base.Global
             return items;
         }
 
+
+        protected virtual List<SearchItem> GetAllItemsFromDatabase()
+        {
+            List<SearchItem> items = new List<SearchItem>();
+
+            try
+            {
+                using (SqliteConnection sql = new SqliteConnection(@"Data Source=C:\ProgramData\BHoM\Resources\AssemblyContent.db"))
+                {
+                    sql.Open();
+
+                    var command = sql.CreateCommand();
+                    command.CommandText = @"
+                        SELECT (Assembly, CallerType, ItemName, ItemType, Icon, Text)
+                        FROM SearchItems
+                    ";
+ 
+                    using (var reader = command.ExecuteReader())
+                    {
+                        string assembly, callerType, itemName, itemType, icon, text;
+
+
+
+                        while (reader.Read())
+                        {
+                            assembly = reader.GetString(0);
+                            callerType = reader.GetString(1);
+                            itemName = reader.GetString(2);
+                            itemType = reader.GetString(3);
+                            icon = reader.GetString(4);
+                            text = reader.GetString(5);
+
+                            SearchItem item = new SearchItem
+                            {
+                                CallerType = GetCallerType(callerType),
+                                Item = typeof(object),
+                                Icon = GetIcon(icon),
+                                Text = text
+                            };
+
+
+                            var name = reader.GetString(0);
+
+                            Console.WriteLine($"Hello, {name}!");
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError("Failed to load search items from the database");
+            }
+
+            return items;
+        }
+
+
+
         /*************************************/
 
         protected Bitmap GetIcon(MethodBase item)
@@ -192,6 +251,29 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
+        protected Bitmap GetIcon(string item)
+        {
+            switch (item)
+            {
+                case "Compute":
+                    return Properties.Resources.Compute;
+                case "Convert":
+                    return Properties.Resources.Convert;
+                case "CreateRequest":
+                    return Properties.Resources.CreateRequest;
+                case "CreateBHoM":
+                    return Properties.Resources.CreateBHoM;
+                case "Modify":
+                    return Properties.Resources.Modify;
+                case "Query":
+                    return Properties.Resources.Query;
+                default:
+                    return Properties.Resources.Empty;
+            }
+        }
+
+        /*************************************/
+
         private static Type GetCallerType(MethodBase item)
         {
             if (item.DeclaringType.Namespace.StartsWith("BH.Engine"))
@@ -230,6 +312,35 @@ namespace BH.UI.Base.Global
                 return typeof(CreateRequestCaller);
             else
                 return typeof(CreateObjectCaller);
+        }
+
+        /*************************************/
+
+        private static Type GetCallerType(string item)
+        {
+            switch (item)
+            {
+                case "ComputeCaller":
+                    return typeof(ComputeCaller);
+                case "ConvertCaller":
+                    return typeof(ConvertCaller);
+                case "CreateAdapterCaller":
+                    return typeof(CreateAdapterCaller);
+                case "CreateEnumCaller":
+                    return typeof(CreateEnumCaller);
+                case "CreateRequestCaller":
+                    return typeof(CreateRequestCaller);
+                case "CreateObjectCaller":
+                    return typeof(CreateObjectCaller);
+                case "CreateTypeCaller":
+                    return typeof(CreateTypeCaller);
+                case "ModifyCaller":
+                    return typeof(ModifyCaller);
+                case "QueryCaller":
+                    return typeof(QueryCaller);
+                default:
+                    return null;
+            }
         }
 
         /*************************************/
