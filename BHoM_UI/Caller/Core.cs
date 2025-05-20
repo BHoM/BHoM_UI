@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using BH.oM.Base;
 using System.Collections;
 using BH.UI.Base.Menus;
+using System.Diagnostics;
 
 namespace BH.UI.Base
 {
@@ -98,8 +99,24 @@ namespace BH.UI.Base
             if (!m_Initialised)
             {
                 m_Initialised = true;
-                Engine.UI.Compute.LoadAssemblies();
-                Global.Initialisation.Activate();
+
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                //Engine.UI.Compute.LoadAssemblies();
+
+                stopwatch.Stop();
+                TimeSpan elapsed = stopwatch.Elapsed;
+
+                BH.Engine.Base.Compute.RecordNote($"Time to load all assemblies: {elapsed.TotalMilliseconds / 1000} s");
+                stopwatch.Start();
+
+                //Global.Initialisation.Activate();
+
+                stopwatch.Stop();
+                elapsed = stopwatch.Elapsed;
+
+                BH.Engine.Base.Compute.RecordNote($"Time to load all settings: {elapsed.TotalMilliseconds / 1000} s");
             }
         }
 

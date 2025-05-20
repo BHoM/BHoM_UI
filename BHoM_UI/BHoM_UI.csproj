@@ -13,6 +13,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.16" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\UI_Engine\UI_Engine.csproj" />
 		<ProjectReference Include="..\UI_oM\UI_oM.csproj" />
 	</ItemGroup>
