@@ -84,6 +84,7 @@ namespace BH.UI.Base.Global
                 }
 
                 ShowForm(events);
+                //Task.Run(() => ShowForm(events));
             }
         }
 
@@ -115,10 +116,6 @@ namespace BH.UI.Base.Global
             if (events == null)
                 return;
 
-            string message = $"The file was upgraded from BHoM version {events.First().OldVersion} to version {events.First().NewVersion}.";
-            message += "\nPlease review the file before saving it.";
-            message += "\n\nHere's the list of components that have been modified:";
-
             m_VersioningForm = new Form
             {
                 Text = "BHoM versioning report",
@@ -136,6 +133,18 @@ namespace BH.UI.Base.Global
             };
             m_VersioningForm.Controls.Add(layout);
 
+            string message = $"The file was upgraded from BHoM version {events.First().OldVersion} to version {events.First().NewVersion}.";
+            message += "\nPlease review the file before saving it.";
+
+
+            int maxMessages = 30;   //Limiting to 30 messages as the forms takes to long to draw for to many encoutners
+            var groups = events.GroupBy(e => new { e.OldVersion, e.NewVersion, e.OldDocument, NewDoc = e.NewDocument ?? e.Message });
+
+            if (groups.Count() > maxMessages)
+                message += $"\n\nThe document contains a significant amount of versioning. Here's the list of the {maxMessages} most common components that have been modified:";
+            else
+                message += "\n\nHere's the list of components that have been modified:";
+
             layout.Controls.Add(new Label
             {
                 Text = message,
@@ -144,18 +153,19 @@ namespace BH.UI.Base.Global
                 Margin = new Padding(5, 20, 5, 5)
             });
 
-            foreach (VersioningEvent e in events)
-                layout.Controls.Add(GetTable(e));
+            foreach (var group in groups.OrderByDescending(x => x.Count()).Take(maxMessages))   //OrderByDescending on count to always show the most commonly upgraded components, and Take maxMessages to limit to a number of tables that can be drawn within a reasonable timeframe
+                layout.Controls.Add(GetTable(group.First(), group.Count()));
 
             m_VersioningForm.Show();
             m_VersioningForm.Focus();
             m_VersioningForm.BringToFront();
+
         }
 
 
         /*************************************/
 
-        private static TableLayoutPanel GetTable(VersioningEvent e)
+        private static TableLayoutPanel GetTable(VersioningEvent e, int count)
         {
             TableLayoutPanel table = new TableLayoutPanel
             {
@@ -171,8 +181,20 @@ namespace BH.UI.Base.Global
             if (newDoc != null && newDoc == e.OldDocument)
                 newDoc += " (the properties of this object have been updated)";
 
+            Label initialCell;
+            if (count > 1)
+            {
+                initialCell = new Label
+                {
+                    Text = $"{count} Instances",
+                    AutoSize = true,
+                };
+            }
+            else
+                initialCell = new Label();
+
             table.Controls.AddRange(new Control[] {
-                new Label(),
+                initialCell,
                 GetCell("Version"),
                 GetCell("Item"),
                 GetCell("Old"),
