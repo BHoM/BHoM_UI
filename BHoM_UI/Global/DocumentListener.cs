@@ -141,7 +141,11 @@ namespace BH.UI.Base.Global
             var groups = events.GroupBy(e => new { e.OldVersion, e.NewVersion, e.OldDocument, NewDoc = e.NewDocument ?? e.Message });
 
             if (groups.Count() > maxMessages)
-                message += $"\n\nThe document contains a significant amount of versioning. Here's the list of the {maxMessages} most common components that have been modified:";
+            {
+                string logFileName = $@"C:\Temp\BHoMUpgradeLog_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+                message += $"\n\nThe document contains a significant amount of versioning. The window log has been shortened showing the {maxMessages} most commonly upgraded components. For a full list see {logFileName}.";
+                WriteLogFile(logFileName, groups);
+            }
             else
                 message += "\n\nHere's the list of components that have been modified:";
 
@@ -161,7 +165,6 @@ namespace BH.UI.Base.Global
             m_VersioningForm.BringToFront();
 
         }
-
 
         /*************************************/
 
@@ -236,6 +239,46 @@ namespace BH.UI.Base.Global
                     Text = text,
                     AutoSize = true
                 };
+            }
+            
+        }
+
+        /*************************************/
+
+        private static void WriteLogFile(string logFileName, IEnumerable<IGrouping<object, VersioningEvent>> groups)
+        {
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(logFileName)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(logFileName));
+
+                List<string> lines = new List<string>();
+
+
+                foreach (var group in groups.OrderByDescending(x => x.Count()))
+                {
+                    VersioningEvent e = group.First();
+                    int count = group.Count();
+
+                    string newDoc = e.NewDocument;
+                    if (newDoc != null && newDoc == e.OldDocument)
+                        newDoc += " (the properties of this object have been updated)";
+
+                    lines.Add($"From version: {e.OldVersion}");
+                    lines.Add($"Old item: {e.OldDocument}");
+                    lines.Add($"To version: {e.NewVersion}");
+                    lines.Add($"New item: {newDoc ?? e.Message}");
+                    lines.Add($"Instances upgraded: {count}");
+                    lines.Add("");
+                    lines.Add("/*************************************/");
+                    lines.Add("");
+                }
+
+                Task.Factory.StartNew(() => File.WriteAllLines(logFileName, lines));    //Write asynchronously to avoid blocking the UI thread
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError(e, "Failed to write versioning log file");
             }
             
         }
