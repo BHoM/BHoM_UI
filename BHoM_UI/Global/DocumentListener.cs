@@ -84,7 +84,6 @@ namespace BH.UI.Base.Global
                 }
 
                 ShowForm(events);
-                //Task.Run(() => ShowForm(events));
             }
         }
 
