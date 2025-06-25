@@ -69,7 +69,7 @@ namespace BH.UI.Base
             for (int index = 0; index < OutputParams.Count; index++)
             {
                 ParamInfo param = OutputParams[index];
-                Func<IDataAccessor, object, int, bool> function = Engine.UI.Compute.OutputAccessor(accessorType, param.DataType);
+                Func<IDataAccessor, object, int, bool> function = Engine.UI.Compute.OutputAccessor(accessorType, param.DataType, QuantitiesAsDouble);
                 m_CompiledSetters.Add(function);
             }
         }

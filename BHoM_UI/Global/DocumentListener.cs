@@ -115,10 +115,6 @@ namespace BH.UI.Base.Global
             if (events == null)
                 return;
 
-            string message = $"The file was upgraded from BHoM version {events.First().OldVersion} to version {events.First().NewVersion}.";
-            message += "\nPlease review the file before saving it.";
-            message += "\n\nHere's the list of components that have been modified:";
-
             m_VersioningForm = new Form
             {
                 Text = "BHoM versioning report",
@@ -136,6 +132,22 @@ namespace BH.UI.Base.Global
             };
             m_VersioningForm.Controls.Add(layout);
 
+            string message = $"The file was upgraded from BHoM version {events.First().OldVersion} to version {events.First().NewVersion}.";
+            message += "\nPlease review the file before saving it.";
+
+
+            int maxMessages = 30;   //Limiting to 30 messages as the forms takes to long to draw for to many encoutners
+            var groups = events.GroupBy(e => new { e.OldVersion, e.NewVersion, e.OldDocument, NewDoc = e.NewDocument ?? e.Message });
+
+            if (groups.Count() > maxMessages)
+            {
+                string logFileName = $@"C:\Temp\BHoMUpgradeLog_{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+                message += $"\n\nThe document contains a significant amount of versioning. The window log has been shortened showing the {maxMessages} most commonly upgraded components. For a full list see {logFileName}.";
+                WriteLogFile(logFileName, groups);
+            }
+            else
+                message += "\n\nHere's the list of components that have been modified:";
+
             layout.Controls.Add(new Label
             {
                 Text = message,
@@ -144,18 +156,18 @@ namespace BH.UI.Base.Global
                 Margin = new Padding(5, 20, 5, 5)
             });
 
-            foreach (VersioningEvent e in events)
-                layout.Controls.Add(GetTable(e));
+            foreach (var group in groups.OrderByDescending(x => x.Count()).Take(maxMessages))   //OrderByDescending on count to always show the most commonly upgraded components, and Take maxMessages to limit to a number of tables that can be drawn within a reasonable timeframe
+                layout.Controls.Add(GetTable(group.First(), group.Count()));
 
             m_VersioningForm.Show();
             m_VersioningForm.Focus();
             m_VersioningForm.BringToFront();
-        }
 
+        }
 
         /*************************************/
 
-        private static TableLayoutPanel GetTable(VersioningEvent e)
+        private static TableLayoutPanel GetTable(VersioningEvent e, int count)
         {
             TableLayoutPanel table = new TableLayoutPanel
             {
@@ -171,8 +183,20 @@ namespace BH.UI.Base.Global
             if (newDoc != null && newDoc == e.OldDocument)
                 newDoc += " (the properties of this object have been updated)";
 
+            Label initialCell;
+            if (count > 1)
+            {
+                initialCell = new Label
+                {
+                    Text = $"{count} Instances",
+                    AutoSize = true,
+                };
+            }
+            else
+                initialCell = new Label();
+
             table.Controls.AddRange(new Control[] {
-                new Label(),
+                initialCell,
                 GetCell("Version"),
                 GetCell("Item"),
                 GetCell("Old"),
@@ -214,6 +238,46 @@ namespace BH.UI.Base.Global
                     Text = text,
                     AutoSize = true
                 };
+            }
+            
+        }
+
+        /*************************************/
+
+        private static void WriteLogFile(string logFileName, IEnumerable<IGrouping<object, VersioningEvent>> groups)
+        {
+            try
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(logFileName)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(logFileName));
+
+                List<string> lines = new List<string>();
+
+
+                foreach (var group in groups.OrderByDescending(x => x.Count()))
+                {
+                    VersioningEvent e = group.First();
+                    int count = group.Count();
+
+                    string newDoc = e.NewDocument;
+                    if (newDoc != null && newDoc == e.OldDocument)
+                        newDoc += " (the properties of this object have been updated)";
+
+                    lines.Add($"From version: {e.OldVersion}");
+                    lines.Add($"Old item: {e.OldDocument}");
+                    lines.Add($"To version: {e.NewVersion}");
+                    lines.Add($"New item: {newDoc ?? e.Message}");
+                    lines.Add($"Instances upgraded: {count}");
+                    lines.Add("");
+                    lines.Add("/*************************************/");
+                    lines.Add("");
+                }
+
+                Task.Factory.StartNew(() => File.WriteAllLines(logFileName, lines));    //Write asynchronously to avoid blocking the UI thread
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError(e, "Failed to write versioning log file");
             }
             
         }

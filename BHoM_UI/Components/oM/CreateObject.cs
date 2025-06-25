@@ -52,6 +52,8 @@ namespace BH.UI.Base.Components
 
         public override string Description { get; protected set; } = "Creates an instance of a selected type of BHoM object";
 
+        public override bool QuantitiesAsDouble { get; protected set; } = false;
+
 
         /*************************************/
         /**** Constructors                ****/

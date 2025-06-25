@@ -38,12 +38,17 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [PreviousVersion("8.1", "BH.Engine.UI.Create.OutputAccessor(System.Type, System.Type)")]
-        public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType)
+        [PreviousVersion("8.2", "BH.Engine.UI.Compute.OutputAccessor(System.Type, System.Type)")]
+        public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType, bool quantitiesAsDouble = true)
         {
             UnderlyingType subType = dataType.UnderlyingType();
             string methodName = (subType.Depth == 0) ? "SetDataItem" : (subType.Depth == 1) ? "SetDataList" : "SetDataTree";
-            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(subType.Type.IsByRef ? subType.Type.GetElementType() : subType.Type);
+
+            Type type = subType.Type;
+            if (quantitiesAsDouble && typeof(BH.oM.Quantities.IQuantity).IsAssignableFrom(type))
+                type = typeof(double);
+
+            MethodInfo method = accessorType.GetMethod(methodName).MakeGenericMethod(type.IsByRef ? type.GetElementType() : type);
 
             ParameterExpression lambdaInput1 = Expression.Parameter(typeof(IDataAccessor), "accessor");
             ParameterExpression lambdaInput2 = Expression.Parameter(typeof(object), "data");
