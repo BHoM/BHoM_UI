@@ -78,6 +78,14 @@ namespace BH.UI.Base
             
         }
 
+        /*************************************/
+
+        public virtual void SetItem(SearchItem item, bool sendNotification = true, bool updateOriginal = true)
+        {
+            if (Global.ItemManager.ResolveSearchItem(item))
+                SetItem(item.Item, sendNotification, updateOriginal);
+        }
+
 
         /*************************************/
         /**** Private Methods             ****/

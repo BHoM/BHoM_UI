@@ -20,6 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.Data.Requests;
@@ -28,10 +29,10 @@ using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using BH.Engine.Base;
-using Microsoft.Data.Sqlite;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BH.UI.Base.Global
 {
@@ -63,7 +64,7 @@ namespace BH.UI.Base.Global
 
         public SearchMenu()
         {
-            PossibleItems = GetAllItemsFromDatabase();
+            PossibleItems = GetAllItemsFromTsvFile();
             Initialisation.CompletionTime = DateTime.UtcNow;
         }
 
@@ -102,7 +103,12 @@ namespace BH.UI.Base.Global
             if (item == null)
                 ItemSelected?.Invoke(this, null);
             else
+            {
+                if (item.Item == null)
+                    ItemManager.ResolveSearchItem(item);
                 ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
+            }
+                
         }
 
         /*************************************/
@@ -151,8 +157,9 @@ namespace BH.UI.Base.Global
             return items;
         }
 
+        /*************************************/
 
-        protected virtual List<SearchItem> GetAllItemsFromDatabase()
+        /*protected virtual List<SearchItem> GetAllItemsFromDatabase()
         {
             List<SearchItem> items = new List<SearchItem>();
 
@@ -164,7 +171,7 @@ namespace BH.UI.Base.Global
 
                     var command = sql.CreateCommand();
                     command.CommandText = @"
-                        SELECT (Assembly, CallerType, ItemName, ItemType, Icon, Text)
+                        SELECT Assembly, CallerType, ItemName, ItemType, Icon, Text
                         FROM SearchItems
                     ";
  
@@ -186,15 +193,12 @@ namespace BH.UI.Base.Global
                             SearchItem item = new SearchItem
                             {
                                 CallerType = GetCallerType(callerType),
-                                Item = typeof(object),
+                                ItemType = itemType,
                                 Icon = GetIcon(icon),
                                 Text = text
                             };
 
-
-                            var name = reader.GetString(0);
-
-                            Console.WriteLine($"Hello, {name}!");
+                            items.Add(item);
                         }
                     }
                 }
@@ -205,9 +209,57 @@ namespace BH.UI.Base.Global
             }
 
             return items;
+        }*/
+
+        /*************************************/
+
+        protected virtual List<SearchItem> GetAllItemsFromTsvFile()
+        {
+            List<SearchItem> items = new List<SearchItem>();
+            string[] lines = new string[0];
+
+            try
+            {
+                lines = File.ReadAllLines(@"C:\ProgramData\BHoM\Resources\AssemblyContent.tsv");
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to read the file containing the search items. Error: {e.Message}");
+                return items;
+            }
+
+            foreach (string line in lines)
+            {
+                try
+                {
+                
+                    string[] parts = line.Split('\t');
+                    if (parts.Length != 7)
+                        continue;
+
+                    SearchItem item = new SearchItem
+                    {
+                        AssemblyName = parts[0],
+                        CallerType = GetCallerType(parts[1]),
+                        ItemName = parts[2],
+                        ItemType = parts[3],
+                        Icon = GetIcon(parts[4]),
+                        ClassFullName = parts[5],
+                        Text = parts[6]
+                    };
+
+                    items.Add(item);
+
+                }
+                catch (Exception e)
+                {
+                    BH.Engine.Base.Compute.RecordError($"Failed to load the following search item: {line}. Error: {e.Message}");
+                }
+
+            }
+
+            return items;
         }
-
-
 
         /*************************************/
 

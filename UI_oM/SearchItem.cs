@@ -38,13 +38,21 @@ namespace BH.oM.UI
 
         public virtual Type CallerType { get; set; } = null;
 
-        public virtual object Item { get; set; } = "";
+        public virtual object Item { get; set; } = null;
 
         public virtual Bitmap Icon { get; set; } = null;
 
         public virtual string Text { get; set; } = "";
 
         public virtual double Weight { get; set; } = 1.0;
+
+        public virtual string AssemblyName { get; set; } = "";
+
+        public virtual string ClassFullName { get; set; } = "";
+
+        public virtual string ItemType { get; set; } = "";
+
+        public virtual string ItemName { get; set; } = "";
 
 
         /***************************************************/
