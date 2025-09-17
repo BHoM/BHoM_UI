@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +38,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Gets the index of a parameter in once the list has been filtered by IsSelected.")]
+        [Input("parameters", "The list of parameters.")]
+        [Input("index", "The index of the paramter in the unfiltered list.")]
+        [Output("selectionIndex", "The index of the parameter in the filtered list.")]
         public static int SelectionIndex(this List<ParamInfo> parameters, int index)
         {
             if (index < 0 || index >= parameters.Count)

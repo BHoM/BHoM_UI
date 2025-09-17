@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +39,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Matches parameters between two lists and identifies added and removed parameters.")]
+        [Input("newList", "The new parameter list.")]
+        [Input("oldList", "The old parameter list to compare against.")]
+        [Output("matches", "Dictionary of matched parameters.")]
         public static Dictionary<ParamInfo, ParamInfo> MatchWith(this List<ParamInfo> newList, List<ParamInfo> oldList, out List<ParamInfo> added, out List<ParamInfo> removed)
         {
             added = newList.ToList();

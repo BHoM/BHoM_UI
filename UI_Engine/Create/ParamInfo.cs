@@ -24,6 +24,7 @@ using BH.Engine.Reflection;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace BH.Engine.UI
@@ -34,9 +35,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Creates a ParamInfo object describing an input/output parameter of a component.")]
         [Input("name", "The name of the parameter.")]
-        [Input("type", "The framework type of the parameter, e.g. BH.oM.Base.BHoMObject.")]
-        [Input("kind", "Whether the parameter is an input of an output. Input is the default value.")]
+        [Input("type", "The type of the parameter, e.g. BH.oM.Base.BHoMObject.")]
+        [Input("kind", "Whether the parameter is an input or an output. Input is the default value.")]
         [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(string name, Type type = null, ParamKind kind = ParamKind.Input)
         {
@@ -53,7 +55,9 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Creates a ParamInfo object describing an input/output parameter of a component.")]
         [Input("property", "The system property to convert to bhom.")]
+        [Input("instance", "Optional instance to get default values from.")]
         [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(this PropertyInfo property, object instance = null)
         {
@@ -78,7 +82,9 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Creates a ParamInfo object describing an input/output parameter of a component.")]
         [Input("parameter", "The system parameter to convert to bhom.")]
+        [Input("description", "Optional description for the parameter.")]
         [Output("parameter", "The bhom parameter used in the bhom abstract syntax.")]
         public static ParamInfo ParamInfo(this ParameterInfo parameter, string description = "")
         {

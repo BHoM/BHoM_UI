@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace BH.Engine.UI
 {
@@ -38,6 +39,11 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Creates an output accessor function for the specified accessor type and data type.")]
+        [Input("accessorType", "The type of accessor to create the function for.")]
+        [Input("dataType", "The data type to access.")]
+        [Input("quantitiesAsDouble", "Whether to treat quantities as double values.")]
+        [Output("accessor", "The compiled output accessor function.")]
         public static Func<IDataAccessor, object, int, bool> OutputAccessor(Type accessorType, Type dataType, bool quantitiesAsDouble = true)
         {
             UnderlyingType subType = dataType.UnderlyingType();

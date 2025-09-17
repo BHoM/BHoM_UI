@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +38,12 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Filters search items based on search criteria.")]
+        [Input("items", "The list of search items to filter.")]
+        [Input("search", "The search string to filter by.")]
+        [Input("nbMax", "The maximum number of hits to return.")]
+        [Input("hitsOnEmptySearch", "Whether to return hits when search is empty.")]
+        [Output("hits", "The filtered list of search items.")]
         public static List<SearchItem> Hits(this List<SearchItem> items, string search, int nbMax = 20, bool hitsOnEmptySearch = false)
         {
             string text = search.Trim().ToLower();

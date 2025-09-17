@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +38,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Gets the sub type of a parameter info.")]
+        [Input("info", "The parameter info to get the sub type for.")]
+        [Output("subType", "The sub type of the parameter info.")]
         public static Type SubType(this ParamInfo info)
         {
             return info.DataType.UnderlyingType().Type;

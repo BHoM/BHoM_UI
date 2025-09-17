@@ -39,6 +39,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Records an error with exception details.")]
+        [Input("e", "The exception to record.")]
+        [Input("message", "Optional additional message.")]
         public static void RecordError(Exception e, string message = "")
         {
             if (e.InnerException != null)
@@ -50,6 +53,8 @@ namespace BH.Engine.UI
 
         /*******************************************/
 
+        [Description("Records an execution error with detailed stack trace information.")]
+        [Input("e", "The exception that occurred during execution.")]
         public static void RecordExecutionError(Exception e)
         {
             string message = "This component failed to run properly.\n- Error: ";

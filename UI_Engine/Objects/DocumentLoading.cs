@@ -20,8 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +34,8 @@ namespace BH.Engine.UI
     {
         private static bool m_documentOpening = false;
 
+        [Description("Sets the document opening state.")]
+        [Input("state", "The document opening state to set.")]
         public static void SetDocumentOpeningState(bool state)
         {
             m_documentOpening = state;

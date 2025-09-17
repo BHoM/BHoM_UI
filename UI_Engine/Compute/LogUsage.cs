@@ -49,6 +49,16 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Logs usage information for a UI component.")]
+        [Input("uiName", "The name of the UI.")]
+        [Input("uiVersion", "The version of the UI.")]
+        [Input("componentId", "The unique identifier of the component.")]
+        [Input("callerName", "The name of the calling component type.")]
+        [Input("selectedItem", "The currently selected item on that component.")]
+        [Input("events", "Optional list of events triggered when executing this component.")]
+        [Input("fileId", "Optional file guid.")]
+        [Input("fileName", "Optional file full name (including path).")]
+        [Input("projectId", "Optional BH project code.")]
         public static void LogUsage(string uiName, string uiVersion, Guid componentId, string callerName, object selectedItem, List<Event> events = null, string fileId = "", string fileName = "", string projectId = "")
         {
             //Special case for a component setting the project ID explicitly
@@ -95,6 +105,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Updates the project ID for a specific file.")]
+        [Input("uiName", "The name of the UI.")]
+        [Input("fileId", "The file guid.")]
+        [Input("projectId", "The project identifier to set.")]
         public static void UpdateProjectId(string uiName, string fileId, string projectId)
         {
             if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
@@ -116,6 +130,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Checks and logs when UI finishes opening a document.")]
+        [Input("uiName", "The name of the UI.")]
+        [Input("fileId", "The file guid.")]
+        [Input("fileName", "The file full name (including path).")]
         public static void CheckLogOnUiEndOpening(string uiName, string fileId, string fileName)
         {
             if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
@@ -312,6 +330,8 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Gets the current BHoM version.")]
+        [Output("version", "The current BHoM version string.")]
         public static string BHoMVersion()
         {
             if (m_BHoMVersion == null)
