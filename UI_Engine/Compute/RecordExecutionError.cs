@@ -39,19 +39,33 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description("Records an error with exception details.")]
-        [Input("e", "The exception to record.")]
-        [Input("message", "Optional additional message.")]
-        public static void RecordError(Exception e, string message = "")
+        [Description("Records an execution error with detailed stack trace information.")]
+        [Input("e", "The exception that occurred during execution.")]
+        public static void RecordExecutionError(Exception e)
         {
+            string message = "This component failed to run properly.\n- Error: ";
+
             if (e.InnerException != null)
                 message += e.InnerException.Message;
             else
                 message += e.Message;
-            BH.Engine.Base.Compute.RecordError(message);
+
+            List<string> stack = e.StackTrace.Split(new char[] { '\n' })
+                .Where(x => x.Contains(" BH."))
+                .Take(2)
+                .ToList();
+
+            if (stack.Count > 0)
+                message += "\n- Occured in " + stack[0].Trim().Substring(2);
+            if (stack.Count > 1)
+                message += "\n     called from" + stack[1].Trim().Substring(2);
+
+            message += "\n- Are you sure you have the correct type of inputs? Check their description for more details.";
+
+            Engine.Base.Compute.RecordError(message);
         }
 
-        /*******************************************/
+        /*************************************/
     }
 }
 
