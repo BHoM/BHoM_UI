@@ -216,9 +216,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        [Description("Gets the current BHoM version.")]
-        [Output("version", "The current BHoM version string.")]
-        public static string BHoMVersion()
+        private static string BHoMVersion()
         {
             if (m_BHoMVersion == null)
                 m_BHoMVersion = Engine.Base.Query.BHoMVersion();
