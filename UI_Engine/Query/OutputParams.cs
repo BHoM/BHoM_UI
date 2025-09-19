@@ -44,6 +44,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Creates output parameters by extracting properties from a list of objects.")]
+        [Input("objects", "The list of objects to create output parameters from.")]
+        [Output("parameters", "The list of output parameters.")]
         public static List<ParamInfo> OutputParams(List<object> objects)
         {
             if (objects.Count == 0 )

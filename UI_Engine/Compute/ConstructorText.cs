@@ -24,7 +24,9 @@ using BH.Engine.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -37,6 +39,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Generate the text representing the input constructor")]
         [Input("type", "The type of object to create a constructor for.")]
         [Input("maxParams", "The maximum number of parameters to include in the text.")]
         [Input("maxChars", "The maximum number of characters for the output text.")]

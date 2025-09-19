@@ -22,8 +22,9 @@
 
 using BH.Engine.Data;
 using BH.Engine.Base;
-using BH.oM.Data.Collections;
 using BH.oM.Base;
+using BH.oM.Base.Attributes;
+using BH.oM.Data.Collections;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.Engine.UI
 {
@@ -40,6 +42,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Organizes a list of objects into search items and a tree structure.")]
+        [Input("items", "The list of objects to organize.")]
+        [MultiOutput(0, "searchItems", "The organized search items.")]
+        [MultiOutput(1, "tree", "The tree structure of the organized items.")]
         public static Output<List<SearchItem>, Tree<object>> IOrganise(this List<object> items)
         {
             List<Type> types = items.GroupBy(x => x.GetType()).Select(x => x.Key).ToList();
@@ -56,6 +62,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Organizes a list of method objects into search items and a tree structure.")]
+        [Input("methods", "The list of method objects to organize.")]
+        [MultiOutput(0, "searchItems", "The organized search items.")]
+        [MultiOutput(1, "tree", "The tree structure of the organized methods.")]
         public static Output<List<SearchItem>, Tree<object>> OrganiseMethods(this List<object> methods)
         {
             // Create method list
@@ -74,6 +84,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Organizes a list of type objects into search items and a tree structure.")]
+        [Input("types", "The list of type objects to organize.")]
+        [MultiOutput(0, "searchItems", "The organized search items.")]
+        [MultiOutput(1, "tree", "The tree structure of the organized types.")]
         public static Output<List<SearchItem>, Tree<object>> OrganiseTypes(this List<object> types)
         {
             // Create type list
@@ -90,6 +104,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Organizes a list of member objects into search items and a tree structure.")]
+        [Input("members", "The list of member objects to organize.")]
+        [MultiOutput(0, "searchItems", "The organized search items.")]
+        [MultiOutput(1, "tree", "The tree structure of the organized members.")]
         public static Output<List<SearchItem>, Tree<object>> OrganiseMembers(this List<object> members)
         {
             // Create method list

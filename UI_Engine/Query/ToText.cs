@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +38,9 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Converts a parameter update to text representation.")]
+        [Input("update", "The parameter update to convert.")]
+        [Output("text", "The text representation of the parameter update.")]
         public static string IToText(this IParamUpdate update)
         {
             return ToText(update as dynamic);

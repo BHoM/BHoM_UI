@@ -20,8 +20,10 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +38,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Loads all BHoM assemblies from the current domain.")]
         public static void LoadAssemblies()
         {
             if (!m_AssemblyLoaded)

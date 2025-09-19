@@ -20,35 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace BH.Engine.UI
 {
-    public static partial class Query
+    public static partial class Compute
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description("Gets the index of a parameter in once the list has been filtered by IsSelected.")]
-        [Input("parameters", "The list of parameters.")]
-        [Input("index", "The index of the paramter in the unfiltered list.")]
-        [Output("selectionIndex", "The index of the parameter in the filtered list.")]
-        public static int SelectionIndex(this List<ParamInfo> parameters, int index)
+        [Description("Records an execution error with detailed stack trace information.")]
+        [Input("e", "The exception that occurred during execution.")]
+        public static void RecordExecutionError(Exception e)
         {
-            if (index < 0 || index >= parameters.Count)
-                return -1;
+            string message = "This component failed to run properly.\n- Error: ";
 
-            ParamInfo info = parameters[index];
-            return parameters.Where(x => x.IsSelected).ToList().FindIndex(x => x == info);
+            if (e.InnerException != null)
+                message += e.InnerException.Message;
+            else
+                message += e.Message;
+
+            List<string> stack = e.StackTrace.Split(new char[] { '\n' })
+                .Where(x => x.Contains(" BH."))
+                .Take(2)
+                .ToList();
+
+            if (stack.Count > 0)
+                message += "\n- Occured in " + stack[0].Trim().Substring(2);
+            if (stack.Count > 1)
+                message += "\n     called from" + stack[1].Trim().Substring(2);
+
+            message += "\n- Are you sure you have the correct type of inputs? Check their description for more details.";
+
+            Engine.Base.Compute.RecordError(message);
         }
 
         /*************************************/
