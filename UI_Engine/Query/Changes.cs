@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +39,11 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Determines the changes between two parameter lists.")]
+        [Input("newList", "The new parameter list.")]
+        [Input("oldList", "The old parameter list to compare against.")]
+        [Input("selectedOnly", "Whether to only consider selected parameters.")]
+        [Output("changes", "The list of parameter changes.")]
         public static List<IParamUpdate> Changes(this List<ParamInfo> newList, List<ParamInfo> oldList, bool selectedOnly = true)
         {
             List<IParamUpdate> changes = new List<IParamUpdate>();

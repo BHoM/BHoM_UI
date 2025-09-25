@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace BH.Engine.UI
 {
@@ -38,6 +39,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Creates an input accessor function for the specified accessor type and data type.")]
+        [Input("accessorType", "The type of accessor to create the function for.")]
+        [Input("dataType", "The data type to access.")]
+        [Output("accessor", "The compiled input accessor function.")]
         public static Func<IDataAccessor, int, object> InputAccessor(Type accessorType, Type dataType)
         {
             UnderlyingType subType = dataType.UnderlyingType();

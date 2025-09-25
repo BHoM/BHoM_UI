@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +39,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Checks if two parameter lists are matching.")]
+        [Input("newList", "The new parameter list.")]
+        [Input("oldList", "The old parameter list to compare against.")]
+        [Output("matching", "True if the lists are matching, false otherwise.")]
         public static bool AreMatching(this List<ParamInfo> newList, List<ParamInfo> oldList)
         {
             if (newList.Count != oldList.Count)
@@ -48,6 +54,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Checks if a property list matches a parameter list.")]
+        [Input("props", "The property list to check.")]
+        [Input("oldList", "The parameter list to compare against.")]
+        [Output("matching", "True if the lists are matching, false otherwise.")]
         public static bool AreMatching(this List<PropertyInfo> props, List<ParamInfo> oldList)
         {
             return oldList.All(x => props.Exists(p => p.Name == x.Name && p.PropertyType == x.DataType));

@@ -21,9 +21,11 @@
  */
 
 using BH.Engine.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +39,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Calculates the weight of a search item based on search criteria.")]
+        [Input("item", "The search item to calculate weight for.")]
+        [Input("search", "The search terms to match against.")]
+        [Output("weight", "The calculated weight of the search item.")]
         public static double Weight(this SearchItem item, string[] search)
         {
             // Get the key for initial filtering
@@ -95,6 +101,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Calculates the weight of a search item based on search configuration.")]
+        [Input("item", "The search item to calculate weight for.")]
+        [Input("config", "The search configuration to use.")]
+        [Output("weight", "The calculated weight of the search item.")]
         public static double Weight(this SearchItem item, SearchConfig config)
         {
             if (config == null)

@@ -24,6 +24,7 @@ using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -36,6 +37,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Compiles a constructor matching of the given type the input parameters")]
         [Input("type", "The type of object to create a constructor for.")]
         [Input("parameters", "The properties that should be used as parameters for the constructor.")]
         [Output("constructor", "The compiled constructor.")]

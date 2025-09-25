@@ -23,14 +23,17 @@
 using BH.Engine.Serialiser;
 using BH.oM.Base;
 using BH.oM.Base.Attributes;
+using BH.oM.Base.Debugging;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace BH.Engine.UI
 {
@@ -40,32 +43,42 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If any previoulsy saved settings for that toolkit will be overwritten.")]
-        [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
-        [Output("success", "Returns true if the settings were saved successfully.")]
-        public static bool SaveSettings(ISettings settings)
+        [Description("Checks and logs when UI finishes opening a document.")]
+        [Input("uiName", "The name of the UI.")]
+        [Input("fileId", "The file guid.")]
+        [Input("fileName", "The file full name (including path).")]
+        public static void CheckLogOnUiEndOpening(string uiName, string fileId, string fileName)
         {
-            if (settings == null)
+            if (string.IsNullOrWhiteSpace(uiName) || string.IsNullOrWhiteSpace(fileId))
+                return;
+
+            if (fileName != null)   //Only call when opening a pre-existing file, not for new files with no filename set
             {
-                Engine.Base.Compute.RecordError("Settings object is null.");
-                return false;
+                if (m_FilesTriedToBeLogged.Contains(fileId))  //Only call when file has been atempted to be logged to
+                {
+                    string projectId;
+                    m_ProjectIDPerFile.TryGetValue(fileId, out projectId);
+
+                    if (string.IsNullOrEmpty(projectId))    //Only call when projectId is not set
+                    {
+                        TriggerLogUsageArgs args = new TriggerLogUsageArgs()
+                        {
+                            UIName = uiName,
+                            FileID = fileId,
+                            FileName = fileName
+                        };
+
+                        TriggerUsageLog(args);
+                        //Check if the projectID has been set to the args
+                        if (!string.IsNullOrWhiteSpace(args.ProjectID))
+                        {
+                            projectId = args.ProjectID; //Set the project ID
+                            UpdateProjectId(uiName, fileId, projectId); //Ensure the project ID is udpated
+                        }
+                    }
+
+                }
             }
-                
-            // Get the config file name
-            string[] splittedNamespace = settings.GetType().Namespace.Split(new char[] { '.' });
-            if (splittedNamespace.Length != 3)
-            {
-                Engine.Base.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
-                return false;
-            }
-
-            string toolkitName = splittedNamespace[2];
-            string filePath = Path.Combine(@"C:\ProgramData\BHoM\Settings", toolkitName + ".cfg");
-
-            // Save the setting in that file
-            File.WriteAllText(filePath, settings.ToJson());
-
-            return true;
         }
 
         /*************************************/
