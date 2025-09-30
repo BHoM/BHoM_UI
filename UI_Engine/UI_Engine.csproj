@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net472</TargetFramework>
 		<AssemblyVersion>9.0.0.0</AssemblyVersion>
@@ -11,7 +10,6 @@
 		<FileVersion>9.0.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
 	</PropertyGroup>
-
 	<ItemGroup>
 	  <ProjectReference Include="..\UI_oM\UI_oM.csproj" />
 	</ItemGroup>
@@ -63,7 +61,6 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y" />
 	</Target>
