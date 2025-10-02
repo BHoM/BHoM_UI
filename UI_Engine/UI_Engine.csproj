@@ -1,17 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>net472</TargetFramework>
-		<AssemblyVersion>8.0.0.0</AssemblyVersion>
+		<AssemblyVersion>9.0.0.0</AssemblyVersion>
 		<Description>https://github.com/BHoM/BHoM_UI</Description>
 		<Version>5.0.0</Version>
 		<Authors>BHoM</Authors>
 		<Copyright>Copyright © https://github.com/BHoM</Copyright>
 		<RootNamespace>BH.Engine.UI</RootNamespace>
-		<FileVersion>8.3.0.0</FileVersion>
+		<FileVersion>9.0.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
 	</PropertyGroup>
-
 	<ItemGroup>
 	  <ProjectReference Include="..\UI_oM\UI_oM.csproj" />
 	</ItemGroup>
@@ -63,7 +61,6 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y" />
 	</Target>
