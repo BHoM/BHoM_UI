@@ -61,10 +61,7 @@ namespace BH.Engine.UI
                         break;
                     }
                 }
-                catch (Exception e)
-                {
-
-                }
+                catch { }
             }
 
             string version = "";

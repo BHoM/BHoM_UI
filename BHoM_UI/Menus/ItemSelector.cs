@@ -45,16 +45,14 @@ namespace BH.UI.Base.Menus
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelector(IEnumerable<object> possibleItems, string key) 
+        public ItemSelector(IEnumerable<SearchItem> possibleItems, string key) 
         {
             m_Key = key;
 
             if (!m_ItemTreeStore.ContainsKey(key) || !m_ItemListStore.ContainsKey(key))
             {
-                List<object> toKeep = possibleItems.Where(x => x.IIsExposed()).ToList();
-                Output<List<SearchItem>, Tree<object>> organisedMethod = Engine.UI.Compute.IOrganise(toKeep);
-                m_ItemListStore[key] = organisedMethod.Item1;
-                m_ItemTreeStore[key] = organisedMethod.Item2;
+                m_ItemListStore[key] = possibleItems.ToList();
+                m_ItemTreeStore[key] = Engine.UI.Compute.Organise(possibleItems);
             }
         }
 
@@ -103,9 +101,9 @@ namespace BH.UI.Base.Menus
         /**** Private Methods             ****/
         /*************************************/
 
-        private void M_Menu_ItemSelected(object sender, object e)
+        private void M_Menu_ItemSelected(object sender, object item)
         {
-            ItemSelected?.Invoke(this, e);
+            ItemSelected?.Invoke(this, item);
         }
 
 
@@ -116,7 +114,7 @@ namespace BH.UI.Base.Menus
         protected string m_Key = "";
         protected IItemSelectorMenu m_SelectorMenu = null;
 
-        protected static Dictionary<string, Tree<object>> m_ItemTreeStore = new Dictionary<string, Tree<object>>();
+        protected static Dictionary<string, Tree<SearchItem>> m_ItemTreeStore = new Dictionary<string, Tree<SearchItem>>();
         protected static Dictionary<string, List<SearchItem>> m_ItemListStore = new Dictionary<string, List<SearchItem>>();
 
 

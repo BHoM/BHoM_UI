@@ -20,18 +20,19 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Data;
+using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Data.Collections;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using System.ComponentModel;
-using BH.oM.UI;
-using BH.oM.Data.Collections;
-using BH.Engine.Reflection;
-using BH.Engine.Data;
-using BH.Engine.Serialiser;
 using System.Windows.Forms;
 
 namespace BH.UI.Base.Components
@@ -71,7 +72,9 @@ namespace BH.UI.Base.Components
 
         public CreateTypeCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.TypeItems());
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateTypeCaller));
+            SetPossibleItems(items);
+
             InputParams = new List<ParamInfo>();
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Type), Kind = ParamKind.Output, Name = "type", Description = "type definition", IsRequired = true } };
         }

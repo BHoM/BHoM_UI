@@ -20,45 +20,31 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.UI;
-using BH.UI.Base.Global;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Base.Components
+namespace BH.oM.UI
 {
-    public class ConvertCaller : Caller
+    public class CodeElementRecord : IObject
     {
-        /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.Convert;
+        public virtual string AssemblyName { get; set; } = "";
 
-        public override Guid Id { get; protected set; } = new Guid("DBB544EB-1EDC-4EF0-A935-EA92FF989CF7");
+        public virtual CodeElementType Type { get; set; } = CodeElementType.Undefined;
 
-        public override string Name { get; protected set; } = "Convert";
+        public virtual string DisplayText { get; set; } = "";
 
-        public override string Category { get; protected set; } = "Engine";
-
-        public override string Description { get; protected set; } = "Convert to and from a BHoM object";
+        public virtual string Json { get; set; } = "";
 
 
-        /*************************************/
-        /**** Constructors                ****/
-        /*************************************/
-
-        public ConvertCaller() : base()
-        {
-            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(ConvertCaller));
-            SetPossibleItems(items);
-        }
-
-        /*************************************/
+        /***************************************************/
     }
 }
 

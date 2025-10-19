@@ -20,13 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Adapter;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using BH.Adapter;
 
 namespace BH.UI.Base.Components
 {
@@ -53,7 +55,8 @@ namespace BH.UI.Base.Components
 
         public ExternalCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.ExternalItems());
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(ExternalCaller));
+            SetPossibleItems(items);
         }
 
         /*************************************/
