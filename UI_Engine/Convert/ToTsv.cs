@@ -20,33 +20,34 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.UI
+namespace BH.Engine.UI
 {
-    public class CodeElementRecord : IObject
+    public static partial class Convert
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
 
-        public virtual string AssemblyName { get; set; } = "";
+        [Description("Convert a code element record into a row in an Excel file (in tsv format).")]
+        [Input("codeElement", "Code element to convert.")]
+        [Output("tsv", "Excel row containing the data related to the code element in a tsv format.")]
+        public static string ToTsv(this CodeElementRecord codeElement)
+        {
+            return $"{codeElement.AssemblyName}\t{codeElement.Type}\t{codeElement.DisplayText}\t{codeElement.Json}\t{codeElement.AssemblyModifiedTime.ToFileTimeUtc()}";
+        }
 
-        public virtual DateTime AssemblyModifiedTime { get; set; } = DateTime.MinValue;
-
-        public virtual CodeElementType Type { get; set; } = CodeElementType.Undefined;
-
-        public virtual string DisplayText { get; set; } = "";
-
-        public virtual string Json { get; set; } = "";
-
-
-        /***************************************************/
+        /*************************************/
     }
 }
 

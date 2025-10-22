@@ -23,12 +23,14 @@
 using BH.Engine.Base;
 using BH.Engine.Reflection;
 using BH.Engine.Serialiser;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Data.Requests;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -50,28 +52,28 @@ namespace BH.Engine.UI
 
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = CodeElementType.AdapterConstructor, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.AdapterConstructor, DisplayText = x.ToText(true), Json = x.ToJson() }));
 
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = GetConstructableType(x), DisplayText = x.ConstructorText(), Json = x.ToJson() }));
+                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetConstructableType(x), DisplayText = x.ConstructorText(), Json = x.ToJson() }));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = CodeElementType.Enum, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Enum, DisplayText = x.ToText(true), Json = x.ToJson() }));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => x.IsExposed())
-                        .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = GetMethodType(x), DisplayText = x.ToText(true), Json = x.ToJson() }));
+                        .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetMethodType(x), DisplayText = x.ToText(true), Json = x.ToJson() }));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = CodeElementType.Method_External, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Method_External, DisplayText = x.ToText(true), Json = x.ToJson() }));
 
             // All Types
             items.AddRange(BH.Engine.UI.Query.TypeItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), Type = CodeElementType.Type, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Type, DisplayText = x.ToText(true), Json = x.ToJson() }));
 
             // Return the list
             return items;
@@ -92,6 +94,20 @@ namespace BH.Engine.UI
         private static string AssemblyName(Type type)
         {
             return type.Assembly.GetName().Name;
+        }
+
+        /*************************************/
+
+        private static DateTime AssemblyModifiedTime(MethodBase method)
+        {
+            return AssemblyModifiedTime(method.DeclaringType);
+        }
+
+        /*************************************/
+
+        private static DateTime AssemblyModifiedTime(Type type)
+        {
+            return File.GetLastWriteTime(type.Assembly.Location);
         }
 
         /*************************************/

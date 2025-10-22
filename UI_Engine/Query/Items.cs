@@ -136,8 +136,8 @@ namespace BH.Engine.UI
         [Output("items", "All types valid in BHoM.")]
         public static IEnumerable<Type> TypeItems()
         {
-            return Engine.Base.Query.BHoMTypeList()
-                .Concat(Engine.Base.Query.BHoMInterfaceTypeList())
+            return Engine.Base.Query.AllTypeList()
+                .Where(x => x.Namespace.StartsWith("BH."))
                 .Concat(new List<Type> { typeof(Type), typeof(Enum),
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),

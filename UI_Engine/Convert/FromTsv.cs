@@ -20,33 +20,52 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.UI
+namespace BH.Engine.UI
 {
-    public class CodeElementRecord : IObject
+    public static partial class Convert
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
 
-        public virtual string AssemblyName { get; set; } = "";
+        [Description("Convert a row in an Excel file (in tsv format) into a code element record.")]
+        [Input("tsv", "Excel row that contains the data related to the code element in a tsv format.")]
+        [Output("codeElement", "Converted code element.")]
+        public static CodeElementRecord FromTsv(this string tsv)
+        {
+            string[] parts = tsv.Split('\t');
+            if (parts.Length < 5)
+                return null;
 
-        public virtual DateTime AssemblyModifiedTime { get; set; } = DateTime.MinValue;
+            if (!Enum.TryParse(parts[1], out CodeElementType type))
+                return null;
 
-        public virtual CodeElementType Type { get; set; } = CodeElementType.Undefined;
+            if (!long.TryParse(parts[4], out long utcTime))
+                return null;
 
-        public virtual string DisplayText { get; set; } = "";
+            return new CodeElementRecord
+            {
+                AssemblyName = parts[0],
+                Type = type,
+                DisplayText = parts[2],
+                Json = parts[3],
+                AssemblyModifiedTime = DateTime.FromFileTimeUtc(utcTime)
+            };
 
-        public virtual string Json { get; set; } = "";
+        }
 
-
-        /***************************************************/
+        /*************************************/
     }
 }
 

@@ -21,12 +21,14 @@
  */
 
 using BH.Adapter;
+using BH.Engine.Base.Objects;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.Base;
 using BH.oM.UI;
 using BH.UI.Base.Components;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -35,6 +37,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -53,7 +56,11 @@ namespace BH.UI.Base.Global
 
         public static List<CodeElementRecord> CodeElements { get; set; } = new List<CodeElementRecord>();
 
+        public static AssemblyResolver AssemblyResolver { get; set; } = new AssemblyResolver();
+
         public static List<SearchItem> SearchItems { get; set; } = new List<SearchItem>();
+
+        public static string AssemblyContentFilePath { get; set; } = @"C:\ProgramData\BHoM\Resources\AssemblyContent.tsv";
 
 
         /*************************************/
@@ -65,6 +72,7 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             success &= LoadCodeElements();
+            success &= LoadNewAssemblies();
             success &= CreateSearchItems(CodeElements);
             success &= LoadToolkitSettings(); 
 
@@ -159,48 +167,99 @@ namespace BH.UI.Base.Global
 
         private static bool LoadCodeElements()
         {
+            if (!File.Exists(AssemblyContentFilePath))
+                return true;
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            bool success = false;
-
+            // Load the code elements
             try
             {
-                CodeElements = File.ReadAllLines(@"C:\ProgramData\BHoM\Resources\AssemblyContent.tsv")
-                    .Select(x => FromTsv(x))
+                CodeElements = File.ReadAllLines(AssemblyContentFilePath)
+                    .Select(x => BH.Engine.UI.Convert.FromTsv(x))
+                    .Where(x => x != null)
                     .ToList();
-
-                success = true;
             }
-            catch
+            catch (Exception e)
             {
+                BH.Engine.Base.Compute.RecordError(e, $"Failed to load the code elements from '{Path.GetFileName(AssemblyContentFilePath)}'.");
                 return false;
             }
 
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to load all code elements: {stopwatch.Elapsed.TotalMilliseconds / 1000} s. Completed at {DateTime.UtcNow}");
+            // Collect the relation between types and the assembly they belong to
+            Dictionary<string, List<string>> assemblyNamesPerType = CodeElements
+                .Where(x => x.Type == CodeElementType.Type)
+                .GroupBy(x => x.DisplayText)
+                .ToDictionary(group => group.Key, group => group.Select(x => x.AssemblyName).Distinct().ToList());
 
-            return success;
+            // Create the assembly resolver and link it the the BHoM engine
+            AssemblyResolver = new AssemblyResolver(assemblyNamesPerType);
+            BH.Engine.Base.Compute.SetAssemblyResolver(AssemblyResolver);
+
+            stopwatch.Stop();
+            BH.Engine.Base.Compute.RecordNote($"Time to load all code elements: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
+
+            return true;
         }
 
         /*************************************/
 
-        private static CodeElementRecord FromTsv(string line)
+        private static bool LoadNewAssemblies()
         {
-            string[] parts = line.Split('\t');
-            if (parts.Length != 4)
-                return null;
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            if (!Enum.TryParse(parts[1], out CodeElementType type))
-                return null;
+            Dictionary<string, DateTime> lastAssemblyUpdateTimes = CodeElements
+                .GroupBy(x => x.AssemblyName)
+                .ToDictionary(x => x.Key, x => x.First().AssemblyModifiedTime);
 
-            return new CodeElementRecord
+            List<string> loadedAssemblies = BH.Engine.UI.Compute.LoadNewAssemblies(lastAssemblyUpdateTimes);
+
+            stopwatch.Stop();
+            BH.Engine.Base.Compute.RecordNote($"Time to load all updated/new assemblies from current domain: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
+
+            UpdateCodeElements(loadedAssemblies);
+
+            return true;
+        }
+
+        /*************************************/
+
+        private static bool UpdateCodeElements(List<string> loadedAssemblies)
+        {
+            List<CodeElementRecord> loadedCodeElements = BH.Engine.UI.Query.CodeElements()
+                .Where(x => loadedAssemblies.Contains(x.AssemblyName))
+                .ToList();
+
+            if (loadedCodeElements.Count == 0)
+                return true;
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            CodeElements = CodeElements.Where(x => !loadedAssemblies.Contains(x.AssemblyName))
+                .Concat(loadedCodeElements)
+                .ToList();
+
+            List<string> lines = CodeElements
+                .Select(x => x.ToTsv())
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToList();
+
+            try
             {
-                AssemblyName = parts[0],
-                Type = type,
-                DisplayText = parts[2],
-                Json = parts[3]
-            };
+                File.WriteAllLines(AssemblyContentFilePath, lines);
+            }
+            catch (Exception e)
+            {
+                BH.Engine.Base.Compute.RecordError(e, $"Failed to save the assembly content to {AssemblyContentFilePath}.");
+            }
+
+            stopwatch.Stop();
+            BH.Engine.Base.Compute.RecordNote($"Time to update the code elements with the content of the updated/new assemblies: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
+
+            return true;
         }
 
         /*************************************/
@@ -222,7 +281,7 @@ namespace BH.UI.Base.Global
                 .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace('\\', '.'), Item = x }));
 
             stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s. Completed at {DateTime.UtcNow}");
+            BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
 
             return true;
         }
