@@ -107,7 +107,10 @@ namespace BH.Engine.UI
 
         private static DateTime AssemblyModifiedTime(Type type)
         {
-            return File.GetLastWriteTime(type.Assembly.Location);
+            if (string.IsNullOrEmpty(type?.Assembly?.Location))
+                return DateTime.MinValue;
+            else
+                return File.GetLastWriteTimeUtc(type.Assembly.Location);
         }
 
         /*************************************/
