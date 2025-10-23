@@ -26,6 +26,7 @@ using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -173,7 +174,10 @@ namespace BH.Engine.UI
         [Output("items", "Names of all BHoM library items.")]
         public static List<string> LibraryItems()
         {
-            return Engine.Library.Query.LibraryNames().ToList();
+            string datasetFolder = BH.Engine.Base.Query.BHoMFolderDatasets();
+            return Directory.GetFiles(datasetFolder, "*.json", SearchOption.AllDirectories)
+                .Select(x => x.Replace(datasetFolder+"\\", "").Replace(".json", ""))
+                .ToList();
         }
 
         /***************************************************/
