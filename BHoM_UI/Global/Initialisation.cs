@@ -72,6 +72,7 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             success &= LoadCodeElements();
+            success &= CreateAssemblyResolver();
             success &= LoadNewAssemblies();
             success &= CreateSearchItems(CodeElements);
             success &= LoadToolkitSettings(); 
@@ -187,6 +188,16 @@ namespace BH.UI.Base.Global
                 return false;
             }
 
+            stopwatch.Stop();
+            BH.Engine.Base.Compute.RecordNote($"Time to load all code elements: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
+
+            return true;
+        }
+
+        /*************************************/
+
+        private static bool CreateAssemblyResolver()
+        {
             // Collect the relation between types and the assembly they belong to
             Dictionary<string, List<string>> assemblyNamesPerType = CodeElements
                 .Where(x => x.Type == CodeElementType.Type)
@@ -196,9 +207,6 @@ namespace BH.UI.Base.Global
             // Create the assembly resolver and link it the the BHoM engine
             AssemblyResolver = new AssemblyResolver(assemblyNamesPerType);
             BH.Engine.Base.Compute.SetAssemblyResolver(AssemblyResolver);
-
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to load all code elements: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
 
             return true;
         }
