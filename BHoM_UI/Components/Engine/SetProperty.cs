@@ -67,12 +67,13 @@ namespace BH.UI.Base.Components
             // This is especially important to differentiate between items, lists and trees
 
             List<object> inputs = new List<object>();
+            string propName="";
             try
             {
                 if (m_CompiledGetters.Count == 3)
                 {
                     object obj = m_CompiledGetters[0](m_DataAccessor, 0);
-                    string propName = m_CompiledGetters[1](m_DataAccessor, 1) as string;
+                    propName = m_CompiledGetters[1](m_DataAccessor, 1) as string;
 
                     if (propName != m_CurrentProperty && obj != null)
                     {
@@ -102,7 +103,12 @@ namespace BH.UI.Base.Components
             }
             catch (Exception e)
             {
-                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                string errorMessage = "This component failed to run properly. Inputs cannot be collected properly.\n";
+
+                if (propName=="Tags") // Special case for Tags property as it can be a bit tricky
+                    errorMessage += "When setting the 'Tags' property, please ensure that the input is a List<string> or a Tree<string>.\n";
+
+                Engine.UI.Compute.RecordError(e, errorMessage);
                 inputs = null;
             }
 
