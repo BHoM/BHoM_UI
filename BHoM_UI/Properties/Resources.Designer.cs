@@ -401,6 +401,30 @@ namespace BH.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CreatePileFoundation
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("CreatePileFoundation", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CreateTruss2D
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("CreateTruss2D", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CustomObject {
             get {
                 object obj = ResourceManager.GetObject("CustomObject", resourceCulture);
