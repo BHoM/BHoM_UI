@@ -20,7 +20,7 @@ namespace BH.UI.Base.Components
         /**** Properties                  ****/
         /*************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateBar;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = BH.UI.Properties.Resources.CreateBar;
         public override Guid Id { get; protected set; } = new Guid("A5F01E77-07B6-4C3C-A9E7-D41B0374D1D2");
 
         public override string Name { get; protected set; } = "CreateBar";

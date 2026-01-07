@@ -19,7 +19,7 @@ namespace BH.UI.Base.Components
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateBHoM;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateOpening;
         public override Guid Id { get; protected set; } = new Guid("A713FABF-C0E8-4FB3-9D75-8FF99DEBBE50");
 
         public override string Name { get; protected set; } = "CreateOpening";

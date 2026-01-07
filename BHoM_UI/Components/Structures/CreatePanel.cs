@@ -19,7 +19,7 @@ namespace BH.UI.Base.Components
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateBHoM;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreatePanel;
         public override Guid Id { get; protected set; } = new Guid("58E4B4F8-B3CC-40CA-B988-6EE127B061D9");
 
         public override string Name { get; protected set; } = "CreatePanel";

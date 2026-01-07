@@ -20,7 +20,7 @@ namespace BH.UI.Base.Components
         /*************************************/
         /**** Properties                  ****/
         /*************************************/
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateBHoM;
+        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.Geo3DBar;
         public override Guid Id { get; protected set; } = new Guid("5E1C951C-EAF4-4150-B329-A6D49ADE1BD7");
 
         public override string Name { get; protected set; } = "Geometry3DBar";

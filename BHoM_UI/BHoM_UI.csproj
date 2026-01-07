@@ -94,6 +94,12 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Structure_Engine">
+      <HintPath>..\..\..\..\..\ProgramData\BHoM\Assemblies\Structure_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Structure_oM">
+      <HintPath>..\..\..\..\..\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
