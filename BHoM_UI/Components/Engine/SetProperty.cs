@@ -103,12 +103,7 @@ namespace BH.UI.Base.Components
             }
             catch (Exception e)
             {
-                string errorMessage = "This component failed to run properly. Inputs cannot be collected properly.\n";
-
-                if (propName=="Tags") // Special case for Tags property as it can be a bit tricky
-                    errorMessage += "When setting the 'Tags' property, please ensure that the input is a List<string> or a Tree<string>.\n";
-
-                Engine.UI.Compute.RecordError(e, errorMessage);
+                Engine.UI.Compute.RecordError(e, "This component failed to run properly because the inputs cannot be collected properly. Please review the access type for the parameter value.\n");
                 inputs = null;
             }
 
