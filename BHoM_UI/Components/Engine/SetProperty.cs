@@ -67,13 +67,12 @@ namespace BH.UI.Base.Components
             // This is especially important to differentiate between items, lists and trees
 
             List<object> inputs = new List<object>();
-            string propName="";
             try
             {
                 if (m_CompiledGetters.Count == 3)
                 {
                     object obj = m_CompiledGetters[0](m_DataAccessor, 0);
-                    propName = m_CompiledGetters[1](m_DataAccessor, 1) as string;
+                    string propName = m_CompiledGetters[1](m_DataAccessor, 1) as string;
 
                     if (propName != m_CurrentProperty && obj != null)
                     {
