@@ -102,7 +102,7 @@ namespace BH.UI.Base.Components
             }
             catch (Exception e)
             {
-                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                Engine.UI.Compute.RecordError(e, "This component failed to run properly because the inputs cannot be collected properly. Please review the access type for the parameter value.\n");
                 inputs = null;
             }
 
