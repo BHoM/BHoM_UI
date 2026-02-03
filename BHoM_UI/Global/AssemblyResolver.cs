@@ -29,6 +29,7 @@ using BH.oM.UI;
 using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -54,6 +55,7 @@ namespace BH.UI.Base.Global
         /**** Public Methods              ****/
         /*************************************/
 
+        [Description("Make sure assemblies that contain a type matching the input name are loaded. Return true if any assembly was loaded.")]
         public bool MakeSureAssemblyIsLoadedForType(string type)
         {
             if (string.IsNullOrEmpty(type) || !type.StartsWith("BH."))
