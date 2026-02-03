@@ -53,7 +53,7 @@ namespace BH.UI.Base.Global
 
         public static List<SearchItem> SearchItems { get; set; } = new List<SearchItem>();
 
-        public static string AssemblyContentFilePath { get; set; } = @"C:\ProgramData\BHoM\Resources\AssemblyContent.tsv";
+        public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), "AssemblyContent.tsv");
 
 
         /*************************************/

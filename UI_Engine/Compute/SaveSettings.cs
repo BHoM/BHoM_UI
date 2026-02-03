@@ -60,7 +60,7 @@ namespace BH.Engine.UI
             }
 
             string toolkitName = splittedNamespace[2];
-            string filePath = Path.Combine(@"C:\ProgramData\BHoM\Settings", toolkitName + ".cfg");
+            string filePath = Path.Combine(BH.Engine.Base.Query.BHoMFolderSettings(), toolkitName + ".cfg");
 
             // Save the setting in that file
             File.WriteAllText(filePath, settings.ToJson());

@@ -71,7 +71,7 @@ namespace BH.Engine.UI
         public static ISettings Settings(string toolkitName)
         {
             // Make sure the file exists
-            string filePath = Path.Combine(@"C:\ProgramData\BHoM\Settings", toolkitName + ".cfg");
+            string filePath = Path.Combine(BH.Engine.Base.Query.BHoMFolderSettings(), toolkitName + ".cfg");
             if (!File.Exists(filePath))
             {
                 Engine.Base.Compute.RecordWarning("There is no setting file for toolkit " + toolkitName + ".");
