@@ -81,9 +81,26 @@ namespace BH.UI.Base.Global
             {
                 if (!BH.Engine.Base.Query.IsAssemblyLoaded(assemblyName))
                 {
-                    Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll"));
-                    if (assembly != null)
-                        anyLoaded = true;
+                    string assemblyPath = Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll");
+                    if (!File.Exists(assemblyPath))
+                    {
+                        BH.Engine.Base.Compute.RecordError($"Assembly file not found when trying to load assemblies for type {type}: {assemblyPath}");
+                        continue;
+                    }
+
+                    try
+                    {
+                        Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(assemblyPath);
+                        if (assembly == null)
+                            BH.Engine.Base.Compute.RecordError($"Failed to load assembly: {assemblyName}");
+                        else
+                            anyLoaded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        BH.Engine.Base.Compute.RecordError(ex, $"Exception while loading assembly for type {type}: {assemblyPath}.");
+                        return false;
+                    }
                 }
             }
 
