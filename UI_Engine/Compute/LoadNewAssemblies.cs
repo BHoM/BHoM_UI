@@ -47,6 +47,12 @@ namespace BH.Engine.UI
         [Output("loadedAssemblies", "Assemblies loaded as considered new")]
         public static List<string> LoadNewAssemblies(Dictionary<string, DateTime> lastAssemblyUpdateTimes)
         {
+            if (lastAssemblyUpdateTimes == null)
+            {
+                BH.Engine.Base.Compute.RecordError("lastAssemblyUpdateTimes was not provided. No assembly was loaded.");
+                return new List<string>();
+            }
+
             List<string> loadedAssemblies = new List<string>();
 
             Regex regex = new Regex(@"oM$|_Engine$|_Adapter$");
