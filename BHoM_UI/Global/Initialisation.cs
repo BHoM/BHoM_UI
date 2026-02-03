@@ -171,7 +171,7 @@ namespace BH.UI.Base.Global
             try
             {
                 CodeElements = File.ReadAllLines(AssemblyContentFilePath)
-                    .Select(x => BH.Engine.UI.Convert.FromTsv(x))
+                    .Select(x => BH.Engine.UI.Convert.CodeElementFromTsv(x))
                     .Where(x => x != null)
                     .ToList();
             }

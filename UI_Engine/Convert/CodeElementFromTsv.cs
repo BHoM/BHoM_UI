@@ -42,17 +42,26 @@ namespace BH.Engine.UI
         [Description("Convert a row in an Excel file (in tsv format) into a code element record.")]
         [Input("tsv", "Excel row that contains the data related to the code element in a tsv format.")]
         [Output("codeElement", "Converted code element.")]
-        public static CodeElementRecord FromTsv(this string tsv)
+        public static CodeElementRecord CodeElementFromTsv(this string tsv)
         {
             string[] parts = tsv.Split('\t');
             if (parts.Length < 5)
+            {
+                BH.Engine.Base.Compute.RecordError("Failed to extract code element record from tvs content because it doesn't contain 5 parts. Input tsv: " + tsv);
                 return null;
-
+            }
+                
             if (!Enum.TryParse(parts[1], out CodeElementType type))
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to extract code element record from tvs content because the code element type ({parts[1]}) is not recognised. Input tsv: " + tsv);
                 return null;
-
+            }
+                
             if (!long.TryParse(parts[4], out long utcTime))
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to extract code element record from tvs content because the provided time ({parts[4]}) is not valid. Input tsv: " + tsv);
                 return null;
+            }
 
             return new CodeElementRecord
             {
