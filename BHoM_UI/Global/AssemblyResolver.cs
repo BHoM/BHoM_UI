@@ -64,7 +64,7 @@ namespace BH.UI.Base.Global
 
             if (parts.Length > 1)
             {
-                // Assembly is alreaady in the type
+                // Assembly is already in the type
                 assemblyNames.Add(parts[1].Trim());
             }
             else if (parts.Length == 1)
@@ -74,16 +74,18 @@ namespace BH.UI.Base.Global
                     assemblyNames.AddRange(m_AssemblyNamePerType[type]);
             }
 
+            bool anyLoaded = false;
             foreach (string assemblyName in assemblyNames.Where(x => !string.IsNullOrEmpty(x)))
             {
                 if (!BH.Engine.Base.Query.IsAssemblyLoaded(assemblyName))
                 {
                     Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll"));
-                    return assembly != null;
+                    if (assembly != null)
+                        anyLoaded = true;
                 }
             }
 
-            return false;
+            return anyLoaded;
         }
 
 
