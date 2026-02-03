@@ -175,8 +175,10 @@ namespace BH.Engine.UI
         public static List<string> LibraryItems()
         {
             string datasetFolder = BH.Engine.Base.Query.BHoMFolderDatasets();
+            string separator = Path.DirectorySeparatorChar.ToString();
+
             return Directory.GetFiles(datasetFolder, "*.json", SearchOption.AllDirectories)
-                .Select(x => x.Replace(datasetFolder+"\\", "").Replace(".json", ""))
+                .Select(x => x.Replace(datasetFolder + separator, "").Replace(".json", ""))
                 .ToList();
         }
 
