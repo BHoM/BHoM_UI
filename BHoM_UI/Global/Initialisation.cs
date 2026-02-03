@@ -279,7 +279,7 @@ namespace BH.UI.Base.Global
 
             // All data libraries
             SearchItems.AddRange(BH.Engine.UI.Query.LibraryItems()
-                .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace('\\', '.'), Item = x }));
+                .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace(Path.DirectorySeparatorChar, '.'), Item = x }));
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
