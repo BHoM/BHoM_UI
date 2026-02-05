@@ -44,10 +44,13 @@ namespace BH.UI.Base.Global
         /**** Constructors                ****/
         /*************************************/
 
-        public AssemblyResolver(Dictionary<string, List<string>> assemblyNamePerType = null)
+        public AssemblyResolver(Dictionary<string, List<string>> assemblyNamePerType = null, Dictionary<string, Dictionary<string, List<string>>> assemblyNamesPerExtensionMethod = null)
         {
-            if (assemblyNamePerType != null) 
+            if (assemblyNamePerType != null)
                 m_AssemblyNamePerType = assemblyNamePerType;
+
+            if (assemblyNamesPerExtensionMethod != null)
+                m_AssemblyNamesPerExtensionMethod = assemblyNamesPerExtensionMethod;
         }
 
 
@@ -107,6 +110,83 @@ namespace BH.UI.Base.Global
             return anyLoaded;
         }
 
+        /***************************************************/
+
+        [Description("Make sure assemblies containing extension methods matching the input name and target type are loaded. Returns true if any assembly was loaded.")]
+        public bool MakeSureAssemblyIsLoadedForExtensionMethod(string methodName, Type targetType)
+        {
+            if (string.IsNullOrEmpty(methodName) || targetType == null)
+                return false;
+
+            if (!m_AssemblyNamesPerExtensionMethod.ContainsKey(methodName))
+                return false;
+
+            Dictionary<string, List<string>> typeToAssemblies = m_AssemblyNamesPerExtensionMethod[methodName];
+            HashSet<string> assembliesToLoad = new HashSet<string>();
+
+            // 1. Exact type match
+            string exactTypeName = targetType.FullName ?? targetType.Name;
+            if (typeToAssemblies.ContainsKey(exactTypeName))
+                assembliesToLoad.UnionWith(typeToAssemblies[exactTypeName]);
+
+            // 2. Base types
+            Type baseType = targetType.BaseType;
+            while (baseType != null && baseType != typeof(object))
+            {
+                string baseTypeName = baseType.FullName ?? baseType.Name;
+                if (typeToAssemblies.ContainsKey(baseTypeName))
+                    assembliesToLoad.UnionWith(typeToAssemblies[baseTypeName]);
+                baseType = baseType.BaseType;
+            }
+
+            // 3. Interfaces
+            foreach (Type interfaceType in targetType.GetInterfaces())
+            {
+                string interfaceName = interfaceType.FullName ?? interfaceType.Name;
+                if (typeToAssemblies.ContainsKey(interfaceName))
+                    assembliesToLoad.UnionWith(typeToAssemblies[interfaceName]);
+            }
+
+            // 4. Generic type definitions
+            if (targetType.IsGenericType)
+            {
+                Type genericDef = targetType.GetGenericTypeDefinition();
+                string genericTypeName = genericDef.FullName ?? genericDef.Name;
+                if (typeToAssemblies.ContainsKey(genericTypeName))
+                    assembliesToLoad.UnionWith(typeToAssemblies[genericTypeName]);
+            }
+
+            // Load all identified assemblies
+            bool anyLoaded = false;
+            foreach (string assemblyName in assembliesToLoad)
+            {
+                if (!BH.Engine.Base.Query.IsAssemblyLoaded(assemblyName))
+                {
+                    string assemblyPath = Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll");
+                    if (!File.Exists(assemblyPath))
+                    {
+                        BH.Engine.Base.Compute.RecordNote($"Assembly not found for extension method {methodName}: {assemblyPath}");
+                        continue;
+                    }
+
+                    try
+                    {
+                        Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(assemblyPath);
+                        if (assembly == null)
+                            BH.Engine.Base.Compute.RecordWarning($"Failed to load assembly: {assemblyName}");
+                        else
+                            anyLoaded = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        BH.Engine.Base.Compute.RecordError(ex, $"Exception loading assembly for extension method {methodName}: {assemblyPath}");
+                    }
+                }
+            }
+
+            return anyLoaded;
+        }
+
 
         /*************************************/
         /**** Private Methods             ****/
@@ -119,6 +199,8 @@ namespace BH.UI.Base.Global
         /*************************************/
 
         Dictionary<string, List<string>> m_AssemblyNamePerType = new Dictionary<string, List<string>>();
+
+        Dictionary<string, Dictionary<string, List<string>>> m_AssemblyNamesPerExtensionMethod = new Dictionary<string, Dictionary<string, List<string>>>();
 
         /*************************************/
     }

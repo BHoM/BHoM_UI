@@ -197,11 +197,151 @@ namespace BH.UI.Base.Global
                 .GroupBy(x => x.DisplayText)
                 .ToDictionary(group => group.Key, group => group.Select(x => x.AssemblyName).Distinct().ToList());
 
+            // Collect the relation between extension methods and the assembly they belong to
+            Dictionary<string, Dictionary<string, List<string>>> assemblyNamesPerExtensionMethod
+                = BuildExtensionMethodDictionary(CodeElements);
+
             // Create the assembly resolver and link it the the BHoM engine
-            AssemblyResolver = new AssemblyResolver(assemblyNamesPerType);
+            AssemblyResolver = new AssemblyResolver(assemblyNamesPerType, assemblyNamesPerExtensionMethod);
             BH.Engine.Base.Compute.SetAssemblyResolver(AssemblyResolver);
 
             return true;
+        }
+
+        /*************************************/
+
+        private static Dictionary<string, Dictionary<string, List<string>>> BuildExtensionMethodDictionary(
+            List<CodeElementRecord> codeElements)
+        {
+            Dictionary<string, Dictionary<string, List<string>>> result
+                = new Dictionary<string, Dictionary<string, List<string>>>();
+
+            foreach (CodeElementRecord record in codeElements.Where(x =>
+                x.Type == CodeElementType.Method_Query ||
+                x.Type == CodeElementType.Method_Compute ||
+                x.Type == CodeElementType.Method_Convert ||
+                x.Type == CodeElementType.Method_Modify))
+            {
+                try
+                {
+                    // Extract first parameter type from JSON
+                    string firstParamTypeName = ExtractFirstParameterType(record.Json);
+
+                    if (!string.IsNullOrEmpty(firstParamTypeName))
+                    {
+                        // Extract method name from DisplayText
+                        string methodName = ExtractMethodName(record.DisplayText);
+
+                        // Build nested dictionary
+                        if (!result.ContainsKey(methodName))
+                            result[methodName] = new Dictionary<string, List<string>>();
+
+                        if (!result[methodName].ContainsKey(firstParamTypeName))
+                            result[methodName][firstParamTypeName] = new List<string>();
+
+                        if (!result[methodName][firstParamTypeName].Contains(record.AssemblyName))
+                            result[methodName][firstParamTypeName].Add(record.AssemblyName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    BH.Engine.Base.Compute.RecordWarning($"Failed to parse extension method from {record.DisplayText}: {ex.Message}");
+                }
+            }
+
+            return result;
+        }
+
+        /*************************************/
+
+        private static string ExtractFirstParameterType(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+                return null;
+
+            try
+            {
+                // Find the Parameters array in the JSON
+                int parametersIndex = json.IndexOf("\"Parameters\"");
+                if (parametersIndex < 0)
+                    return null;
+
+                // Find the opening bracket of the Parameters array
+                int arrayStartIndex = json.IndexOf('[', parametersIndex);
+                if (arrayStartIndex < 0)
+                    return null;
+
+                // Find the end of the first parameter (first element in array)
+                // The first element starts after [ and is a JSON string itself
+                int firstParamStart = arrayStartIndex + 1;
+
+                // Skip whitespace
+                while (firstParamStart < json.Length && char.IsWhiteSpace(json[firstParamStart]))
+                    firstParamStart++;
+
+                // Check if array is empty
+                if (firstParamStart >= json.Length || json[firstParamStart] == ']')
+                    return null;
+
+                // The first parameter is a JSON string, find "Name" property within it
+                // Look for "Name" : "..." pattern in the first parameter
+                int nameIndex = json.IndexOf("\\\"Name\\\"", firstParamStart);
+                if (nameIndex < 0)
+                    return null;
+
+                // Find the opening quote of the Name value
+                int nameValueStart = json.IndexOf("\\\"", nameIndex + 8); // Skip past \"Name\"
+                if (nameValueStart < 0)
+                    return null;
+
+                nameValueStart += 2; // Skip past \"
+
+                // Find the closing quote of the Name value
+                int nameValueEnd = json.IndexOf("\\\"", nameValueStart);
+                if (nameValueEnd < 0)
+                    return null;
+
+                // Extract the type name
+                string typeName = json.Substring(nameValueStart, nameValueEnd - nameValueStart);
+
+                // Remove assembly qualification: "Type, Assembly" -> "Type"
+                int commaIndex = typeName.IndexOf(',');
+                if (commaIndex > 0)
+                    typeName = typeName.Substring(0, commaIndex).Trim();
+
+                return typeName;
+            }
+            catch (Exception ex)
+            {
+                // Silent fail
+                BH.Engine.Base.Compute.RecordNote($"Could not extract parameter type: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        /*************************************/
+
+        private static string ExtractMethodName(string displayText)
+        {
+            // Format: "BH.Engine.Namespace.Query.MethodName(params)" or with generics
+            int openParen = displayText.IndexOf('(');
+            if (openParen < 0)
+                return displayText;
+
+            string beforeParams = displayText.Substring(0, openParen);
+
+            // Remove generic type parameters if present
+            int genericStart = beforeParams.IndexOf('<');
+            if (genericStart > 0)
+                beforeParams = beforeParams.Substring(0, genericStart);
+
+            // Get last segment after last dot
+            int lastDot = beforeParams.LastIndexOf('.');
+            if (lastDot >= 0)
+                return beforeParams.Substring(lastDot + 1);
+
+            return beforeParams;
         }
 
         /*************************************/
