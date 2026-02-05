@@ -65,7 +65,7 @@ namespace BH.Engine.UI
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => x.IsExposed())
-                        .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetMethodType(x), DisplayText = x.ToText(true), Json = x.ToJson() }));
+                        .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetMethodType(x), DisplayText = x.ToText(includePath: true, removeIForInterface: false), Json = x.ToJson() }));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
