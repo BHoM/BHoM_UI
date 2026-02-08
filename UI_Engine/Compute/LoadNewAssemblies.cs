@@ -53,6 +53,9 @@ namespace BH.Engine.UI
                 return new List<string>();
             }
 
+            // Make sure the keys for the assemblies are in lower case to avoid casing mismatching
+            Dictionary<string, DateTime> lastUpdateTimes = lastAssemblyUpdateTimes.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+
             List<string> loadedAssemblies = new List<string>();
 
             Regex regex = new Regex(@"oM$|_Engine$|_Adapter$");
@@ -61,7 +64,8 @@ namespace BH.Engine.UI
                 string name = Path.GetFileNameWithoutExtension(file);
                 if (regex.IsMatch(name))
                 {
-                    if (!lastAssemblyUpdateTimes.ContainsKey(name) || lastAssemblyUpdateTimes[name] < File.GetLastWriteTimeUtc(file))
+                    string key = name.ToLower();
+                    if (!lastUpdateTimes.ContainsKey(key) || lastUpdateTimes[key] < File.GetLastWriteTimeUtc(file))
                     {
                         Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(file);
                         if (assembly != null)

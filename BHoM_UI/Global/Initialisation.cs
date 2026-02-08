@@ -370,7 +370,7 @@ namespace BH.UI.Base.Global
         private static bool UpdateCodeElements(List<string> loadedAssemblies)
         {
             List<CodeElementRecord> loadedCodeElements = BH.Engine.UI.Query.CodeElements()
-                .Where(x => loadedAssemblies.Contains(x.AssemblyName))
+                .Where(x => loadedAssemblies.Contains(x.AssemblyName, StringComparer.OrdinalIgnoreCase))
                 .ToList();
 
             if (loadedCodeElements.Count == 0)
