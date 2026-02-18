@@ -26,6 +26,7 @@ using BH.oM.Base.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -136,8 +137,8 @@ namespace BH.Engine.UI
         [Output("items", "All types valid in BHoM.")]
         public static IEnumerable<Type> TypeItems()
         {
-            return Engine.Base.Query.BHoMTypeList()
-                .Concat(Engine.Base.Query.BHoMInterfaceTypeList())
+            return Engine.Base.Query.AllTypeList()
+                .Where(x => x.Namespace.StartsWith("BH."))
                 .Concat(new List<Type> { typeof(Type), typeof(Enum),
                     typeof(object), typeof(bool), typeof(byte),
                     typeof(char), typeof(string),
@@ -173,7 +174,12 @@ namespace BH.Engine.UI
         [Output("items", "Names of all BHoM library items.")]
         public static List<string> LibraryItems()
         {
-            return Engine.Library.Query.LibraryNames().ToList();
+            string datasetFolder = BH.Engine.Base.Query.BHoMFolderDatasets();
+            string separator = Path.DirectorySeparatorChar.ToString();
+
+            return Directory.GetFiles(datasetFolder, "*.json", SearchOption.AllDirectories)
+                .Select(x => x.Replace(datasetFolder + separator, "").Replace(".json", ""))
+                .ToList();
         }
 
         /***************************************************/

@@ -21,17 +21,18 @@
  */
 
 using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Base;
 using BH.oM.UI;
+using BH.UI.Base.Menus;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using BH.Engine.Serialiser;
 using System.Windows.Forms;
-using BH.oM.Base;
-using System.Collections;
-using BH.UI.Base.Menus;
 
 namespace BH.UI.Base
 {
@@ -97,9 +98,13 @@ namespace BH.UI.Base
         {
             if (!m_Initialised)
             {
+                BH.Engine.Base.Compute.RecordNote($"Caller initialising at {DateTime.UtcNow}");
+
                 m_Initialised = true;
-                Engine.UI.Compute.LoadAssemblies();
+                //Engine.UI.Compute.LoadAssemblies();
                 Global.Initialisation.Activate();
+
+                BH.Engine.Base.Compute.RecordNote($"Caller initialised at {DateTime.UtcNow}");
             }
         }
 
@@ -125,10 +130,10 @@ namespace BH.UI.Base
 
         /*************************************/
 
-        protected void SetPossibleItems<T>(IEnumerable<T> items)
+        protected void SetPossibleItems(IEnumerable<SearchItem> items)
         {
             HasPossibleItems = true;
-            m_ItemSelector = new ItemSelector(items.Cast<object>(), Name);
+            m_ItemSelector = new ItemSelector(items, Name);
             m_ItemSelector.ItemSelected += (sender, e) => SetItem(e);
         }
 

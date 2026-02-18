@@ -20,20 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System.CodeDom.Compiler;
+using BH.Engine.Base;
 using BH.Engine.Reflection;
-using System.Windows.Forms;
-using System.Windows.Controls;
+using BH.oM.Base;
 using BH.oM.Test.UnitTests;
 using BH.oM.UI;
-using BH.oM.Base;
-using BH.Engine.Base;
+using BH.UI.Base.Global;
+using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace BH.UI.Base.Components
 {
@@ -60,7 +61,8 @@ namespace BH.UI.Base.Components
 
         public UnitTestCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.EngineItems());
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.Text.Contains('('));
+            SetPossibleItems(items);
         }
 
 

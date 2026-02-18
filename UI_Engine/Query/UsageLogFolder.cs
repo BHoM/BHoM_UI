@@ -37,7 +37,7 @@ namespace BH.Engine.UI
         [Output("logFolder", "The directory path to the logs folder for the BHoM.")]
         public static string UsageLogFolder()
         {
-            string logFolder = @"C:\ProgramData\BHoM\Logs";
+            string logFolder = BH.Engine.Base.Query.BHoMFolderLogs();
 
             //Make sure the folder exists
             if (!Directory.Exists(logFolder))

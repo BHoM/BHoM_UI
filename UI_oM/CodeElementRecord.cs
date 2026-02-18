@@ -20,48 +20,35 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.UI;
-using BH.UI.Base.Global;
+using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Base.Components
+namespace BH.oM.UI
 {
-    public class ComputeCaller : Caller
+    public class CodeElementRecord : IObject
     {
-        /*************************************/
-        /**** Properties                  ****/
-        /*************************************/
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.Compute;
+        public virtual string AssemblyName { get; set; } = "";
 
-        public override Guid Id { get; protected set; } = new Guid("A4EBE086-E659-4273-940B-98FD9BD73436");
+        public virtual DateTime AssemblyModifiedTime { get; set; } = DateTime.MinValue;
 
-        public override string Name { get; protected set; } = "Compute";
+        public virtual CodeElementType Type { get; set; } = CodeElementType.Undefined;
 
-        public override string Category { get; protected set; } = "Engine";
+        public virtual string DisplayText { get; set; } = "";
 
-        public override string Description { get; protected set; } = "Run a computationally intensive calculations";
+        public virtual string Json { get; set; } = "";
 
 
-        /*************************************/
-        /**** Constructors                ****/
-        /*************************************/
-
-        public ComputeCaller() : base()
-        {
-            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(ComputeCaller));
-            SetPossibleItems(items);
-        }
-
-        /*************************************/
+        /***************************************************/
     }
 }
-
 
 
 

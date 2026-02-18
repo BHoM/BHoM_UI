@@ -20,48 +20,36 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
-using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.UI.Base.Components
+namespace BH.Engine.UI
 {
-    public class ComputeCaller : Caller
+    public static partial class Convert
     {
         /*************************************/
-        /**** Properties                  ****/
+        /**** Public Methods              ****/
         /*************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.Compute;
-
-        public override Guid Id { get; protected set; } = new Guid("A4EBE086-E659-4273-940B-98FD9BD73436");
-
-        public override string Name { get; protected set; } = "Compute";
-
-        public override string Category { get; protected set; } = "Engine";
-
-        public override string Description { get; protected set; } = "Run a computationally intensive calculations";
-
-
-        /*************************************/
-        /**** Constructors                ****/
-        /*************************************/
-
-        public ComputeCaller() : base()
+        [Description("Convert a code element record into a row in an Excel file (in tsv format).")]
+        [Input("codeElement", "Code element to convert.")]
+        [Output("tsv", "Excel row containing the data related to the code element in a tsv format.")]
+        public static string ToTsv(this CodeElementRecord codeElement)
         {
-            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(ComputeCaller));
-            SetPossibleItems(items);
+            return $"{codeElement.AssemblyName}\t{codeElement.Type}\t{codeElement.DisplayText}\t{codeElement.Json}\t{codeElement.AssemblyModifiedTime.ToFileTimeUtc()}";
         }
 
         /*************************************/
     }
 }
-
 
 
 

@@ -21,56 +21,62 @@
  */
 
 using BH.Engine.Reflection;
-using BH.Engine.UI;
-using BH.oM.Base;
+using BH.oM.Base.Attributes;
 using BH.oM.UI;
-using BH.UI.Base.Global;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace BH.UI.Base.Components
+namespace BH.Engine.UI
 {
-    public class CreateObjectCaller : Caller
+    public static partial class Convert
     {
         /*************************************/
-        /**** Properties                  ****/
+        /**** Public Methods              ****/
         /*************************************/
 
-        public override System.Drawing.Bitmap Icon_24x24 { get; protected set; } = Properties.Resources.CreateBHoM;
-
-        public override Guid Id { get; protected set; } = new Guid("76221701-C5E7-4A93-8A2B-D34E77ED9CC1");
-
-        public override string Name { get; protected set; } = "CreateObject";
-
-        public override string Category { get; protected set; } = "oM";
-
-        public override string Description { get; protected set; } = "Creates an instance of a selected type of BHoM object";
-
-        public override bool QuantitiesAsDouble { get; protected set; } = false;
-
-
-        /*************************************/
-        /**** Constructors                ****/
-        /*************************************/
-
-        public CreateObjectCaller() : base()
+        [Description("Convert a row in an Excel file (in tsv format) into a code element record.")]
+        [Input("tsv", "Excel row that contains the data related to the code element in a tsv format.")]
+        [Output("codeElement", "Converted code element.")]
+        public static CodeElementRecord CodeElementFromTsv(this string tsv)
         {
-            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateObjectCaller));
-            SetPossibleItems(items);
+            string[] parts = tsv.Split('\t');
+            if (parts.Length < 5)
+            {
+                BH.Engine.Base.Compute.RecordError("Failed to extract code element record from tvs content because it doesn't contain 5 parts. Input tsv: " + tsv);
+                return null;
+            }
+                
+            if (!Enum.TryParse(parts[1], out CodeElementType type))
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to extract code element record from tvs content because the code element type ({parts[1]}) is not recognised. Input tsv: " + tsv);
+                return null;
+            }
+                
+            if (!long.TryParse(parts[4], out long utcTime))
+            {
+                BH.Engine.Base.Compute.RecordError($"Failed to extract code element record from tvs content because the provided time ({parts[4]}) is not valid. Input tsv: " + tsv);
+                return null;
+            }
+
+            return new CodeElementRecord
+            {
+                AssemblyName = parts[0],
+                Type = type,
+                DisplayText = parts[2],
+                Json = parts[3],
+                AssemblyModifiedTime = DateTime.FromFileTimeUtc(utcTime)
+            };
+
         }
 
         /*************************************/
     }
-
 }
-
 
 
 

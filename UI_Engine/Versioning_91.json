@@ -1,0 +1,29 @@
+﻿{
+    "Namespace": {
+        "ToNew": {
+        },
+    "ToOld": {
+        }
+    },
+  "Type": {
+        "ToNew": {
+
+        },
+    "ToOld": {
+        }
+    },
+  "Property": {
+        "ToNew": {
+        },
+    "ToOld": {
+        }
+    },
+  "MessageForDeleted": {
+      "BH.Engine.UI.Compute.IOrganise(System.Collections.Generic.List<System.Object>)":  "This method was used specifically to organise the UI menus. Since our UI menus are not relying on pre-loaded assemblies anymore, this method has been removed. If you need ot organise menu items, you can use `BH.Engine.UI.Compute.Organise(IEnumerable<SearchItem> items)` instead.",
+	  "BH.Engine.UI.Compute.OrganiseMethods(System.Collections.Generic.List<System.Object>)": "This method was used specifically to organise the UI menus. Since our UI menus are not relying on pre-loaded assemblies anymore, this method has been removed. If you need ot organise menu items, you can use `BH.Engine.UI.Compute.Organise(IEnumerable<SearchItem> items)` instead.",
+	  "BH.Engine.UI.Compute.OrganiseMembers(System.Collections.Generic.List<System.Object>)": "This method was used specifically to organise the UI menus. Since our UI menus are not relying on pre-loaded assemblies anymore, this method has been removed. If you need ot organise menu items, you can use `BH.Engine.UI.Compute.Organise(IEnumerable<SearchItem> items)` instead.",
+	  "BH.Engine.UI.Compute.OrganiseTypes(System.Collections.Generic.List<System.Object>)": "This method was used specifically to organise the UI menus. Since our UI menus are not relying on pre-loaded assemblies anymore, this method has been removed. If you need ot organise menu items, you can use `BH.Engine.UI.Compute.Organise(IEnumerable<SearchItem> items)` instead."
+  },
+  "MessageForNoUpgrade": {
+    }
+}

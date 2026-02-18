@@ -40,14 +40,14 @@ namespace BH.UI.Base.Menus
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelectorMenu_WinForm(List<SearchItem> itemList, Tree<object> itemTree) : base(itemList, itemTree) { }
+        public ItemSelectorMenu_WinForm(List<SearchItem> itemList, Tree<SearchItem> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/
         /**** Override Methods            ****/
         /*************************************/
 
-        protected override void AddTree(ToolStripDropDown menu, Tree<object> itemTree)
+        protected override void AddTree(ToolStripDropDown menu, Tree<SearchItem> itemTree)
         {
             if (itemTree != null)
                 AppendMenuTree(itemTree, menu);
@@ -74,7 +74,7 @@ namespace BH.UI.Base.Menus
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected void AppendMenuTree(Tree<object> tree, ToolStripDropDown menu)
+        protected void AppendMenuTree(Tree<SearchItem> tree, ToolStripDropDown menu)
         {
             if (tree.Children.Count > 0)
             {
@@ -83,7 +83,7 @@ namespace BH.UI.Base.Menus
                 {
                     if (treeMenu.DropDown.Items.Count == 0)
                     {
-                        foreach (Tree<object> childTree in tree.Children.Values.OrderBy(x => x.Name))
+                        foreach (Tree<SearchItem> childTree in tree.Children.Values.OrderBy(x => x.Name))
                             AppendMenuTree(childTree, treeMenu.DropDown);
                         treeMenu.Invalidate();
                     }
@@ -155,7 +155,7 @@ namespace BH.UI.Base.Menus
                 ToolStripMenuItem methodItem = AppendMenuItem(m_Menu, item.Text, Item_Click);
                 methodItem.ToolTipText = item.Item.IDescription();
                 m_SearchResultItems.Add(methodItem);
-                m_ItemLinks[methodItem] = item.Item;
+                m_ItemLinks[methodItem] = item;
             }
         }
 
@@ -166,7 +166,7 @@ namespace BH.UI.Base.Menus
 
         protected ToolStripDropDown m_Menu;
         protected ToolStripTextBox m_SearchBox;
-        protected Dictionary<ToolStripMenuItem, object> m_ItemLinks = new Dictionary<ToolStripMenuItem, object>();
+        protected Dictionary<ToolStripMenuItem, SearchItem> m_ItemLinks = new Dictionary<ToolStripMenuItem, SearchItem>();
         protected List<ToolStripItem> m_SearchResultItems = new List<ToolStripItem>();
 
         /*************************************/

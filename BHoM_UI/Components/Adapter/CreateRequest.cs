@@ -20,13 +20,15 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using BH.Engine.Reflection;
 
 namespace BH.UI.Base.Components
 {
@@ -55,11 +57,8 @@ namespace BH.UI.Base.Components
 
         public CreateRequestCaller() : base()
         {
-            List<MemberInfo> possibleItems = new List<MemberInfo>();
-            possibleItems.AddRange(Engine.UI.Query.ConstructableRequestItems());
-            possibleItems.AddRange(Engine.UI.Query.CreateRequestItems());
-
-            SetPossibleItems(possibleItems);
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateRequestCaller));
+            SetPossibleItems(items);
         }
 
         /*************************************/
