@@ -125,7 +125,7 @@ namespace BH.UI.Base.Global
             HashSet<string> assembliesToLoad = new HashSet<string>();
 
             // 1. Exact type match
-            string exactTypeName = targetType.FullName ?? targetType.Name;
+            string exactTypeName = TypeKey(targetType);
             if (typeToAssemblies.ContainsKey(exactTypeName))
                 assembliesToLoad.UnionWith(typeToAssemblies[exactTypeName]);
 
@@ -133,7 +133,7 @@ namespace BH.UI.Base.Global
             Type baseType = targetType.BaseType;
             while (baseType != null && baseType != typeof(object))
             {
-                string baseTypeName = baseType.FullName ?? baseType.Name;
+                string baseTypeName = TypeKey(baseType);
                 if (typeToAssemblies.ContainsKey(baseTypeName))
                     assembliesToLoad.UnionWith(typeToAssemblies[baseTypeName]);
                 baseType = baseType.BaseType;
@@ -142,7 +142,7 @@ namespace BH.UI.Base.Global
             // 3. Interfaces
             foreach (Type interfaceType in targetType.GetInterfaces())
             {
-                string interfaceName = interfaceType.FullName ?? interfaceType.Name;
+                string interfaceName = TypeKey(interfaceType);
                 if (typeToAssemblies.ContainsKey(interfaceName))
                     assembliesToLoad.UnionWith(typeToAssemblies[interfaceName]);
             }
@@ -151,7 +151,7 @@ namespace BH.UI.Base.Global
             if (targetType.IsGenericType)
             {
                 Type genericDef = targetType.GetGenericTypeDefinition();
-                string genericTypeName = genericDef.FullName ?? genericDef.Name;
+                string genericTypeName = TypeKey(genericDef);
                 if (typeToAssemblies.ContainsKey(genericTypeName))
                     assembliesToLoad.UnionWith(typeToAssemblies[genericTypeName]);
             }
@@ -191,6 +191,15 @@ namespace BH.UI.Base.Global
         /*************************************/
         /**** Private Methods             ****/
         /*************************************/
+
+        private static string TypeKey(Type type)
+        {
+            string key = type.FullName ?? type.Name;
+            int cut = key.IndexOfAny(new char[] { ',', '[' });
+            if (cut > 0)
+                key = key.Substring(0, cut);
+            return key;
+        }
 
 
 
