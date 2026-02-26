@@ -52,7 +52,12 @@ namespace BH.Engine.UI
 
             //Create the element tree
             List<string> toSkip = new List<string> { "Compute", "Convert", "Create", "External", "Modify", "Query", "oM", "Engine" };
-            Tree<SearchItem> tree = Data.Create.Tree(items.ToList(), items.Select(x => x.Text.Split('.').Except(toSkip).ToList()).ToList(), "Select an item");
+            var paths = items.Select(x =>
+            {
+                string[] parts = x.Text.Split('.');
+                return parts.Where((seg, idx) => idx == parts.Length - 1 || !toSkip.Contains(seg)).ToList();
+            }).ToList();
+            Tree<SearchItem> tree = Data.Create.Tree(items.ToList(), paths, "Select an item");
             while (tree.Children.Count == 1 && tree.Children.Values.First().Children.Count > 0)
                 tree.Children = tree.Children.Values.First().Children;
             tree = tree.GroupByName();
