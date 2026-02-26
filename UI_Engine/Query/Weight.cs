@@ -86,7 +86,10 @@ namespace BH.Engine.UI
             }
             else if (item.Item == null || item.Item is string)
             {
-                name = item.Text.Split(new char[] { '.', '\\', '/' }).First();
+                string text = item.Text;
+                int parenIdx = text.IndexOf('(');
+                if (parenIdx > 0) text = text.Substring(0, parenIdx);
+                name = text.Split(new char[] { '.', '\\', '/' }).LastOrDefault() ?? "";
             }
 
             // Increase weight if name is matching
