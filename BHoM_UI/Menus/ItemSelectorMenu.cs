@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -43,7 +43,7 @@ namespace BH.UI.Base.Menus
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelectorMenu(List<SearchItem> itemList, Tree<object> itemTree)
+        public ItemSelectorMenu(List<SearchItem> itemList, Tree<SearchItem> itemTree)
         {
             m_ItemList = itemList;
             m_ItemTree = itemTree;
@@ -70,7 +70,7 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        public void SetItems(List<SearchItem> itemList, Tree<object> itemTree)
+        public void SetItems(List<SearchItem> itemList, Tree<SearchItem> itemTree)
         {
             m_ItemList = itemList;
             m_ItemTree = itemTree;
@@ -81,7 +81,7 @@ namespace BH.UI.Base.Menus
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected abstract void AddTree(M menu, Tree<object> itemTree);
+        protected abstract void AddTree(M menu, Tree<SearchItem> itemTree);
 
         /*************************************/
 
@@ -89,10 +89,19 @@ namespace BH.UI.Base.Menus
 
         /*************************************/
 
-        protected void ReturnSelectedItem(object item)
+        protected void ReturnSelectedItem(SearchItem item)
         {
-            if (ItemSelected != null)
-                ItemSelected(this, item);
+            if (ItemSelected == null)
+                return;
+
+            if (item == null)
+                ItemSelected.Invoke(this, null);
+            else
+            {
+                if (item.Item == null && !string.IsNullOrEmpty(item.Json))
+                    item.Item = BH.Engine.Serialiser.Convert.FromJson(item.Json);
+                ItemSelected.Invoke(this, item.Item);
+            }
         }
 
 
@@ -102,12 +111,13 @@ namespace BH.UI.Base.Menus
 
         protected List<SearchItem> m_ItemList = new List<SearchItem>();
 
-        protected Tree<object> m_ItemTree = new Tree<object>();
+        protected Tree<SearchItem> m_ItemTree = new Tree<SearchItem>();
 
 
         /*************************************/
     }
 }
+
 
 
 

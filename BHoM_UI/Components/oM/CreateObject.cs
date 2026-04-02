@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,19 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.Engine.UI;
+using BH.oM.Base;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using BH.Engine.Reflection;
-using System.Linq.Expressions;
-using BH.oM.UI;
-using BH.Engine.UI;
 using System.Windows.Forms;
-using BH.oM.Base;
-using System.Collections;
 
 namespace BH.UI.Base.Components
 {
@@ -61,17 +62,15 @@ namespace BH.UI.Base.Components
 
         public CreateObjectCaller() : base()
         {
-            List<MemberInfo> possibleItems = new List<MemberInfo>();
-            possibleItems.AddRange(Engine.UI.Query.ConstructableTypeItems());
-            possibleItems.AddRange(Engine.UI.Query.CreateItems());
-
-            SetPossibleItems(possibleItems);
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateObjectCaller));
+            SetPossibleItems(items);
         }
 
         /*************************************/
     }
 
 }
+
 
 
 

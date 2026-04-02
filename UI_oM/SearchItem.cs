@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -38,7 +38,7 @@ namespace BH.oM.UI
 
         public virtual Type CallerType { get; set; } = null;
 
-        public virtual object Item { get; set; } = "";
+        public virtual object Item { get; set; } = null;
 
         public virtual Bitmap Icon { get; set; } = null;
 
@@ -46,10 +46,13 @@ namespace BH.oM.UI
 
         public virtual double Weight { get; set; } = 1.0;
 
+        public virtual string Json { get; set; } = "";
+
 
         /***************************************************/
     }
 }
+
 
 
 

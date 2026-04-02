@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,20 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
+using BH.Engine.Data;
+using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Data.Collections;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using System.ComponentModel;
-using BH.oM.UI;
-using BH.oM.Data.Collections;
-using BH.Engine.Reflection;
-using BH.Engine.Data;
-using BH.Engine.Serialiser;
 using System.Windows.Forms;
-using BH.Engine.Base;
 
 namespace BH.UI.Base.Components
 {
@@ -72,7 +73,8 @@ namespace BH.UI.Base.Components
 
         public CreateEnumCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.EnumItems());
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateEnumCaller));
+            SetPossibleItems(items);
 
             InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(int), Kind = ParamKind.Input, Name = "index", Description = "index of the enum value" } };
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(Enum), Kind = ParamKind.Output, Name = "enum", Description = "enum value" } };
@@ -106,6 +108,7 @@ namespace BH.UI.Base.Components
         /*************************************/
     }
 }
+
 
 
 

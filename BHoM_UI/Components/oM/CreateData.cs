@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -20,21 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Data;
+using BH.Engine.Reflection;
+using BH.Engine.Serialiser;
+using BH.oM.Base;
+using BH.oM.Data.Collections;
+using BH.oM.UI;
+using BH.UI.Base.Global;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using System.ComponentModel;
-using BH.oM.UI;
-using BH.oM.Data.Collections;
-using BH.Engine.Reflection;
-using BH.Engine.Data;
-using BH.Engine.Serialiser;
-using System.Windows.Forms;
-using BH.oM.Base;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace BH.UI.Base.Components
 {
@@ -73,7 +74,8 @@ namespace BH.UI.Base.Components
 
         public CreateDataCaller() : base()
         {
-            SetPossibleItems(Engine.UI.Query.LibraryItems());
+            IEnumerable<SearchItem> items = Initialisation.SearchItems.Where(x => x.CallerType == typeof(CreateDataCaller));
+            SetPossibleItems(items);
 
             InputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(int), Kind = ParamKind.Input, Name = "index", Description = "index of the data reference" } };
             OutputParams = new List<ParamInfo>() { new ParamInfo { DataType = typeof(IObject), Kind = ParamKind.Output, Name = "data", Description = "selected reference data" } };
@@ -177,6 +179,7 @@ namespace BH.UI.Base.Components
         /*************************************/
     }
 }
+
 
 
 

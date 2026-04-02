@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -86,7 +86,10 @@ namespace BH.Engine.UI
             }
             else if (item.Item == null || item.Item is string)
             {
-                name = item.Text.Split(new char[] { '.', '\\', '/' }).First();
+                string text = item.Text;
+                int parenIdx = text.IndexOf('(');
+                if (parenIdx > 0) text = text.Substring(0, parenIdx);
+                name = text.Split(new char[] { '.', '\\', '/' }).LastOrDefault() ?? "";
             }
 
             // Increase weight if name is matching
@@ -248,6 +251,7 @@ namespace BH.Engine.UI
         /*************************************/
     }
 }
+
 
 
 

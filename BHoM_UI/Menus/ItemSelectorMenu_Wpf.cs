@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -39,20 +39,20 @@ namespace BH.UI.Base.Menus
         /**** Constructors                ****/
         /*************************************/
 
-        public ItemSelectorMenu_Wpf(List<SearchItem> itemList, Tree<object> itemTree) : base(itemList, itemTree) { }
+        public ItemSelectorMenu_Wpf(List<SearchItem> itemList, Tree<SearchItem> itemTree) : base(itemList, itemTree) { }
 
 
         /*************************************/
         /**** Override Methods            ****/
         /*************************************/
 
-        protected override void AddTree(ContextMenu menu, Tree<object> itemTree)
+        protected override void AddTree(ContextMenu menu, Tree<SearchItem> itemTree)
         {
             menu.Items.Add(new Separator());
 
             m_ItemMenu = new MenuItem { Header = itemTree.Name };
             menu.Items.Add(m_ItemMenu);
-            foreach (Tree<object> childTree in itemTree.Children.Values.OrderBy(x => x.Name))
+            foreach (Tree<SearchItem> childTree in itemTree.Children.Values.OrderBy(x => x.Name))
                 AppendMenuTree(childTree, m_ItemMenu);
         }
 
@@ -80,13 +80,13 @@ namespace BH.UI.Base.Menus
         /**** Protected Methods           ****/
         /*************************************/
 
-        protected void AppendMenuTree(Tree<object> tree, MenuItem menu)
+        protected void AppendMenuTree(Tree<SearchItem> tree, MenuItem menu)
         {
             if (tree.Children.Count > 0)
             {
                 MenuItem treeMenu = CreateMenuItem(tree.Name);
                 menu.Items.Add(treeMenu);
-                foreach (Tree<object> childTree in tree.Children.Values.OrderBy(x => x.Name))
+                foreach (Tree<SearchItem> childTree in tree.Children.Values.OrderBy(x => x.Name))
                     AppendMenuTree(childTree, treeMenu);
             }
             else
@@ -116,7 +116,7 @@ namespace BH.UI.Base.Menus
             MenuItem item = (MenuItem)sender;
             if (m_ItemLinks.ContainsKey(item))
             {
-                object link = m_ItemLinks[item];
+                SearchItem searchItem = m_ItemLinks[item];
 
                 // Clear the old items
                 foreach (MenuItem result in m_SearchResultItems)
@@ -131,7 +131,7 @@ namespace BH.UI.Base.Menus
                 m_Menu.Items.Remove(m_SearchLabel);
                 m_SearchLabel = null;
 
-                ReturnSelectedItem(link);
+                ReturnSelectedItem(searchItem);
             }
                 
         }
@@ -154,7 +154,7 @@ namespace BH.UI.Base.Menus
                 MenuItem methodItem = CreateMenuItem(item.Text, Item_Click);
                 m_Menu.Items.Add(methodItem);
                 m_SearchResultItems.Add(methodItem);
-                m_ItemLinks[methodItem] = item.Item;
+                m_ItemLinks[methodItem] = item;
             }
         }
 
@@ -176,12 +176,13 @@ namespace BH.UI.Base.Menus
         protected MenuItem m_ItemMenu;
         protected TextBox m_SearchBox;
         protected MenuItem m_SearchLabel;
-        protected Dictionary<MenuItem, object> m_ItemLinks = new Dictionary<MenuItem, object>();
+        protected Dictionary<MenuItem, SearchItem> m_ItemLinks = new Dictionary<MenuItem, SearchItem>();
         protected List<MenuItem> m_SearchResultItems = new List<MenuItem>();
 
         /*************************************/
     }
 }
+
 
 
 

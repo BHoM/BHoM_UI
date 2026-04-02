@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -71,7 +71,7 @@ namespace BH.Engine.UI
         public static ISettings Settings(string toolkitName)
         {
             // Make sure the file exists
-            string filePath = Path.Combine(@"C:\ProgramData\BHoM\Settings", toolkitName + ".cfg");
+            string filePath = Path.Combine(BH.Engine.Base.Query.BHoMFolderSettings(), toolkitName + ".cfg");
             if (!File.Exists(filePath))
             {
                 Engine.Base.Compute.RecordWarning("There is no setting file for toolkit " + toolkitName + ".");
@@ -104,6 +104,7 @@ namespace BH.Engine.UI
         /*************************************/
     }
 }
+
 
 
 

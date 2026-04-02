@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2025, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2026, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -102,7 +102,7 @@ namespace BH.UI.Base.Components
             }
             catch (Exception e)
             {
-                Engine.UI.Compute.RecordError(e, "This component failed to run properly. Inputs cannot be collected properly.\n");
+                Engine.UI.Compute.RecordError(e, "This component failed to run properly because the inputs cannot be collected properly. Please review the access type for the parameter value.\n");
                 inputs = null;
             }
 
@@ -187,6 +187,7 @@ namespace BH.UI.Base.Components
         /*************************************/
     }
 }
+
 
 
 
