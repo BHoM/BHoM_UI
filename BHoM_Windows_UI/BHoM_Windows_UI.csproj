@@ -12,7 +12,12 @@
 		<OutputPath>..\Build\</OutputPath>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseWPF>true</UseWPF>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UI_oM\UI_oM.csproj" />

@@ -14,6 +14,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\UI_Engine\UI_Engine.csproj" />
 		<ProjectReference Include="..\UI_oM\UI_oM.csproj" />
 	</ItemGroup>
