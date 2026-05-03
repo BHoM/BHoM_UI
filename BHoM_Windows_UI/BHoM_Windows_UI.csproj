@@ -12,7 +12,6 @@
 		<OutputPath>..\Build\</OutputPath>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseWPF>true</UseWPF>
-		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
 
 	<ItemGroup>
