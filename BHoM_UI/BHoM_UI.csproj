@@ -10,7 +10,12 @@
 		<RootNamespace>BH.UI</RootNamespace>
 		<FileVersion>9.2.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\UI_Engine\UI_Engine.csproj" />

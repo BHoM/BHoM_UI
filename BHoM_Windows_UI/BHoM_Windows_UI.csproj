@@ -10,8 +10,13 @@
 		<RootNamespace>BH.UI.Base.Windows</RootNamespace>
 		<FileVersion>9.2.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseWPF>true</UseWPF>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.0" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UI_oM\UI_oM.csproj" />
