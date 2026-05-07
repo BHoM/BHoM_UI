@@ -20,40 +20,51 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
+using BH.Engine.Base;
+using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.oM.UI
+namespace BH.Engine.UI
 {
-    public class SearchItem : BHoMObject
+    public static partial class Query
     {
-        /***************************************************/
-        /**** Properties                                ****/
-        /***************************************************/
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
 
-        public virtual Type CallerType { get; set; } = null;
+        [Description("Gets all the text representations of types that accept the provided type as input.")]
+        [Input("type", "The type to get the output key from.")]
+        [Output("Keys", "Text representations of types that accept the provided type as input.")]
+        public static List<string> OutputKeys(this Type type)
+        {
+            if (m_OutputTypeKeys.ContainsKey(type))
+                return m_OutputTypeKeys[type];
+            else
+            {
+                List<string> keys = new List<Type> { type }
+                    .Concat(type.BaseTypes().Where(x => x.Namespace?.StartsWith("BH.") == true))
+                    .Select(x => x.ToText(true))
+                    .ToList();
 
-        public virtual object Item { get; set; } = null;
+                m_OutputTypeKeys[type] = keys;
+                return keys;
+            }
+        }
 
-        public virtual Bitmap Icon { get; set; } = null;
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
 
-        public virtual string Text { get; set; } = "";
+        private static Dictionary<Type, List<string>> m_OutputTypeKeys = new Dictionary<Type, List<string>>();
 
-        public virtual double Weight { get; set; } = 1.0;
-
-        public virtual string Json { get; set; } = "";
-
-        public virtual List<string> InputKeys { get; set; } = new List<string>();
-
-        public virtual List<string> OutputKeys { get; set; } = new List<string>();
-
-
-        /***************************************************/
+        /*************************************/
     }
 }
 

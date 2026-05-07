@@ -50,30 +50,34 @@ namespace BH.Engine.UI
         {
             List<CodeElementRecord> items = new List<CodeElementRecord>();
 
-            // All adapter constructors
-            items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.AdapterConstructor, DisplayText = x.ToText(true), Json = x.ToJson() }));
+            /// Types
 
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetConstructableType(x), DisplayText = x.ConstructorText(), Json = x.ToJson() }));
+                .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText())));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Enum, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true))));
+
+            // All Types
+            items.AddRange(BH.Engine.UI.Query.TypeItems()
+                .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true))));
+
+            /// Methods
+
+            // All adapter constructors
+            items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
+                .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true))));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => x.IsExposed())
-                        .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = GetMethodType(x), DisplayText = x.ToText(includePath: true, removeIForInterface: false), Json = x.ToJson() }));
+                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false))));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Method_External, DisplayText = x.ToText(true), Json = x.ToJson() }));
-
-            // All Types
-            items.AddRange(BH.Engine.UI.Query.TypeItems()
-                .Select(x => new CodeElementRecord { AssemblyName = AssemblyName(x), AssemblyModifiedTime = AssemblyModifiedTime(x), Type = CodeElementType.Type, DisplayText = x.ToText(true), Json = x.ToJson() }));
+                .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true))));
 
             // Return the list
             return items;
@@ -82,6 +86,51 @@ namespace BH.Engine.UI
 
         /*************************************/
         /**** Public Methods              ****/
+        /*************************************/
+
+        private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText)
+        {
+            List<Type> inputTypes = type.GetProperties()
+                .Select(x => x.PropertyType?.UnderlyingType()?.Type)
+                .Where(x => x != null)
+                .Distinct()
+                .ToList();
+
+            return new CodeElementRecord
+            {
+                AssemblyName = AssemblyName(type),
+                AssemblyModifiedTime = AssemblyModifiedTime(type),
+                Type = elementType,
+                DisplayText = displayText,
+                Json = type.ToJson(),
+                InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
+                OutputKeys = type.UnderlyingType()?.Type.OutputKeys()
+            };
+        }
+
+        /*************************************/
+
+        private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText)
+        {
+            Type outputType = (method is MethodInfo) ? ((MethodInfo)method).ReturnType : method.DeclaringType;
+            List<Type> inputTypes = method.GetParameters()
+                .Select(x => x.ParameterType?.UnderlyingType()?.Type)
+                .Where(x => x != null)
+                .Distinct()
+                .ToList();
+
+            return new CodeElementRecord
+            {
+                AssemblyName = AssemblyName(method),
+                AssemblyModifiedTime = AssemblyModifiedTime(method),
+                Type = elementType,
+                DisplayText = displayText,
+                Json = method.ToJson(),
+                InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
+                OutputKeys = outputType.UnderlyingType()?.Type.OutputKeys()
+            };
+        }
+
         /*************************************/
 
         private static string AssemblyName(MethodBase method)

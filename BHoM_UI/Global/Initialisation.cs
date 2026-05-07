@@ -21,6 +21,7 @@
  */
 
 using BH.Adapter;
+using BH.Engine.Base;
 using BH.Engine.Base.Objects;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
@@ -35,6 +36,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media;
 
 
 namespace BH.UI.Base.Global
@@ -415,11 +417,15 @@ namespace BH.UI.Base.Global
 
             // All code elements
             SearchItems.AddRange(codeElements
-                .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json }));
+                .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json, InputKeys = x.InputKeys, OutputKeys = x.OutputKeys }));
 
             // All data libraries
             SearchItems.AddRange(BH.Engine.UI.Query.LibraryItems()
                 .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace(Path.DirectorySeparatorChar, '.'), Item = x }));
+
+            // All system types
+            SearchItems.AddRange(BH.Engine.UI.Query.SystemTypes()
+                .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
@@ -502,7 +508,7 @@ namespace BH.UI.Base.Global
         private static List<SearchItem> GetComponentItems()
         {
             // Reflection is pretty slow on this one so better to just do it manually even if less elegant
-            return new List<SearchItem>
+            List<SearchItem> items = new List<SearchItem>
             {
                 new SearchItem {
                     Item = typeof(RemoveCaller).GetMethod("Remove"),
@@ -589,6 +595,13 @@ namespace BH.UI.Base.Global
                     Text = "BH.oM.CreateDictionary"
                 }
             };
+
+            foreach (SearchItem item in items.Where(x => x.Item is MethodBase))
+                item.InputKeys = ((MethodBase)item.Item).GetParameters()
+                .Select(x => x.ParameterType?.ToText(true))
+                .ToList();
+
+            return items;
         }
 
         /*************************************/

@@ -44,7 +44,32 @@ namespace BH.Engine.UI
         [Output("tsv", "Excel row containing the data related to the code element in a tsv format.")]
         public static string ToTsv(this CodeElementRecord codeElement)
         {
-            return $"{codeElement.AssemblyName}\t{codeElement.Type}\t{codeElement.DisplayText}\t{codeElement.Json}\t{codeElement.AssemblyModifiedTime.ToFileTimeUtc()}";
+            return $"{codeElement.AssemblyName}" +
+                $"\t{codeElement.Type}" +
+                $"\t{codeElement.DisplayText}" +
+                $"\t{codeElement.Json}" +
+                $"\t{codeElement.AssemblyModifiedTime.ToFileTimeUtc()}" +
+                $"\t{ToCommaSeparatedList(codeElement.InputKeys)}" +
+                $"\t{ToCommaSeparatedList(codeElement.OutputKeys)}";
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static string ToCommaSeparatedList(List<string> keys)
+        {
+            switch (keys?.Count)
+            {
+                case 0:
+                case null:
+                    return "";
+                case 1:
+                    return keys.First();
+                default: 
+                    return keys.Aggregate((a, b) => a + "," + b);
+            }
         }
 
         /*************************************/

@@ -116,83 +116,56 @@ namespace BH.Engine.UI
             Type constraint = config.TypeConstraint;
             if (constraint != null)
                 constraint = constraint.UnderlyingType().Type;
-            bool isReturnType = config.IsReturnType;
 
-            if (isReturnType)
-            {
-                object target = item.Item;
-                Type returnType = typeof(object);
-
-                if (target is MethodInfo)
-                    returnType = ((MethodInfo)target).ReturnType;
-                else if (target is ConstructorInfo)
-                    returnType = ((ConstructorInfo)target).DeclaringType;
-                else if (target is Type)
-                {
-                    if (item.CallerType.Name == "CreateTypeCaller")
-                        returnType = typeof(Type);
-                    else
-                        returnType = target as Type;
-                }
-                else if (target is CustomItem)
-                {
-                    CustomItem ci = target as CustomItem;
-                    List<Type> types = ci.OutputTypes.Where(x => x != null).ToList();
-
-                    double weight = 0;
-                    if (types.Count > 0)
-                        weight = types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
-
-                    if (ci.Tags.Count > 0 && config.Tags.Count > 0)
-                        weight *= 1 + ci.Tags.Intersect(config.Tags).Count();
-
-                    return weight;
-                }
-
-                double callerWeight = item.Text.StartsWith("BH.oM") ? 1.0 : 0.1;
-                return callerWeight * DistanceWeight(returnType.UnderlyingType().Type, constraint);
-            }
+            if (config.IsReturnType)
+                return WeightForInput(item, constraint.ToText(true));
             else
+                return WeightForOutput(item, constraint.OutputKeys());
+        }
+
+        /*************************************/
+
+        public static double WeightForInput(this SearchItem item, string validKey)
+        {
+            // handles the case for types separately
+            if (validKey == "System.Type")
+                return item.CallerType?.Name == "CreateTypeCaller" ? 1.0 : 0;
+            else if (item.CallerType?.Name == "CreateTypeCaller")
+                return 0;
+
+            if (item.OutputKeys.Count == 0)
+                return 0;
+            else if (item.OutputKeys[0] == validKey)
             {
-                object target = item.Item;
-
-                if (target is MethodBase)
+                switch (item.CallerType.Name)
                 {
-                    ParameterInfo[] parameters = ((MethodBase)target).GetParameters();
-                    if (parameters.Length == 0)
-                        return 0;
-                    else
-                        return parameters.Max(x => DistanceWeight(constraint, x.ParameterType.UnderlyingType().Type));
+                    case "CreateAdapterCaller":
+                    case "CreateObjectCaller":
+                    case "CreateRequestCaller":
+                    case "CreateEnumCaller":
+                        return 1.0;
+                    default:
+                        return 0.9;
                 }
-                else if (target is Type)
-                {
-                    if (item.CallerType.Name == "CreateTypeCaller")
-                        return constraint == typeof(Type) ? 1 : 0;
-                    else
-                    {
-                        PropertyInfo[] properties = ((Type)target).GetProperties();
-                        if (properties.Length == 0)
-                            return 0;
-                        else
-                            return properties.Max(x => DistanceWeight(constraint, x.TryGetPropertyType().UnderlyingType().Type));
-                    }    
-                }
-                else if (target is CustomItem)
-                {
-                    CustomItem ci = target as CustomItem;
-                    List<Type> types = ci.InputTypes.Where(x => x != null).ToList();
-                    double weight = 0;
-                    if (types.Count > 0)
-                        weight = types.Max(x => DistanceWeight(constraint, x.UnderlyingType().Type));
-
-                    if (ci.Tags.Count > 0 && config.Tags.Count > 0)
-                        weight *= 1 + ci.Tags.Intersect(config.Tags).Count();
-
-                    return weight;
-                }
-                else
-                    return 0;
             }
+            else if (item.OutputKeys.Any(x => x == validKey))
+                return 0.75;
+            else 
+                return 0;
+        }
+
+        /*************************************/
+
+        public static double WeightForOutput(this SearchItem item, List<string> validKeys)
+        {
+            if (validKeys == null || validKeys.Count == 0 || item.CallerType?.Name == "CreateTypeCaller")
+                return 0;
+            else if (item.InputKeys.Contains(validKeys[0]))
+                return 1.0;
+            else if (item.InputKeys.Intersect(validKeys).Any())
+                return 0.75;
+            else 
+                return 0;
         }
 
 
