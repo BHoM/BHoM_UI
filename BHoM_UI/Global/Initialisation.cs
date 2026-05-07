@@ -425,7 +425,7 @@ namespace BH.UI.Base.Global
 
             // All system types
             SearchItems.AddRange(BH.Engine.UI.Query.SystemTypes()
-                .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true) }));
+                .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true), Item = x }));
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
