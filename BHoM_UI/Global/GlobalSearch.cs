@@ -160,8 +160,12 @@ namespace BH.UI.Base.Global
             if (settings != null)
                 excludedToolkits = settings.Toolkits.Where(x => !x.Include).Select(x => x.Toolkit).ToList();
 
-            if (config != null)
+            if (config?.TypeConstraint != null)
             {
+                Type constraint = config.TypeConstraint;
+                if (constraint != null)
+                    constraint = constraint.UnderlyingType().Type;
+
                 m_SearchMenu.PossibleItems = m_PossibleItems.Where(x =>
                 {
                     if (excludedToolkits.Any(y => x.Text.Contains(y)))
@@ -170,8 +174,13 @@ namespace BH.UI.Base.Global
                     return true; //If the text does not contain any of the excluded toolkits then include it in this display
                 }).Select(x =>
                 {
-                    SearchItem withWeight = x.ShallowClone() as SearchItem;
-                    withWeight.Weight = withWeight.Weight(config);
+                    SearchItem withWeight = x.ShallowClone();
+
+                    if (config.IsReturnType)
+                        withWeight.Weight = withWeight.WeightForInput(constraint.ToText(true));
+                    else
+                        withWeight.Weight = withWeight.WeightForOutput(constraint.OutputKeys());
+
                     return withWeight;
                 }).Where(x => x.Weight > 0).ToList();
             }

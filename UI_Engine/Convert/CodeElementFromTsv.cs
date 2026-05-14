@@ -63,13 +63,23 @@ namespace BH.Engine.UI
                 return null;
             }
 
+            List<string> inputKeys = new List<string>();
+            List<string> outputKeys = new List<string>();
+            if (parts.Length >= 7)
+            {
+                inputKeys = string.IsNullOrEmpty(parts[5]) ? new List<string>() : parts[5].Split(',').ToList();
+                outputKeys = string.IsNullOrEmpty(parts[6]) ? new List<string>() : parts[6].Split(',').ToList();
+            }
+
             return new CodeElementRecord
             {
                 AssemblyName = parts[0],
                 Type = type,
                 DisplayText = parts[2],
                 Json = parts[3],
-                AssemblyModifiedTime = DateTime.FromFileTimeUtc(utcTime)
+                AssemblyModifiedTime = DateTime.FromFileTimeUtc(utcTime),
+                InputKeys = inputKeys,
+                OutputKeys = outputKeys
             };
 
         }
