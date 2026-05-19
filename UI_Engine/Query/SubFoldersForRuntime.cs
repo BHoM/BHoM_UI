@@ -68,7 +68,7 @@ namespace BH.Engine.UI
 
 
         /*************************************/
-        /**** Public Methods              ****/
+        /**** Private Fields              ****/
         /*************************************/
 
         private static List<string> m_SubFoldersForRuntime = null;
