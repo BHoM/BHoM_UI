@@ -84,7 +84,7 @@ namespace BH.UI.Base.Global
             {
                 if (!BH.Engine.Base.Query.IsAssemblyLoaded(assemblyName))
                 {
-                    string assemblyPath = Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll");
+                    string assemblyPath = BH.Engine.UI.Query.AssemblyPath(assemblyName);
                     if (!File.Exists(assemblyPath))
                     {
                         BH.Engine.Base.Compute.RecordError($"Assembly file not found when trying to load assemblies for type {type}: {assemblyPath}");
@@ -162,7 +162,7 @@ namespace BH.UI.Base.Global
             {
                 if (!BH.Engine.Base.Query.IsAssemblyLoaded(assemblyName))
                 {
-                    string assemblyPath = Path.Combine(BH.Engine.Base.Query.BHoMFolder(), assemblyName + ".dll");
+                    string assemblyPath = BH.Engine.UI.Query.AssemblyPath(assemblyName);
                     if (!File.Exists(assemblyPath))
                     {
                         BH.Engine.Base.Compute.RecordNote($"Assembly not found for extension method {methodName}: {assemblyPath}");

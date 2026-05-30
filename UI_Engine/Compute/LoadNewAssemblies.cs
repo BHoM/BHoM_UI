@@ -55,16 +55,42 @@ namespace BH.Engine.UI
 
             // Make sure the keys for the assemblies are in lower case to avoid casing mismatching
             Dictionary<string, DateTime> lastUpdateTimes = lastAssemblyUpdateTimes.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+            HashSet<string> loadedAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> visitedAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            List<string> loadedAssemblies = new List<string>();
+            // Pass 1: runtime-specific subdirectory (preferred over flat folder when present)
+            string bhomFolder = BH.Engine.Base.Query.BHoMFolder();
+            foreach (string subFolder in BH.Engine.UI.Query.SubFoldersForRuntime())
+            {
+                string runtimeFolder = Path.Combine(bhomFolder, subFolder);
+                LoadNewAssembliesForFolder(runtimeFolder, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
+            }
 
-            Regex regex = new Regex(@"oM$|_Engine$|_Adapter$");
-            foreach (string file in Directory.GetFiles(BH.Engine.Base.Query.BHoMFolder(), "*.dll", SearchOption.TopDirectoryOnly))
+            // Pass 2: flat folder, skipping any assembly already handled by the runtime subdir pass
+            LoadNewAssembliesForFolder(bhomFolder, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
+
+            return loadedAssemblies.ToList();
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static void LoadNewAssembliesForFolder(string folderPath, Dictionary<string, DateTime> lastUpdateTimes, HashSet<string> loadedAssemblies, HashSet<string> visitedAssemblies)
+        {
+            if (!Directory.Exists(folderPath))
+                return;
+
+            foreach (string file in Directory.GetFiles(folderPath, "*.dll", SearchOption.TopDirectoryOnly))
             {
                 string name = Path.GetFileNameWithoutExtension(file);
-                if (regex.IsMatch(name))
+
+                if (m_AssemblyNameFilter.IsMatch(name) && !visitedAssemblies.Contains(name))
                 {
+                    visitedAssemblies.Add(name);
                     string key = name.ToLower();
+
                     if (!lastUpdateTimes.ContainsKey(key) || lastUpdateTimes[key] < File.GetLastWriteTimeUtc(file))
                     {
                         Assembly assembly = BH.Engine.Base.Compute.LoadAssembly(file);
@@ -72,13 +98,18 @@ namespace BH.Engine.UI
                         {
                             BH.Engine.Base.Compute.RecordNote($"Assembly {name} loaded as it was newer than its last recorded update time.");
                             loadedAssemblies.Add(name);
-                        }   
-                    }  
+                        }
+                    }
                 }
             }
-
-            return loadedAssemblies;
         }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private static readonly Regex m_AssemblyNameFilter = new Regex(@"oM$|_Engine$|_Adapter$");
 
         /*************************************/
 

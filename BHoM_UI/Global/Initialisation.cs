@@ -68,9 +68,9 @@ namespace BH.UI.Base.Global
 
             success &= LoadCodeElements();
             success &= CreateAssemblyResolver();
+            success &= LoadToolkitSettings();
             success &= LoadNewAssemblies();
             success &= CreateSearchItems(CodeElements);
-            success &= LoadToolkitSettings(); 
 
             CompletionTime = DateTime.UtcNow;
 
@@ -127,7 +127,10 @@ namespace BH.UI.Base.Global
 
             // Make sure the assembly is loaded for that method
             if (!string.IsNullOrEmpty(settings.InitialisationAssembly) && !BH.Engine.Base.Query.IsAssemblyLoaded(settings.InitialisationAssembly))
-                BH.Engine.Base.Compute.LoadAssembly(Path.Combine(BH.Engine.Base.Query.BHoMFolder(), settings.InitialisationAssembly + ".dll"));
+            {
+                string initAssemblyPath = BH.Engine.UI.Query.AssemblyPath(settings.InitialisationAssembly);
+                BH.Engine.Base.Compute.LoadAssembly(initAssemblyPath);
+            }
 
             // Get method declaring type
             List<Type> typeCandidates = Engine.Base.Create.AllTypes(typeName).Where(x => x.FullName == typeName).ToList();
