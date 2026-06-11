@@ -20,58 +20,47 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Base;
+using BH.oM.Base.Attributes;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.UI;
 
-namespace BH.UI.Base.Windows.ViewModel
+namespace BH.Engine.UI
 {
-    internal class ToolkitSelectItemModel : INotifyPropertyChanged
+    public static partial class Query
     {
-        public ToolkitSelectItemModel(ToolkitSelectItem item)
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
+
+        [Description("Gets the toolkit related to a given search item.")]
+        [Input("item", "Search item to get the toolkit for.")]
+        [Output("toolkit", "Toolkit related to a given search item.")]
+        public static string Toolkit(this SearchItem item)
         {
-            Toolkit = item.Toolkit;
-            Include = item.Include;
+            string[] split = item?.Text.Split('.');
+            if (split.Length < 3)
+                return null;
+
+            string toolkit = split[2];
+            if (toolkit == "Adapters" || toolkit == "Revit" && split.Length > 3)
+                toolkit = split[3];
+
+            return toolkit;
         }
 
-        public ToolkitSelectItem ToItem()
-        {
-            return new ToolkitSelectItem()
-            {
-                Toolkit = this.Toolkit,
-                Include = this.Include,
-            };
-        }
-
-        private bool m_Include;
-
-        public virtual string Toolkit { get; set; }
-        public virtual bool Include
-        { 
-            get
-            {
-                return m_Include;
-            }
-            set
-            {
-                m_Include = value;
-                NotifyPropertyChanged();
-            }    
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if(PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        /*************************************/
     }
 }
+
+
+
+
+
 
 

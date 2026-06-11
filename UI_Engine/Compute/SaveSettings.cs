@@ -50,22 +50,8 @@ namespace BH.Engine.UI
                 Engine.Base.Compute.RecordError("Settings object is null.");
                 return false;
             }
-                
-            // Get the config file name
-            string[] splittedNamespace = settings.GetType().Namespace.Split(new char[] { '.' });
-            if (splittedNamespace.Length != 3)
-            {
-                Engine.Base.Compute.RecordError("This settings object doesn't have a valid namespace. It should be `BH.oM.ToolkitName` .");
-                return false;
-            }
 
-            string toolkitName = splittedNamespace[2];
-            string filePath = Path.Combine(BH.Engine.Base.Query.BHoMFolderSettings(), toolkitName + ".cfg");
-
-            // Save the setting in that file
-            File.WriteAllText(filePath, settings.ToJson());
-
-            return true;
+            return BH.Engine.Settings.Compute.SaveSettings(settings, true);
         }
 
         /*************************************/

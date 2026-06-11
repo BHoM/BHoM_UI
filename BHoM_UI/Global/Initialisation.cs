@@ -66,6 +66,8 @@ namespace BH.UI.Base.Global
 
         public static List<CustomRibbonEntry> CustomRibbonEntries { get; set; } = new List<CustomRibbonEntry>();
 
+        public static List<string> ExcludedToolkits { get; set; } = new List<string>();
+
 
         /*************************************/
         /**** Public Methods              ****/
@@ -106,21 +108,48 @@ namespace BH.UI.Base.Global
             bool success = true;
             List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
 
-            // Loading intialisation settings
+            success &= LoadInitialisationSettings(allSettings);
+            success &= LoadCustomRibbons(allSettings);
+            success &= LoadSearchSettings(allSettings);
+
+            stopwatch.Stop();
+            BH.Engine.Base.Compute.RecordNote($"Time to load toolkit settings: {stopwatch.Elapsed.TotalMilliseconds / 1000} s");
+
+            return success;
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static bool LoadInitialisationSettings(List<ISettings> allSettings)
+        {
+            bool success = true;
+
             List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
-            foreach(var settings in initialisationSettings)
+            foreach (var settings in initialisationSettings)
             {
                 try
                 {
                     success &= InitialiseToolkit(settings);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load settings of type {settings.GetType().Name}.");
+                    success = false;
                 }
             }
 
-            // Loading custom ribbon items
+            return success;
+        }
+
+        /*************************************/
+
+        private static bool LoadCustomRibbons(List<ISettings> allSettings)
+        {
+            bool success = true;
+
             List<CustomRibbonSettings> ribbonSettings = allSettings.OfType<CustomRibbonSettings>().ToList();
             foreach (var settings in ribbonSettings)
             {
@@ -134,20 +163,25 @@ namespace BH.UI.Base.Global
                     catch (Exception e)
                     {
                         BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load custom entry for ribbon. Tab name: {entry.TabName}, Category: {entry.Category}, json: {entry.ItemJson}.");
+                        success = false;
                     }
                 }
-                
             }
-
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to load toolkit settings: {stopwatch.Elapsed.TotalMilliseconds / 1000} s");
 
             return success;
         }
 
-
         /*************************************/
-        /**** Private Methods             ****/
+
+        private static bool LoadSearchSettings(List<ISettings> allSettings)
+        {
+            SearchSettings searchSettings = allSettings.OfType<SearchSettings>().FirstOrDefault();
+            if (searchSettings?.ExcludedToolkits != null)
+                ExcludedToolkits = searchSettings.ExcludedToolkits;
+
+            return true;
+        }
+
         /*************************************/
 
         private static bool InitialiseToolkit(IInitialisationSettings settings)
@@ -461,6 +495,10 @@ namespace BH.UI.Base.Global
             // All system types
             SearchItems.AddRange(BH.Engine.UI.Query.SystemTypes()
                 .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true), Item = x }));
+
+            // Filter out excluded toolkits
+            if (ExcludedToolkits?.Count > 0) 
+                SearchItems = SearchItems.Where(x => !ExcludedToolkits.Contains(x.Toolkit())).ToList();
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");

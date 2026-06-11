@@ -60,6 +60,9 @@
       <Private>False</Private>
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Settings_Engine">
+      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Settings_Engine.dll</HintPath>
+    </Reference>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;$(ProgramData)\BHoM\Assemblies&quot; /Y" />
