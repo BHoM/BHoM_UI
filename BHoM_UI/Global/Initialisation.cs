@@ -44,6 +44,13 @@ namespace BH.UI.Base.Global
     public static class Initialisation
     {
         /*************************************/
+        /**** Events                      ****/
+        /*************************************/
+
+        public static event EventHandler<CustomRibbonEntry> CustomRibbonEntryLoaded;
+
+
+        /*************************************/
         /**** Public Properties           ****/
         /*************************************/
 
@@ -56,6 +63,8 @@ namespace BH.UI.Base.Global
         public static List<SearchItem> SearchItems { get; set; } = new List<SearchItem>();
 
         public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), "AssemblyContent.tsv");
+
+        public static List<CustomRibbonEntry> CustomRibbonEntries { get; set; } = new List<CustomRibbonEntry>();
 
 
         /*************************************/
@@ -94,10 +103,11 @@ namespace BH.UI.Base.Global
             BH.Engine.Settings.Compute.LoadSettings(directory);
             BH.Engine.Settings.Compute.LoadSettings(directory, "*.cfg"); //Legacy cfg files to be loaded in
 
-            List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
-            List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
-
             bool success = true;
+            List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
+
+            // Loading intialisation settings
+            List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
             foreach(var settings in initialisationSettings)
             {
                 try
@@ -110,12 +120,34 @@ namespace BH.UI.Base.Global
                 }
             }
 
+            // Loading custom ribbon items
+            List<CustomRibbonSettings> ribbonSettings = allSettings.OfType<CustomRibbonSettings>().ToList();
+            foreach (var settings in ribbonSettings)
+            {
+                foreach (var entry in settings.Entries)
+                {
+                    try
+                    {
+                        CustomRibbonEntryLoaded?.Invoke(null, entry);
+                        CustomRibbonEntries.Add(entry);
+                    }
+                    catch (Exception e)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load custom entry for ribbon. Tab name: {entry.TabName}, Category: {entry.Category}, json: {entry.ItemJson}.");
+                    }
+                }
+                
+            }
+
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to load toolkit settings: {stopwatch.Elapsed.TotalMilliseconds / 1000} s");
 
             return success;
         }
 
+
+        /*************************************/
+        /**** Private Methods             ****/
         /*************************************/
 
         private static bool InitialiseToolkit(IInitialisationSettings settings)
