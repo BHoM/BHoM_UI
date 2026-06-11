@@ -61,7 +61,9 @@
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
     </Reference>
     <Reference Include="Settings_Engine">
-      <HintPath>..\..\..\ProgramData\BHoM\Assemblies\Settings_Engine.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Settings_Engine.dll</HintPath>
     </Reference>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
