@@ -87,6 +87,7 @@ namespace BH.UI.Base.Global
                 if (e.KeyCode == System.Windows.Forms.Keys.B && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
                     Open(container);
             };
+
             return true;
         }
 
@@ -154,25 +155,15 @@ namespace BH.UI.Base.Global
         /*************************************/
 
         private static void ShowWithConstraint(SearchConfig config)
-        {
-            var settings = BH.Engine.Settings.Query.GetSettings(typeof(BH.oM.UI.SearchSettings)) as SearchSettings;
-            List<string> excludedToolkits = new List<string>();
-            if (settings != null)
-                excludedToolkits = settings.Toolkits.Where(x => !x.Include).Select(x => x.Toolkit).ToList();
-
+        {               
+            // Apply weight base on type constraint
             if (config?.TypeConstraint != null)
             {
                 Type constraint = config.TypeConstraint;
                 if (constraint != null)
                     constraint = constraint.UnderlyingType().Type;
 
-                m_SearchMenu.PossibleItems = m_PossibleItems.Where(x =>
-                {
-                    if (excludedToolkits.Any(y => x.Text.Contains(y)))
-                        return false;
-
-                    return true; //If the text does not contain any of the excluded toolkits then include it in this display
-                }).Select(x =>
+                m_SearchMenu.PossibleItems = m_PossibleItems.Select(x =>
                 {
                     SearchItem withWeight = x.ShallowClone();
 
@@ -183,16 +174,6 @@ namespace BH.UI.Base.Global
 
                     return withWeight;
                 }).Where(x => x.Weight > 0).ToList();
-            }
-            else
-            {
-                m_SearchMenu.PossibleItems = m_PossibleItems.Where(x =>
-                {
-                    if (excludedToolkits.Any(y => x.Text.Contains(y)))
-                        return false;
-
-                    return true; //If the text does not contain any of the excluded toolkits then include it in this display
-                }).ToList();
             }
 
             m_SearchMenu.HitsOnEmptySearch = config != null;
