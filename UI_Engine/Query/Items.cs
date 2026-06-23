@@ -145,19 +145,6 @@ namespace BH.Engine.UI
 
         /***************************************************/
 
-        [Description("Extracts all basic system types.")]
-        [Output("items", "All basic system types.")]
-        public static IEnumerable<Type> SystemTypes()
-        {
-            return new List<Type> { typeof(Type), typeof(Enum),
-                    typeof(object), typeof(bool), typeof(byte),
-                    typeof(char), typeof(string),
-                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),
-                    typeof(DateTime)};
-        }
-
-        /***************************************************/
-
         [Description("Extracts all types that have a valid public constructor.")]
         [Output("items", "All types that have a valid public constructor.")]
         public static IEnumerable<Type> ConstructableTypeItems()

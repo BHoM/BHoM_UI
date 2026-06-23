@@ -125,6 +125,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Calculates the weight of a search item specifically aimed as an input.")]
+        [Input("item", "The search item to calculate weight for.")]
+        [Input("validKey", "Accepted type for the input it will feed into. i.e., the return type of the item.")]
+        [Output("weight", "The calculated weight of the search item.")]
         public static double WeightForInput(this SearchItem item, string validKey)
         {
             // handles the case for types separately
@@ -156,6 +160,10 @@ namespace BH.Engine.UI
 
         /*************************************/
 
+        [Description("Calculates the weight of a search item specifically aimed as an output.")]
+        [Input("item", "The search item to calculate weight for.")]
+        [Input("validKeys", "Accepted types for the output it will get its data from. i.e., the input type of the item.")]
+        [Output("weight", "The calculated weight of the search item.")]
         public static double WeightForOutput(this SearchItem item, List<string> validKeys)
         {
             if (validKeys == null || validKeys.Count == 0 || item.CallerType?.Name == "CreateTypeCaller")

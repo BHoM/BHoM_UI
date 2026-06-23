@@ -20,14 +20,14 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
+using BH.Engine.Reflection;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,23 +39,15 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description("Returns the best on-disk path for a BHoM assembly, preferring the runtime-specific subdirectory (netX.0\\ or netfx\\) over the flat folder.")]
-        [Input("assemblyName", "Assembly name without extension, e.g. 'SQL_Adapter'.")]
-        [Output("path", "Full path to the .dll file; the file may or may not exist.")]
-        public static string AssemblyPath(string assemblyName)
+        [Description("Extracts all basic system types.")]
+        [Output("items", "All basic system types.")]
+        public static IEnumerable<Type> SystemTypes()
         {
-            string bhomFolder = BH.Engine.Base.Query.BHoMFolder();
-
-            // First try to return an assembly from a runtime-specific folder 
-            foreach (string subFolder in BH.Engine.UI.Query.SubFoldersForRuntime())
-            {
-                string runtimePath = Path.Combine(bhomFolder, subFolder, assemblyName + ".dll");
-                if (File.Exists(runtimePath))
-                    return runtimePath;
-            }
-
-            //Then  fallback to returning the assembly from the default rool folder
-            return Path.Combine(bhomFolder, assemblyName + ".dll");
+            return new List<Type> { typeof(Type), typeof(Enum),
+                    typeof(object), typeof(bool), typeof(byte),
+                    typeof(char), typeof(string),
+                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),
+                    typeof(DateTime)};
         }
 
         /*************************************/

@@ -44,7 +44,7 @@ namespace BH.Engine.UI
 
         [Description("Loads all BHoM assemblies from the current domain.")]
         [Input("lastAssemblyUpdateTimes", "records of the last time each assembly was updated.")]
-        [Output("loadedAssemblies", "Assemblies loaded as considered new")]
+        [Output("loadedAssemblies", "Assemblies loaded as considered new.")]
         public static List<string> LoadNewAssemblies(Dictionary<string, DateTime> lastAssemblyUpdateTimes)
         {
             if (lastAssemblyUpdateTimes == null)
