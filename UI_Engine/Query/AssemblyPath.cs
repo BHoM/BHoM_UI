@@ -40,7 +40,7 @@ namespace BH.Engine.UI
         /*************************************/
 
         [Description("Returns the best on-disk path for a BHoM assembly, preferring the runtime-specific subdirectory (netX.0\\ or netfx\\) over the flat folder.")]
-        [Input("assemblyName", "Assembly name without extension, e.g. 'SQL_Adapter'")]
+        [Input("assemblyName", "Assembly name without extension, e.g. 'SQL_Adapter'.")]
         [Output("path", "Full path to the .dll file; the file may or may not exist.")]
         public static string AssemblyPath(string assemblyName)
         {

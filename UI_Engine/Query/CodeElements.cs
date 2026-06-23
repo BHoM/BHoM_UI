@@ -45,7 +45,7 @@ namespace BH.Engine.UI
         /*************************************/
 
         [Description("Collect all the code elements that can be used to create UI components from the loaded assemblies.")]
-        [Output("codeElements", "All code elements already loaded that can be used in the UI to create components")]
+        [Output("codeElements", "All code elements already loaded that can be used in the UI to create components.")]
         public static List<CodeElementRecord> CodeElements()
         {
             List<CodeElementRecord> items = new List<CodeElementRecord>();
