@@ -155,7 +155,7 @@ namespace BH.UI.Base.Global
         /*************************************/
 
         private static void ShowWithConstraint(SearchConfig config)
-        {               
+        {
             // Apply weight base on type constraint
             if (config?.TypeConstraint != null)
             {
@@ -175,6 +175,8 @@ namespace BH.UI.Base.Global
                     return withWeight;
                 }).Where(x => x.Weight > 0).ToList();
             }
+            else
+                m_SearchMenu.PossibleItems = m_PossibleItems.ToList();
 
             m_SearchMenu.HitsOnEmptySearch = config != null;
             m_SearchMenu.ShowResults("");
