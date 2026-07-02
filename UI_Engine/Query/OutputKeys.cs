@@ -20,39 +20,49 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Serialiser;
-using BH.oM.Base;
+using BH.Engine.Base;
+using BH.Engine.Reflection;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Engine.UI
 {
-    public static partial class Compute
+    public static partial class Query
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If any previoulsy saved settings for that toolkit will be overwritten.")]
-        [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
-        [Output("success", "Returns true if the settings were saved successfully.")]
-        public static bool SaveSettings(ISettings settings)
+        [Description("Gets all the text representations of types that accept the provided type as input.")]
+        [Input("type", "The type to get the output key from.")]
+        [Output("Keys", "Text representations of types that accept the provided type as input.")]
+        public static List<string> OutputKeys(this Type type)
         {
-            if (settings == null)
+            if (m_OutputTypeKeys.ContainsKey(type))
+                return m_OutputTypeKeys[type];
+            else
             {
-                Engine.Base.Compute.RecordError("Settings object is null.");
-                return false;
-            }
+                List<string> keys = new List<Type> { type }
+                    .Concat(type.BaseTypes().Where(x => x.Namespace?.StartsWith("BH.") == true))
+                    .Select(x => x.ToText(true))
+                    .ToList();
 
-            return BH.Engine.Settings.Compute.SaveSettings(settings, true);
+                m_OutputTypeKeys[type] = keys;
+                return keys;
+            }
         }
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private static Dictionary<Type, List<string>> m_OutputTypeKeys = new Dictionary<Type, List<string>>();
 
         /*************************************/
     }

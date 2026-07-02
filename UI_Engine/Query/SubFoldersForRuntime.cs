@@ -20,39 +20,58 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Serialiser;
-using BH.oM.Base;
+using BH.Engine.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Engine.UI
 {
-    public static partial class Compute
+    public static partial class Query
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If any previoulsy saved settings for that toolkit will be overwritten.")]
-        [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
-        [Output("success", "Returns true if the settings were saved successfully.")]
-        public static bool SaveSettings(ISettings settings)
+        [Description("Returns the runtime-specific subdirectories of the BHoM Assemblies folder where assemblies compatible with the current .NET runtime can be found. " +
+             "Returns '.../Assemblies/netfx/' on .NET Framework and '.../Assemblies/netX.0/' on CoreCLR (.NET X).")]
+        [Output("subFolders", "runtime-specific subdirectories for the BHoM assemblies sorted in the order they should be traversed.")]
+        public static List<string> SubFoldersForRuntime()
         {
-            if (settings == null)
+            if (m_SubFoldersForRuntime != null) 
+                return m_SubFoldersForRuntime;
+
+            
+            var desc = RuntimeInformation.FrameworkDescription;
+            if (desc.StartsWith(".NET Framework", StringComparison.OrdinalIgnoreCase))
             {
-                Engine.Base.Compute.RecordError("Settings object is null.");
-                return false;
+                // Return 'netfx' if the framework is a .NET Framework
+                m_SubFoldersForRuntime = new List<string> { "netfx" };
+            }
+            else
+            {
+                // For .NET Core, return exact TFM first, then descend to lower versions as fallback
+                m_SubFoldersForRuntime = new List<string>();
+                int major = Environment.Version.Major;
+                for (int v = major; v >= 5; v--)
+                    m_SubFoldersForRuntime.Add($"net{v}.0");
             }
 
-            return BH.Engine.Settings.Compute.SaveSettings(settings, true);
+            return m_SubFoldersForRuntime;
         }
+
+
+        /*************************************/
+        /**** Private Fields              ****/
+        /*************************************/
+
+        private static List<string> m_SubFoldersForRuntime = null;
 
         /*************************************/
     }

@@ -20,38 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Serialiser;
-using BH.oM.Base;
+using BH.Engine.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Engine.UI
 {
-    public static partial class Compute
+    public static partial class Query
     {
         /*************************************/
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If any previoulsy saved settings for that toolkit will be overwritten.")]
-        [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
-        [Output("success", "Returns true if the settings were saved successfully.")]
-        public static bool SaveSettings(ISettings settings)
+        [Description("Gets the toolkit related to a given search item.")]
+        [Input("item", "Search item to get the toolkit for.")]
+        [Output("toolkit", "Toolkit related to a given search item.")]
+        public static string Toolkit(this SearchItem item)
         {
-            if (settings == null)
-            {
-                Engine.Base.Compute.RecordError("Settings object is null.");
-                return false;
-            }
+            string[] split = item?.Text.Split('.');
+            if (split.Length < 3)
+                return null;
 
-            return BH.Engine.Settings.Compute.SaveSettings(settings, true);
+            string toolkit = split[2];
+            if (toolkit == "Adapters" || toolkit == "Revit" && split.Length > 3)
+                toolkit = split[3];
+
+            return toolkit;
         }
 
         /*************************************/

@@ -20,44 +20,29 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Serialiser;
 using BH.oM.Base;
-using BH.oM.Base.Attributes;
-using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BH.Engine.UI
+namespace BH.oM.UI
 {
-    public static partial class Compute
+    public class CustomRibbonSettings : ISettings
     {
-        /*************************************/
-        /**** Public Methods              ****/
-        /*************************************/
+        /***************************************************/
+        /**** Properties                                ****/
+        /***************************************************/
 
-        [Description(@"Saves the settings for a toolkit into C:/ProgramData/BHoM/Settings. If any previoulsy saved settings for that toolkit will be overwritten.")]
-        [Input("settings", "Settings for a toolkit that need to be saved permanently.")]
-        [Output("success", "Returns true if the settings were saved successfully.")]
-        public static bool SaveSettings(ISettings settings)
-        {
-            if (settings == null)
-            {
-                Engine.Base.Compute.RecordError("Settings object is null.");
-                return false;
-            }
+        public virtual string Name { get; set; } = "";
 
-            return BH.Engine.Settings.Compute.SaveSettings(settings, true);
-        }
+        public virtual List<CustomRibbonEntry> Entries { get; set; } = new List<CustomRibbonEntry>();
 
-        /*************************************/
+
+        /***************************************************/
     }
 }
-
 
 
 

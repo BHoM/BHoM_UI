@@ -204,6 +204,20 @@ namespace BH.UI.Base
                     {
                         if (OutputParams[i].IsSelected)
                         {
+                            if (output == null)
+                            {
+                                var subType = OutputParams[i].DataType.UnderlyingType();
+                                Type elementType = subType.Type;
+                                if (QuantitiesAsDouble && typeof(BH.oM.Quantities.IQuantity).IsAssignableFrom(elementType))
+                                    elementType = typeof(double);
+
+                                if (elementType.IsValueType && Nullable.GetUnderlyingType(elementType) == null)
+                                {
+                                    output = Activator.CreateInstance(elementType);
+                                    BH.Engine.Base.Compute.RecordWarning($"Output '{OutputParams[i].Name}' is null but its type ({elementType.Name}) is not nullable. Using default value instead.");
+                                }
+                            }
+
                             m_CompiledSetters[i](m_DataAccessor, output, index);
                             index++;
                         }

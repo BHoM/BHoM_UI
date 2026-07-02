@@ -21,6 +21,7 @@
  */
 
 using BH.Adapter;
+using BH.Engine.Base;
 using BH.Engine.Base.Objects;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
@@ -35,12 +36,20 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Media;
 
 
 namespace BH.UI.Base.Global
 {
     public static class Initialisation
     {
+        /*************************************/
+        /**** Events                      ****/
+        /*************************************/
+
+        public static event EventHandler<CustomRibbonEntry> CustomRibbonEntryLoaded;
+
+
         /*************************************/
         /**** Public Properties           ****/
         /*************************************/
@@ -55,6 +64,10 @@ namespace BH.UI.Base.Global
 
         public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), "AssemblyContent.tsv");
 
+        public static List<CustomRibbonEntry> CustomRibbonEntries { get; set; } = new List<CustomRibbonEntry>();
+
+        public static List<string> ExcludedToolkits { get; set; } = new List<string>();
+
 
         /*************************************/
         /**** Public Methods              ****/
@@ -66,9 +79,9 @@ namespace BH.UI.Base.Global
 
             success &= LoadCodeElements();
             success &= CreateAssemblyResolver();
+            success &= LoadToolkitSettings();
             success &= LoadNewAssemblies();
             success &= CreateSearchItems(CodeElements);
-            success &= LoadToolkitSettings(); 
 
             CompletionTime = DateTime.UtcNow;
 
@@ -92,26 +105,81 @@ namespace BH.UI.Base.Global
             BH.Engine.Settings.Compute.LoadSettings(directory);
             BH.Engine.Settings.Compute.LoadSettings(directory, "*.cfg"); //Legacy cfg files to be loaded in
 
-            List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
-            List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
-
             bool success = true;
-            foreach(var settings in initialisationSettings)
-            {
-                try
-                {
-                    success &= InitialiseToolkit(settings);
-                }
-                catch(Exception e)
-                {
-                    BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load settings of type {settings.GetType().Name}.");
-                }
-            }
+            List<ISettings> allSettings = BH.Engine.Settings.Query.GetAllSettings();
+
+            success &= LoadInitialisationSettings(allSettings);
+            success &= LoadCustomRibbons(allSettings);
+            success &= LoadSearchSettings(allSettings);
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to load toolkit settings: {stopwatch.Elapsed.TotalMilliseconds / 1000} s");
 
             return success;
+        }
+
+
+        /*************************************/
+        /**** Private Methods             ****/
+        /*************************************/
+
+        private static bool LoadInitialisationSettings(List<ISettings> allSettings)
+        {
+            bool success = true;
+
+            List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
+            foreach (var settings in initialisationSettings)
+            {
+                try
+                {
+                    success &= InitialiseToolkit(settings);
+                }
+                catch (Exception e)
+                {
+                    BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load settings of type {settings.GetType().Name}.");
+                    success = false;
+                }
+            }
+
+            return success;
+        }
+
+        /*************************************/
+
+        private static bool LoadCustomRibbons(List<ISettings> allSettings)
+        {
+            bool success = true;
+
+            List<CustomRibbonSettings> ribbonSettings = allSettings.OfType<CustomRibbonSettings>().ToList();
+            foreach (var settings in ribbonSettings)
+            {
+                foreach (var entry in settings.Entries)
+                {
+                    try
+                    {
+                        CustomRibbonEntryLoaded?.Invoke(null, entry);
+                        CustomRibbonEntries.Add(entry);
+                    }
+                    catch (Exception e)
+                    {
+                        BH.Engine.Base.Compute.RecordWarning(e, $"Failed to load custom entry for ribbon. Tab name: {entry.TabName}, Category: {entry.Category}, json: {entry.ItemJson}.");
+                        success = false;
+                    }
+                }
+            }
+
+            return success;
+        }
+
+        /*************************************/
+
+        private static bool LoadSearchSettings(List<ISettings> allSettings)
+        {
+            SearchSettings searchSettings = allSettings.OfType<SearchSettings>().FirstOrDefault();
+            if (searchSettings?.ExcludedToolkits != null)
+                ExcludedToolkits = searchSettings.ExcludedToolkits;
+
+            return true;
         }
 
         /*************************************/
@@ -125,7 +193,10 @@ namespace BH.UI.Base.Global
 
             // Make sure the assembly is loaded for that method
             if (!string.IsNullOrEmpty(settings.InitialisationAssembly) && !BH.Engine.Base.Query.IsAssemblyLoaded(settings.InitialisationAssembly))
-                BH.Engine.Base.Compute.LoadAssembly(Path.Combine(BH.Engine.Base.Query.BHoMFolder(), settings.InitialisationAssembly + ".dll"));
+            {
+                string initAssemblyPath = BH.Engine.UI.Query.AssemblyPath(settings.InitialisationAssembly);
+                BH.Engine.Base.Compute.LoadAssembly(initAssemblyPath);
+            }
 
             // Get method declaring type
             List<Type> typeCandidates = Engine.Base.Create.AllTypes(typeName).Where(x => x.FullName == typeName).ToList();
@@ -415,11 +486,19 @@ namespace BH.UI.Base.Global
 
             // All code elements
             SearchItems.AddRange(codeElements
-                .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json }));
+                .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json, InputKeys = x.InputKeys, OutputKeys = x.OutputKeys }));
 
             // All data libraries
             SearchItems.AddRange(BH.Engine.UI.Query.LibraryItems()
                 .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace(Path.DirectorySeparatorChar, '.'), Item = x }));
+
+            // All system types
+            SearchItems.AddRange(BH.Engine.UI.Query.SystemTypes()
+                .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true), Item = x }));
+
+            // Filter out excluded toolkits
+            if (ExcludedToolkits?.Count > 0) 
+                SearchItems = SearchItems.Where(x => !ExcludedToolkits.Contains(x.Toolkit())).ToList();
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to create all items for the menu: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
@@ -502,7 +581,7 @@ namespace BH.UI.Base.Global
         private static List<SearchItem> GetComponentItems()
         {
             // Reflection is pretty slow on this one so better to just do it manually even if less elegant
-            return new List<SearchItem>
+            List<SearchItem> items = new List<SearchItem>
             {
                 new SearchItem {
                     Item = typeof(RemoveCaller).GetMethod("Remove"),
@@ -589,6 +668,13 @@ namespace BH.UI.Base.Global
                     Text = "BH.oM.CreateDictionary"
                 }
             };
+
+            foreach (SearchItem item in items.Where(x => x.Item is MethodBase))
+                item.InputKeys = ((MethodBase)item.Item).GetParameters()
+                .Select(x => x.ParameterType?.ToText(true))
+                .ToList();
+
+            return items;
         }
 
         /*************************************/

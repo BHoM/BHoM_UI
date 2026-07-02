@@ -20,58 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
+using BH.oM.Base.Attributes;
+using BH.oM.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.UI;
 
-namespace BH.UI.Base.Windows.ViewModel
+namespace BH.Engine.UI
 {
-    internal class ToolkitSelectItemModel : INotifyPropertyChanged
+    public static partial class Query
     {
-        public ToolkitSelectItemModel(ToolkitSelectItem item)
+        /*************************************/
+        /**** Public Methods              ****/
+        /*************************************/
+
+        [Description("Extracts all basic system types.")]
+        [Output("items", "All basic system types.")]
+        public static IEnumerable<Type> SystemTypes()
         {
-            Toolkit = item.Toolkit;
-            Include = item.Include;
+            return new List<Type> { typeof(Type), typeof(Enum),
+                    typeof(object), typeof(bool), typeof(byte),
+                    typeof(char), typeof(string),
+                    typeof(float), typeof(double), typeof(decimal), typeof(short), typeof(int), typeof(long),
+                    typeof(DateTime)};
         }
 
-        public ToolkitSelectItem ToItem()
-        {
-            return new ToolkitSelectItem()
-            {
-                Toolkit = this.Toolkit,
-                Include = this.Include,
-            };
-        }
-
-        private bool m_Include;
-
-        public virtual string Toolkit { get; set; }
-        public virtual bool Include
-        { 
-            get
-            {
-                return m_Include;
-            }
-            set
-            {
-                m_Include = value;
-                NotifyPropertyChanged();
-            }    
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if(PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        /*************************************/
     }
 }
+
+
+
+
+
 
 

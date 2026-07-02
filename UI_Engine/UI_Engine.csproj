@@ -7,7 +7,7 @@
 		<Authors>BHoM</Authors>
 		<Copyright>Copyright © https://github.com/BHoM</Copyright>
 		<RootNamespace>BH.Engine.UI</RootNamespace>
-		<FileVersion>9.1.0.0</FileVersion>
+		<FileVersion>9.2.0.0</FileVersion>
 		<OutputPath>..\Build\</OutputPath>
 	</PropertyGroup>
 	<ItemGroup>
@@ -59,6 +59,11 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Settings_Engine">
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Settings_Engine.dll</HintPath>
     </Reference>
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

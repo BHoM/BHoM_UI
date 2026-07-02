@@ -36,7 +36,7 @@ namespace BH.oM.UI
         /**** Properties                                ****/
         /***************************************************/
 
-        public virtual List<ToolkitSelectItem> Toolkits { get; set; } = new List<ToolkitSelectItem>();
+        public virtual List<string> ExcludedToolkits { get; set; } = new List<string>();
 
         /***************************************************/
     }

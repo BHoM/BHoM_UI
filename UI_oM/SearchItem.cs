@@ -48,6 +48,10 @@ namespace BH.oM.UI
 
         public virtual string Json { get; set; } = "";
 
+        public virtual List<string> InputKeys { get; set; } = new List<string>();
+
+        public virtual List<string> OutputKeys { get; set; } = new List<string>();
+
 
         /***************************************************/
     }
