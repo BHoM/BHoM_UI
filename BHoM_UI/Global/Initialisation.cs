@@ -20,23 +20,20 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Adapter;
 using BH.Engine.Base;
 using BH.Engine.Base.Objects;
-using BH.Engine.Reflection;
 using BH.Engine.UI;
 using BH.oM.Base;
+using BH.oM.Base.Reflection;
 using BH.oM.UI;
 using BH.UI.Base.Components;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Media;
 
 
 namespace BH.UI.Base.Global
@@ -62,7 +59,7 @@ namespace BH.UI.Base.Global
 
         public static List<SearchItem> SearchItems { get; set; } = new List<SearchItem>();
 
-        public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), "AssemblyContent.tsv");
+        public static string AssemblyContentFilePath { get; set; } = BH.Engine.Base.Objects.Initialisation.DefaultAssemblyContentFilePath;
 
         public static List<CustomRibbonEntry> CustomRibbonEntries { get; set; } = new List<CustomRibbonEntry>();
 
@@ -96,7 +93,7 @@ namespace BH.UI.Base.Global
             stopwatch.Start();
 
             string directory = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.CommonApplicationData), "BHoM", "Settings");
-            if(!Directory.Exists(directory))
+            if (!Directory.Exists(directory))
             {
                 BH.Engine.Base.Compute.RecordWarning($"{directory} doesn't exist. Toolkit settings are not loaded.");
                 return false;
@@ -128,7 +125,7 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             List<IInitialisationSettings> initialisationSettings = allSettings.OfType<IInitialisationSettings>().ToList();
-            foreach (var settings in initialisationSettings)
+            foreach (IInitialisationSettings settings in initialisationSettings)
             {
                 try
                 {
@@ -151,9 +148,9 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             List<CustomRibbonSettings> ribbonSettings = allSettings.OfType<CustomRibbonSettings>().ToList();
-            foreach (var settings in ribbonSettings)
+            foreach (CustomRibbonSettings settings in ribbonSettings)
             {
-                foreach (var entry in settings.Entries)
+                foreach (CustomRibbonEntry entry in settings.Entries)
                 {
                     try
                     {
@@ -194,7 +191,7 @@ namespace BH.UI.Base.Global
             // Make sure the assembly is loaded for that method
             if (!string.IsNullOrEmpty(settings.InitialisationAssembly) && !BH.Engine.Base.Query.IsAssemblyLoaded(settings.InitialisationAssembly))
             {
-                string initAssemblyPath = BH.Engine.UI.Query.AssemblyPath(settings.InitialisationAssembly);
+                string initAssemblyPath = BH.Engine.Base.Objects.Initialisation.AssemblyFilePath(settings.InitialisationAssembly);
                 BH.Engine.Base.Compute.LoadAssembly(initAssemblyPath);
             }
 
@@ -235,26 +232,11 @@ namespace BH.UI.Base.Global
             if (!File.Exists(AssemblyContentFilePath))
                 return true;
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            // Load the code elements
-            try
-            {
-                CodeElements = File.ReadAllLines(AssemblyContentFilePath)
-                    .Select(x => BH.Engine.UI.Convert.CodeElementFromTsv(x))
-                    .Where(x => x != null)
-                    .ToList();
-            }
-            catch (Exception e)
-            {
-                BH.Engine.Base.Compute.RecordError(e, $"Failed to load the code elements from '{Path.GetFileName(AssemblyContentFilePath)}'.");
+            List<CodeElementRecord> loaded = BH.Engine.Base.Objects.Initialisation.LoadCodeElements(AssemblyContentFilePath, x => x.FromTsv());
+            if (loaded == null)
                 return false;
-            }
 
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to load all code elements: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
-
+            CodeElements = loaded;
             return true;
         }
 
@@ -262,214 +244,21 @@ namespace BH.UI.Base.Global
 
         private static bool CreateAssemblyResolver()
         {
-            // Collect the relation between types and the assembly they belong to
-            Dictionary<string, List<string>> assemblyNamesPerType = CodeElements
-                .Where(x => x.Type == CodeElementType.Type)
-                .GroupBy(x => x.DisplayText)
-                .ToDictionary(group => group.Key, group => group.Select(x => x.AssemblyName).Distinct().ToList());
-
-            // Collect the relation between extension methods and the assembly they belong to
-            Dictionary<string, Dictionary<string, List<string>>> assemblyNamesPerExtensionMethod
-                = BuildExtensionMethodDictionary(CodeElements);
-
-            // Create the assembly resolver and link it the the BHoM engine
-            AssemblyResolver = new AssemblyResolver(assemblyNamesPerType, assemblyNamesPerExtensionMethod);
+            AssemblyResolver = BH.Engine.Base.Objects.Initialisation.CreateAssemblyResolver(CodeElements);
             BH.Engine.Base.Compute.SetAssemblyResolver(AssemblyResolver);
-
             return true;
-        }
-
-        /*************************************/
-
-        private static Dictionary<string, Dictionary<string, List<string>>> BuildExtensionMethodDictionary(
-            List<CodeElementRecord> codeElements)
-        {
-            Dictionary<string, Dictionary<string, List<string>>> result
-                = new Dictionary<string, Dictionary<string, List<string>>>();
-
-            foreach (CodeElementRecord record in codeElements.Where(x =>
-                x.Type == CodeElementType.Method_Query ||
-                x.Type == CodeElementType.Method_Compute ||
-                x.Type == CodeElementType.Method_Convert ||
-                x.Type == CodeElementType.Method_Modify))
-            {
-                try
-                {
-                    // Extract first parameter type from JSON
-                    string firstParamTypeName = ExtractFirstParameterType(record.Json);
-
-                    if (!string.IsNullOrEmpty(firstParamTypeName))
-                    {
-                        // Extract method name from DisplayText
-                        string methodName = ExtractMethodName(record.DisplayText);
-
-                        // Build nested dictionary
-                        if (!result.ContainsKey(methodName))
-                            result[methodName] = new Dictionary<string, List<string>>();
-
-                        if (!result[methodName].ContainsKey(firstParamTypeName))
-                            result[methodName][firstParamTypeName] = new List<string>();
-
-                        if (!result[methodName][firstParamTypeName].Contains(record.AssemblyName))
-                            result[methodName][firstParamTypeName].Add(record.AssemblyName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Failed to parse extension method from {record.DisplayText}: {ex.Message}");
-                }
-            }
-
-            return result;
-        }
-
-        /*************************************/
-
-        private static string ExtractFirstParameterType(string json)
-        {
-            if (string.IsNullOrEmpty(json))
-                return null;
-
-            try
-            {
-                // Find the Parameters array in the JSON
-                int parametersIndex = json.IndexOf("\"Parameters\"");
-                if (parametersIndex < 0)
-                    return null;
-
-                // Find the opening bracket of the Parameters array
-                int arrayStartIndex = json.IndexOf('[', parametersIndex);
-                if (arrayStartIndex < 0)
-                    return null;
-
-                // Find the end of the first parameter (first element in array)
-                // The first element starts after [ and is a JSON string itself
-                int firstParamStart = arrayStartIndex + 1;
-
-                // Skip whitespace
-                while (firstParamStart < json.Length && char.IsWhiteSpace(json[firstParamStart]))
-                    firstParamStart++;
-
-                // Check if array is empty
-                if (firstParamStart >= json.Length || json[firstParamStart] == ']')
-                    return null;
-
-                // The first parameter is a JSON string, find "Name" property within it
-                // Look for "Name" : "..." pattern in the first parameter
-                int nameIndex = json.IndexOf("\\\"Name\\\"", firstParamStart);
-                if (nameIndex < 0)
-                    return null;
-
-                // Find the opening quote of the Name value
-                int nameValueStart = json.IndexOf("\\\"", nameIndex + 8); // Skip past \"Name\"
-                if (nameValueStart < 0)
-                    return null;
-
-                nameValueStart += 2; // Skip past \"
-
-                // Find the closing quote of the Name value
-                int nameValueEnd = json.IndexOf("\\\"", nameValueStart);
-                if (nameValueEnd < 0)
-                    return null;
-
-                // Extract the type name
-                string typeName = json.Substring(nameValueStart, nameValueEnd - nameValueStart);
-
-                // Remove assembly qualification: "Type, Assembly" -> "Type"
-                int commaIndex = typeName.IndexOf(',');
-                if (commaIndex > 0)
-                    typeName = typeName.Substring(0, commaIndex).Trim();
-
-                return typeName;
-            }
-            catch (Exception ex)
-            {
-                // Silent fail
-                BH.Engine.Base.Compute.RecordNote($"Could not extract parameter type: {ex.Message}");
-            }
-
-            return null;
-        }
-
-        /*************************************/
-
-        private static string ExtractMethodName(string displayText)
-        {
-            // Format: "BH.Engine.Namespace.Query.MethodName(params)" or with generics
-            int openParen = displayText.IndexOf('(');
-            if (openParen < 0)
-                return displayText;
-
-            string beforeParams = displayText.Substring(0, openParen);
-
-            // Remove generic type parameters if present
-            int genericStart = beforeParams.IndexOf('<');
-            if (genericStart > 0)
-                beforeParams = beforeParams.Substring(0, genericStart);
-
-            // Get last segment after last dot
-            int lastDot = beforeParams.LastIndexOf('.');
-            if (lastDot >= 0)
-                return beforeParams.Substring(lastDot + 1);
-
-            return beforeParams;
         }
 
         /*************************************/
 
         private static bool LoadNewAssemblies()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Dictionary<string, DateTime> lastAssemblyUpdateTimes = CodeElements
-                .GroupBy(x => x.AssemblyName)
-                .ToDictionary(x => x.Key, x => x.First().AssemblyModifiedTime);
-
-            List<string> loadedAssemblies = BH.Engine.UI.Compute.LoadNewAssemblies(lastAssemblyUpdateTimes);
-
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to load all updated/new assemblies from current domain: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
-
-            UpdateCodeElements(loadedAssemblies);
-
-            return true;
-        }
-
-        /*************************************/
-
-        private static bool UpdateCodeElements(List<string> loadedAssemblies)
-        {
-            List<CodeElementRecord> loadedCodeElements = BH.Engine.UI.Query.CodeElements()
-                .Where(x => loadedAssemblies.Contains(x.AssemblyName, StringComparer.OrdinalIgnoreCase))
-                .ToList();
-
-            if (loadedCodeElements.Count == 0)
-                return true;
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            CodeElements = CodeElements.Where(x => !loadedAssemblies.Contains(x.AssemblyName))
-                .Concat(loadedCodeElements)
-                .ToList();
-
-            List<string> lines = CodeElements
-                .Select(x => x.ToTsv())
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToList();
-
-            try
-            {
-                File.WriteAllLines(AssemblyContentFilePath, lines);
-            }
-            catch (Exception e)
-            {
-                BH.Engine.Base.Compute.RecordError(e, $"Failed to save the assembly content to {AssemblyContentFilePath}.");
-            }
-
-            stopwatch.Stop();
-            BH.Engine.Base.Compute.RecordNote($"Time to update the code elements with the content of the updated/new assemblies: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
+            CodeElements = BH.Engine.Base.Objects.Initialisation.RefreshFromNewAssemblies(
+                CodeElements,
+                BH.Engine.Base.Objects.Initialisation.DefaultAssemblyNameFilter,
+                AssemblyContentFilePath,
+                x => x.ToTsv(),
+                names => BH.Engine.Reflection.Query.CodeElements(names));
 
             return true;
         }
@@ -486,18 +275,18 @@ namespace BH.UI.Base.Global
 
             // All code elements
             SearchItems.AddRange(codeElements
-                .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json, InputKeys = x.InputKeys, OutputKeys = x.OutputKeys }));
+                .Select(x => new SearchItem { CallerType = GetCallerType(x), Icon = GetIcon(x), Text = x.DisplayText, InputKeys = x.InputKeys, OutputKeys = x.OutputKeys }));
 
             // All data libraries
             SearchItems.AddRange(BH.Engine.UI.Query.LibraryItems()
                 .Select(x => new SearchItem { CallerType = typeof(CreateDataCaller), Icon = Properties.Resources.BHoM_Data, Text = x.Replace(Path.DirectorySeparatorChar, '.'), Item = x }));
 
             // All system types
-            SearchItems.AddRange(BH.Engine.UI.Query.SystemTypes()
+            SearchItems.AddRange(BH.Engine.Reflection.Query.SystemTypes()
                 .Select(x => new SearchItem { CallerType = typeof(CreateTypeCaller), Icon = Properties.Resources.Type, Text = x.ToText(true), Item = x }));
 
             // Filter out excluded toolkits
-            if (ExcludedToolkits?.Count > 0) 
+            if (ExcludedToolkits?.Count > 0)
                 SearchItems = SearchItems.Where(x => !ExcludedToolkits.Contains(x.Toolkit())).ToList();
 
             stopwatch.Stop();
@@ -508,18 +297,24 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
-        private static Type GetCallerType(CodeElementType codeElementType)
+        private static Type GetCallerType(CodeElementRecord codeElement)
         {
-            switch (codeElementType)
+            switch (codeElement.Type)
             {
-                case CodeElementType.AdapterConstructor:
-                    return typeof(CreateAdapterCaller);
-                case CodeElementType.ConstructableObject:
-                    return typeof(CreateObjectCaller);
-                case CodeElementType.ConstructableRequest:
-                    return typeof(CreateRequestCaller);
+                case CodeElementType.Constructor:
+                    if (codeElement.IsAdapterConstructor())
+                        return typeof(CreateAdapterCaller);
+                    if (codeElement.IsRequestConstructor())
+                        return typeof(CreateRequestCaller);
+                    else
+                        return typeof(CreateObjectCaller);
                 case CodeElementType.Enum:
                     return typeof(CreateEnumCaller);
+                case CodeElementType.Method_Create:
+                    if (codeElement.IsRequestCreator())
+                        return typeof(CreateRequestCaller);
+                    else
+                        return typeof(CreateObjectCaller);
                 case CodeElementType.Method_Compute:
                     return typeof(ComputeCaller);
                 case CodeElementType.Method_Convert:
@@ -530,10 +325,6 @@ namespace BH.UI.Base.Global
                     return typeof(ModifyCaller);
                 case CodeElementType.Method_Query:
                     return typeof(QueryCaller);
-                case CodeElementType.ObjectCreator:
-                    return typeof(CreateObjectCaller);
-                case CodeElementType.RequestCreator:
-                    return typeof(CreateRequestCaller);
                 case CodeElementType.Type:
                     return typeof(CreateTypeCaller);
                 default:
@@ -543,18 +334,45 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
-        private static Bitmap GetIcon(CodeElementType codeElementType)
+        private static bool IsAdapterConstructor(this CodeElementRecord codeElement)
         {
-            switch (codeElementType)
+            return codeElement.Type == CodeElementType.Constructor && codeElement.OutputKeys.Contains("BH.oM.Adapter.IBHoMAdapter");
+        }
+
+        /*************************************/
+
+        private static bool IsRequestConstructor(this CodeElementRecord codeElement)
+        {
+            return codeElement.Type == CodeElementType.Constructor && codeElement.OutputKeys.Contains("BH.oM.Data.Requests.IRequest");
+        }
+
+        /*************************************/
+
+        private static bool IsRequestCreator(this CodeElementRecord codeElement)
+        {
+            return codeElement.Type == CodeElementType.Method_Create && codeElement.OutputKeys.Contains("BH.oM.Data.Requests.IRequest");
+        }
+
+        /*************************************/
+
+        private static Bitmap GetIcon(CodeElementRecord codeElement)
+        {
+            switch (codeElement.Type)
             {
-                case CodeElementType.AdapterConstructor:
-                    return Properties.Resources.Adapter;
-                case CodeElementType.ConstructableObject:
-                    return Properties.Resources.CreateBHoM;
-                case CodeElementType.ConstructableRequest:
-                    return Properties.Resources.CreateRequest;
+                case CodeElementType.Constructor:
+                    if (codeElement.IsAdapterConstructor())
+                        return Properties.Resources.Adapter;
+                    if (codeElement.IsRequestConstructor())
+                        return Properties.Resources.CreateRequest;
+                    else
+                        return Properties.Resources.CreateBHoM;
                 case CodeElementType.Enum:
                     return Properties.Resources.BHoM_Enum;
+                case CodeElementType.Method_Create:
+                    if (codeElement.IsRequestCreator())
+                        return Properties.Resources.CreateRequest;
+                    else
+                        return Properties.Resources.CreateBHoM;
                 case CodeElementType.Method_Compute:
                     return Properties.Resources.Compute;
                 case CodeElementType.Method_Convert:
@@ -565,10 +383,6 @@ namespace BH.UI.Base.Global
                     return Properties.Resources.Modify;
                 case CodeElementType.Method_Query:
                     return Properties.Resources.Query;
-                case CodeElementType.ObjectCreator:
-                    return Properties.Resources.CreateBHoM;
-                case CodeElementType.RequestCreator:
-                    return Properties.Resources.CreateRequest;
                 case CodeElementType.Type:
                     return Properties.Resources.Type;
                 default:

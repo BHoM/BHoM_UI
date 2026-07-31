@@ -24,9 +24,6 @@ using BH.oM.Base;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.oM.UI
 {
@@ -46,7 +43,7 @@ namespace BH.oM.UI
 
         public virtual double Weight { get; set; } = 1.0;
 
-        public virtual string Json { get; set; } = "";
+        //public virtual string Json { get; set; } = "";
 
         public virtual List<string> InputKeys { get; set; } = new List<string>();
 

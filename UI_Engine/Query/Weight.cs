@@ -21,6 +21,7 @@
  */
 
 using BH.Engine.Base;
+using BH.Engine.Reflection;
 using BH.oM.Base.Attributes;
 using BH.oM.UI;
 using System;
@@ -28,8 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.Engine.UI
 {
@@ -154,7 +153,7 @@ namespace BH.Engine.UI
             }
             else if (item.OutputKeys.Any(x => x == validKey))
                 return 0.75;
-            else 
+            else
                 return 0;
         }
 
@@ -172,7 +171,7 @@ namespace BH.Engine.UI
                 return 1.0;
             else if (item.InputKeys.Intersect(validKeys).Any())
                 return 0.75;
-            else 
+            else
                 return 0;
         }
 

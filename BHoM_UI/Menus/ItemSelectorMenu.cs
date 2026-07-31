@@ -24,9 +24,6 @@ using BH.oM.Data.Collections;
 using BH.oM.UI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.UI.Base.Menus
 {
@@ -98,8 +95,9 @@ namespace BH.UI.Base.Menus
                 ItemSelected.Invoke(this, null);
             else
             {
-                if (item.Item == null && !string.IsNullOrEmpty(item.Json))
-                    item.Item = BH.Engine.Serialiser.Convert.FromJson(item.Json);
+                if (item.Item == null && !string.IsNullOrEmpty(item.Text))
+                    item.Item = BH.Engine.Base.Query.ItemByKey(item.Text);
+
                 ItemSelected.Invoke(this, item.Item);
             }
         }

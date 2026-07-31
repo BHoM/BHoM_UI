@@ -20,18 +20,11 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Base;
-using BH.Engine.Reflection;
 using BH.Engine.UI;
-using BH.oM.Data.Requests;
 using BH.oM.UI;
-using BH.UI.Base.Components;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Reflection;
 
 namespace BH.UI.Base.Global
 {
@@ -103,11 +96,12 @@ namespace BH.UI.Base.Global
                 ItemSelected?.Invoke(this, null);
             else
             {
-                if (item.Item == null && !string.IsNullOrEmpty(item.Json))
-                    item.Item = BH.Engine.Serialiser.Convert.FromJson(item.Json);
+                if (item.Item == null && !string.IsNullOrEmpty(item.Text))
+                    item.Item = BH.Engine.Base.Query.ItemByKey(item.Text);
+
                 ItemSelected?.Invoke(this, new ComponentRequest { CallerType = item.CallerType, SelectedItem = item.Item, Location = location });
             }
-                
+
         }
 
         /*************************************/
