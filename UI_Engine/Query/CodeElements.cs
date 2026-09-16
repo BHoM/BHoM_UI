@@ -54,30 +54,36 @@ namespace BH.Engine.UI
 
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
-                .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText())));
+                        .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText()))
+                        .Where(x => x != null));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
-                .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true))));
+                        .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true)))
+                        .Where(x => x != null));
 
             // All Types
             items.AddRange(BH.Engine.UI.Query.TypeItems()
-                .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true))));
+                        .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true)))
+                        .Where(x => x != null));
 
             /// Methods
 
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
-                .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true))));
+                        .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true)))
+                        .Where(x => x != null));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => x.IsExposed())
-                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false))));
+                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false)))
+                        .Where(x => x != null));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
-                .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true))));
+                        .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true)))
+                        .Where(x => x != null));
 
             // Return the list
             return items;
@@ -90,45 +96,69 @@ namespace BH.Engine.UI
 
         private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText)
         {
-            List<Type> inputTypes = type.GetProperties()
-                .Select(x => x.PropertyType?.UnderlyingType()?.Type)
-                .Where(x => x != null)
-                .Distinct()
-                .ToList();
-
-            return new CodeElementRecord
+            try
             {
-                AssemblyName = AssemblyName(type),
-                AssemblyModifiedTime = AssemblyModifiedTime(type),
-                Type = elementType,
-                DisplayText = displayText,
-                Json = type.ToJson(),
-                InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
-                OutputKeys = type.UnderlyingType()?.Type.OutputKeys()
-            };
+                List<Type> inputTypes = type.GetProperties()
+                    .Select(x => x.PropertyType?.UnderlyingType()?.Type)
+                    .Where(x => x != null)
+                    .Distinct()
+                    .ToList();
+
+                return new CodeElementRecord
+                {
+                    AssemblyName = AssemblyName(type),
+                    AssemblyModifiedTime = AssemblyModifiedTime(type),
+                    Type = elementType,
+                    DisplayText = displayText,
+                    Json = type.ToJson(),
+                    InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
+                    OutputKeys = type.UnderlyingType()?.Type.OutputKeys()
+                };
+            }
+            catch (Exception e)
+            {
+                if (type == null)   //Don't think this will ever happen, but adding as a extra safeguard
+                    BH.Engine.Base.Compute.RecordError(e, "Null type found when initialising the UI."); 
+                else
+                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load type {type.FullName} to the BHoM UI. The type will not be available.");
+
+                return null;
+            }
         }
 
         /*************************************/
 
         private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText)
         {
-            Type outputType = (method is MethodInfo) ? ((MethodInfo)method).ReturnType : method.DeclaringType;
-            List<Type> inputTypes = method.GetParameters()
-                .Select(x => x.ParameterType?.UnderlyingType()?.Type)
-                .Where(x => x != null)
-                .Distinct()
-                .ToList();
-
-            return new CodeElementRecord
+            try
             {
-                AssemblyName = AssemblyName(method),
-                AssemblyModifiedTime = AssemblyModifiedTime(method),
-                Type = elementType,
-                DisplayText = displayText,
-                Json = method.ToJson(),
-                InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
-                OutputKeys = outputType.UnderlyingType()?.Type.OutputKeys()
-            };
+                Type outputType = (method is MethodInfo) ? ((MethodInfo)method).ReturnType : method.DeclaringType;
+                List<Type> inputTypes = method.GetParameters()
+                    .Select(x => x.ParameterType?.UnderlyingType()?.Type)
+                    .Where(x => x != null)
+                    .Distinct()
+                    .ToList();
+
+                return new CodeElementRecord
+                {
+                    AssemblyName = AssemblyName(method),
+                    AssemblyModifiedTime = AssemblyModifiedTime(method),
+                    Type = elementType,
+                    DisplayText = displayText,
+                    Json = method.ToJson(),
+                    InputKeys = inputTypes.Select(x => x.ToText(true)).ToList(),
+                    OutputKeys = outputType.UnderlyingType()?.Type.OutputKeys()
+                };
+            }
+            catch (Exception e)
+            {
+                if(method == null)  //Don't think this will ever happen, but adding as a extra safeguard
+                    BH.Engine.Base.Compute.RecordError(e, "Null method found when initialising the UI.");
+                else
+                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load method {method.Name} from {method.DeclaringType.FullName} to the BHoM UI. The method will not be available.");
+                
+                return null;
+            }
         }
 
         /*************************************/
