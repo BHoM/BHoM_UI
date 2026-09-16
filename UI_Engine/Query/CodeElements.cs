@@ -120,7 +120,7 @@ namespace BH.Engine.UI
                 if (type == null)   //Don't think this will ever happen, but adding as a extra safeguard
                     BH.Engine.Base.Compute.RecordError(e, "Null type found when initialising the UI."); 
                 else
-                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load type {type.FullName} to the BHoM UI. The type will not be available.");
+                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load type {type.FullName} from {type.Assembly.FullName} to the BHoM UI. The type will not be available.");
 
                 return null;
             }
@@ -155,7 +155,7 @@ namespace BH.Engine.UI
                 if(method == null)  //Don't think this will ever happen, but adding as a extra safeguard
                     BH.Engine.Base.Compute.RecordError(e, "Null method found when initialising the UI.");
                 else
-                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load method {method.Name} from {method.DeclaringType.FullName} to the BHoM UI. The method will not be available.");
+                    BH.Engine.Base.Compute.RecordError(e, $"Failed to load method {method.Name} from {method.DeclaringType.FullName} from assembly {method.DeclaringType.Assembly.FullName} to the BHoM UI. The method will not be available.");
                 
                 return null;
             }
