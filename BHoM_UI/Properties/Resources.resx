@@ -119,141 +119,141 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="BHoM_Alligator_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_alligator_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_alligator_icon.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_BHoM_Object" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_bhom_object.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_bhom_object.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Create_CustomData" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_create_customdata.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_create_customdata.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Filter" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_filter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_filter.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_FromJSON" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_fromjson.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_fromjson.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_GetProperty" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_getproperty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_getproperty.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_GetPropertyNames" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_getpropertynames.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_getpropertynames.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Read__CustomData" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_read _customdata.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_read _customdata.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_SetProperty" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_setproperty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_setproperty.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_ToJSON" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bhom_tojson.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bhom_tojson.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BS_Script" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\bs_script.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\bs_script.png;System.Byte[], mscorlib</value>
   </data>
   <data name="gator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\gator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\gator.png;System.Byte[], mscorlib</value>
   </data>
   <data name="VBH_Script" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\vbh_script.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\vbh_script.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Compute" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\compute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\compute.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Convert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\convert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\convert.png;System.Byte[], mscorlib</value>
   </data>
   <data name="CreateBHoM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\createbhom.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\createbhom.png;System.Byte[], mscorlib</value>
   </data>
   <data name="CustomObject" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\customobject.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\customobject.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Dictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\dictionary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\dictionary.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Enum" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\enum.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\enum.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Explode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\explode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\explode.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Modify" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\modify.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\modify.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Query" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\query.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\query.png;System.Byte[], mscorlib</value>
   </data>
   <data name="ToJson" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\tojson.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\tojson.png;System.Byte[], mscorlib</value>
   </data>
   <data name="VS_Script" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\vs_script.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\vs_script.png;System.Byte[], mscorlib</value>
   </data>
   <data name="FromJson" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\fromjson.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\fromjson.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\type.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\data.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\data.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Adapter" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\adapter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\adapter.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\delete.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\delete.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Execute" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\execute.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\execute.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Move" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\move.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\move.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Pull" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\pull.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\pull.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Push" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\push.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\push.png;System.Byte[], mscorlib</value>
   </data>
   <data name="UpdateProperty" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\updateproperty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\updateproperty.png;System.Byte[], mscorlib</value>
   </data>
   <data name="GetInfo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\getinfo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\getinfo.png;System.Byte[], mscorlib</value>
   </data>
   <data name="Empty" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\empty.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\empty.png;System.Byte[], mscorlib</value>
   </data>
   <data name="CreateRequest" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\createrequest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\createrequest.png;System.Byte[], mscorlib</value>
   </data>
   <data name="External" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\External.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\External.png;System.Byte[], mscorlib</value>
   </data>
   <data name="GetEvents" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\GetEvents.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\GetEvents.png;System.Byte[], mscorlib</value>
   </data>
   <data name="RunCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>resources\runcode.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>resources\runcode.png;System.Byte[], mscorlib</value>
   </data>
   <data name="UnitTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\UnitTest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\UnitTest.png;System.Byte[], mscorlib</value>
   </data>
   <data name="SearchSettings" type="System.Resources.ResXFileRef, System.Windows.Forms">
-	<value>Resources\SearchSettings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+	<value>Resources\SearchSettings.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\BHoM_Icon.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\BHoM_Icon.ico;System.Byte[], mscorlib</value>
   </data>
   <data name="BHoM_Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\BHoM_Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\BHoM_Logo.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BooleanToggleOff" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\BooleanToggleOff.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\BooleanToggleOff.png;System.Byte[], mscorlib</value>
   </data>
   <data name="BooleanToggleOn" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\BooleanToggleOn.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>Resources\BooleanToggleOn.png;System.Byte[], mscorlib</value>
   </data>
 </root>

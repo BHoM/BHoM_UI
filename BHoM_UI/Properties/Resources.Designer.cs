@@ -88,7 +88,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Adapter {
             get {
                 object obj = ResourceManager.GetObject("Adapter", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -98,7 +98,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap bar {
             get {
                 object obj = ResourceManager.GetObject("bar", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -108,7 +108,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Alligator_Icon {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Alligator_Icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -118,7 +118,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_App_Clean {
             get {
                 object obj = ResourceManager.GetObject("BHoM_App_Clean", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -128,7 +128,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_App_Close {
             get {
                 object obj = ResourceManager.GetObject("BHoM_App_Close", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -138,7 +138,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_App_Run {
             get {
                 object obj = ResourceManager.GetObject("BHoM_App_Run", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -148,7 +148,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_App_Save {
             get {
                 object obj = ResourceManager.GetObject("BHoM_App_Save", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -158,7 +158,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_BHoM_Object {
             get {
                 object obj = ResourceManager.GetObject("BHoM_BHoM_Object", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -168,7 +168,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Create_CustomData {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Create_CustomData", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -178,7 +178,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Data {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Data", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -188,7 +188,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Enum {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Enum", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -198,7 +198,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Filter {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Filter", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -208,7 +208,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_FromJSON {
             get {
                 object obj = ResourceManager.GetObject("BHoM_FromJSON", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -218,7 +218,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_GetProperty {
             get {
                 object obj = ResourceManager.GetObject("BHoM_GetProperty", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -228,7 +228,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_GetPropertyNames {
             get {
                 object obj = ResourceManager.GetObject("BHoM_GetPropertyNames", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -238,7 +238,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Material {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Material", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -248,7 +248,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Read__CustomData {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Read__CustomData", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -258,7 +258,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_Run_Analasis {
             get {
                 object obj = ResourceManager.GetObject("BHoM_Run_Analasis", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -268,7 +268,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_SetProperty {
             get {
                 object obj = ResourceManager.GetObject("BHoM_SetProperty", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -278,7 +278,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BHoM_ToJSON {
             get {
                 object obj = ResourceManager.GetObject("BHoM_ToJSON", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -290,7 +290,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("BooleanToggleOn", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -302,7 +302,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("BooleanToggleOff", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -312,7 +312,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap BS_Script {
             get {
                 object obj = ResourceManager.GetObject("BS_Script", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -322,7 +322,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Compute {
             get {
                 object obj = ResourceManager.GetObject("Compute", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -332,7 +332,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Convert {
             get {
                 object obj = ResourceManager.GetObject("Convert", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -342,7 +342,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap CreateBHoM {
             get {
                 object obj = ResourceManager.GetObject("CreateBHoM", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -352,7 +352,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap CustomObject {
             get {
                 object obj = ResourceManager.GetObject("CustomObject", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -362,7 +362,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Delete {
             get {
                 object obj = ResourceManager.GetObject("Delete", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -372,7 +372,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Dictionary {
             get {
                 object obj = ResourceManager.GetObject("Dictionary", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -382,7 +382,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap DOF {
             get {
                 object obj = ResourceManager.GetObject("DOF", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -392,7 +392,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Execute {
             get {
                 object obj = ResourceManager.GetObject("Execute", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -402,7 +402,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Explode {
             get {
                 object obj = ResourceManager.GetObject("Explode", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -414,7 +414,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("External", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -424,7 +424,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap FromJson {
             get {
                 object obj = ResourceManager.GetObject("FromJson", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -434,7 +434,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap gator {
             get {
                 object obj = ResourceManager.GetObject("gator", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -444,7 +444,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Modify {
             get {
                 object obj = ResourceManager.GetObject("Modify", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -454,7 +454,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Move {
             get {
                 object obj = ResourceManager.GetObject("Move", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -464,7 +464,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap node {
             get {
                 object obj = ResourceManager.GetObject("node", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -474,7 +474,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Pull {
             get {
                 object obj = ResourceManager.GetObject("Pull", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -484,7 +484,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Push {
             get {
                 object obj = ResourceManager.GetObject("Push", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -494,7 +494,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Query {
             get {
                 object obj = ResourceManager.GetObject("Query", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -506,7 +506,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("RunCode", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -516,7 +516,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap CreateRequest {
             get {
                 object obj = ResourceManager.GetObject("CreateRequest", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -526,7 +526,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap skeleton {
             get {
                 object obj = ResourceManager.GetObject("skeleton", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -536,7 +536,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap ToJson {
             get {
                 object obj = ResourceManager.GetObject("ToJson", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -546,7 +546,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap Type {
             get {
                 object obj = ResourceManager.GetObject("Type", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -556,7 +556,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap UpdateProperty {
             get {
                 object obj = ResourceManager.GetObject("UpdateProperty", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -566,7 +566,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap VBH_Script {
             get {
                 object obj = ResourceManager.GetObject("VBH_Script", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
         
@@ -576,7 +576,7 @@ namespace BH.UI.Properties {
         internal static System.Drawing.Bitmap VS_Script {
             get {
                 object obj = ResourceManager.GetObject("VS_Script", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -588,7 +588,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("GetInfo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -600,7 +600,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("Empty", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -612,7 +612,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("GetEvents", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -624,7 +624,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("UnitTest", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -636,7 +636,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("SearchSettings", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -648,7 +648,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("BHoM_Logo", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return new System.Drawing.Bitmap(new System.IO.MemoryStream((byte[])obj));
             }
         }
 
@@ -660,7 +660,7 @@ namespace BH.UI.Properties {
             get
             {
                 object obj = ResourceManager.GetObject("BHoM_Icon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                return new System.Drawing.Icon(new System.IO.MemoryStream((byte[])obj));
             }
         }
     }
