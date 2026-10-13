@@ -84,9 +84,10 @@ namespace BH.UI.Base.Global
             List<CodeElementRecord> records = codeElements.Where(x => x != null).ToList();
 
             // Collect the relation between types and the assembly they belong to
+            // Types are looked up by the name the serialiser writes (e.g. BaseTagHost`1), not by the display text of the code element (e.g. BaseTagHost<T>)
             Dictionary<string, List<string>> assemblyNamePerType = records
-                .Where(x => x.Type == CodeElementType.Type)
-                .GroupBy(x => x.DisplayText)
+                .Where(x => x.Type == CodeElementType.Type && !string.IsNullOrWhiteSpace(x.DisplayText))
+                .GroupBy(x => ToTypeKey(x.DisplayText))
                 .ToDictionary(group => group.Key, group => group.Select(x => x.AssemblyName).Distinct().ToList());
 
             // Collect the relation between extension methods and the assembly they belong to
