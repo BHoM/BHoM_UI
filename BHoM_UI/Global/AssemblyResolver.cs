@@ -358,7 +358,17 @@ namespace BH.UI.Base.Global
                 if (firstParamStart >= json.Length || json[firstParamStart] == ']')
                     return null;
 
-                // The first parameter is a JSON string, find "Name" property within it
+                // Current format: the first parameter is a plain string holding the name of the type, e.g. "BH.oM.Geometry.Vector"
+                if (json[firstParamStart] == '"' && (firstParamStart + 1 >= json.Length || json[firstParamStart + 1] != '{'))
+                {
+                    int plainEnd = json.IndexOf('"', firstParamStart + 1);
+                    if (plainEnd < 0)
+                        return null;
+
+                    return ToTypeKey(json.Substring(firstParamStart + 1, plainEnd - firstParamStart - 1));
+                }
+
+                // Previous format: the first parameter is a JSON string, find "Name" property within it
                 // Look for "Name" : "..." pattern in the first parameter
                 int nameIndex = json.IndexOf("\\\"Name\\\"", firstParamStart);
                 if (nameIndex < 0)
@@ -393,6 +403,53 @@ namespace BH.UI.Base.Global
             }
 
             return null;
+        }
+
+        /*************************************/
+
+        private static string ToTypeKey(string typeName)
+        {
+            // Converts the text of a type, as written in the parameters of a method, into the key built by TypeKey for a type at run time
+            // e.g. "System.Collections.Generic.List<BH.oM.Geometry.Point>" -> "System.Collections.Generic.List`1" and "System.Double[]" -> "System.Double"
+            if (string.IsNullOrWhiteSpace(typeName))
+                return null;
+
+            typeName = typeName.Trim();
+
+            // By-reference and pointer markers
+            typeName = typeName.TrimEnd('&', '*');
+
+            // Array ranks, e.g. [] or [,]
+            while (typeName.EndsWith("]"))
+            {
+                int rankStart = typeName.LastIndexOf('[');
+                if (rankStart <= 0 || typeName.Substring(rankStart + 1, typeName.Length - rankStart - 2).Any(x => x != ','))
+                    break;
+
+                typeName = typeName.Substring(0, rankStart);
+            }
+
+            // Generic arguments: only the number of top-level arguments is kept
+            int genericStart = typeName.IndexOf('<');
+            if (genericStart > 0 && typeName.EndsWith(">"))
+            {
+                int arguments = 1;
+                int depth = 0;
+                for (int i = genericStart + 1; i < typeName.Length - 1; i++)
+                {
+                    char c = typeName[i];
+                    if (c == '<')
+                        depth++;
+                    else if (c == '>')
+                        depth--;
+                    else if (c == ',' && depth == 0)
+                        arguments++;
+                }
+
+                typeName = typeName.Substring(0, genericStart) + "`" + arguments;
+            }
+
+            return typeName;
         }
 
         /*************************************/
