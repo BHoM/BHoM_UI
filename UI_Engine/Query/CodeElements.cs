@@ -34,6 +34,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BH.Engine.UI
@@ -48,22 +49,36 @@ namespace BH.Engine.UI
         [Output("codeElements", "All code elements already loaded that can be used in the UI to create components.")]
         public static List<CodeElementRecord> CodeElements()
         {
+            return CodeElements((string)null);
+        }
+
+        /*************************************/
+
+        [Description("Collect the code elements that can be used to create UI components from the loaded assemblies matching the filter.")]
+        [Input("assemblyNameFilter", "Regular expression the name of the assembly defining the element must match for the element to be collected. If null or empty, all loaded assemblies are used.")]
+        [Output("codeElements", "Code elements from the matching loaded assemblies that can be used in the UI to create components.")]
+        public static List<CodeElementRecord> CodeElements(string assemblyNameFilter)
+        {
+            Regex assemblyFilter = string.IsNullOrEmpty(assemblyNameFilter) ? null : new Regex(assemblyNameFilter);
             List<CodeElementRecord> items = new List<CodeElementRecord>();
 
             /// Types
 
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
+                        .Where(x => Matches(x, assemblyFilter))
                         .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText()))
                         .Where(x => x != null));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
+                        .Where(x => Matches(x, assemblyFilter))
                         .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true)))
                         .Where(x => x != null));
 
             // All Types
             items.AddRange(BH.Engine.UI.Query.TypeItems()
+                        .Where(x => Matches(x, assemblyFilter))
                         .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true)))
                         .Where(x => x != null));
 
@@ -71,17 +86,19 @@ namespace BH.Engine.UI
 
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
+                        .Where(x => Matches(x, assemblyFilter))
                         .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true)))
                         .Where(x => x != null));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
-                        .Where(x => x.IsExposed())
+                        .Where(x => Matches(x, assemblyFilter) && x.IsExposed())
                         .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false)))
                         .Where(x => x != null));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
+                        .Where(x => Matches(x, assemblyFilter))
                         .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true)))
                         .Where(x => x != null));
 
@@ -92,6 +109,20 @@ namespace BH.Engine.UI
 
         /*************************************/
         /**** Public Methods              ****/
+        /*************************************/
+
+        private static bool Matches(Type type, Regex assemblyFilter)
+        {
+            return assemblyFilter == null || assemblyFilter.IsMatch(AssemblyName(type));
+        }
+
+        /*************************************/
+
+        private static bool Matches(MethodBase method, Regex assemblyFilter)
+        {
+            return assemblyFilter == null || assemblyFilter.IsMatch(AssemblyName(method));
+        }
+
         /*************************************/
 
         private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText)
