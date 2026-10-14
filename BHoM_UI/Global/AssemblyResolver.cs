@@ -24,6 +24,7 @@ using BH.Engine.Base;
 using BH.Engine.Base.Objects;
 using BH.Engine.Reflection;
 using BH.Engine.UI;
+using BH.oM.Base;
 using BH.oM.Base.Attributes;
 using BH.oM.Data.Requests;
 using BH.oM.UI;
@@ -106,26 +107,23 @@ namespace BH.UI.Base.Global
         [Description("Make sure assemblies that contain a type matching the input name are loaded. Return true if any assembly was loaded.")]
         public virtual bool MakeSureAssemblyIsLoadedForType(string type)
         {
-            if (string.IsNullOrEmpty(type) || !type.StartsWith("BH."))
+            // The type can be a generic type with arguments from other assemblies, so BH. can be anywhere in the text
+            if (string.IsNullOrEmpty(type) || !type.Contains("BH."))
                 return false;
 
-            string[] parts = type.Split(',');
-            List<string> assemblyNames = new List<string>();
+            Output<List<string>, List<string>> parsedType = BH.Engine.UI.Query.AssemblyNamesInType(type);
+            List<string> assemblyNames = new List<string>(parsedType.Item1);
 
-            if (parts.Length > 1)
+            // The types that were not assembly-qualified still need to be resolved using the maps collected by this resolver
+            foreach (string typeName in parsedType.Item2)
             {
-                // Assembly is already in the type
-                assemblyNames.Add(parts[1].Trim());
-            }
-            else if (parts.Length == 1)
-            {
-                // We don't have the assembly registered in the type so we need to deduce it
-                Dictionary<string, List<string>> assemblyNamePerType = m_AssemblyNamePerType;
-                if (assemblyNamePerType.ContainsKey(type))
-                    assemblyNames.AddRange(assemblyNamePerType[type]);
+                if (m_AssemblyNamePerType.ContainsKey(typeName))
+                    assemblyNames.AddRange(m_AssemblyNamePerType[typeName]);
+                else
+                    BH.Engine.Base.Compute.RecordWarning($"No assembly was found for this type: {typeName}.");
             }
 
-            return LoadAssemblies(assemblyNames, $"type {type}", true);
+            return LoadAssemblies(assemblyNames.Distinct(), $"type {type}", true);
         }
 
         /***************************************************/
