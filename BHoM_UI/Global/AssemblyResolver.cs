@@ -88,17 +88,17 @@ namespace BH.UI.Base.Global
             // Types are looked up by the name the serialiser writes (e.g. BaseTagHost`1), not by the display text of the code element (e.g. BaseTagHost<T>)
             Dictionary<string, List<string>> assemblyNamePerType = records
                 .Where(x => x.Type == CodeElementType.Type && !string.IsNullOrWhiteSpace(x.DisplayText))
-                .GroupBy(x => ToTypeKey(x.DisplayText))
+                .GroupBy(x => BH.Engine.UI.Query.TypeKey(x.DisplayText))
                 .ToDictionary(group => group.Key, group => group.Select(x => x.AssemblyName).Distinct().ToList());
 
             // Collect the relation between extension methods and the assembly they belong to
-            Dictionary<string, Dictionary<string, List<string>>> assemblyNamesPerExtensionMethod = BuildExtensionMethodDictionary(records);
+            Dictionary<string, Dictionary<string, List<string>>> assemblyNamesPerExtensionMethod = records.ExtensionMethodDictionary();
 
             // The maps are replaced rather than modified so that concurrent readers always see a consistent snapshot
             lock (m_Lock)
             {
-                m_AssemblyNamePerType = Merge(m_AssemblyNamePerType, assemblyNamePerType);
-                m_AssemblyNamesPerExtensionMethod = Merge(m_AssemblyNamesPerExtensionMethod, assemblyNamesPerExtensionMethod);
+                m_AssemblyNamePerType = BH.Engine.UI.Compute.Merge(m_AssemblyNamePerType, assemblyNamePerType);
+                m_AssemblyNamesPerExtensionMethod = BH.Engine.UI.Compute.Merge(m_AssemblyNamesPerExtensionMethod, assemblyNamesPerExtensionMethod);
             }
         }
 
@@ -142,7 +142,7 @@ namespace BH.UI.Base.Global
             HashSet<string> assembliesToLoad = new HashSet<string>();
 
             // 1. Exact type match
-            string exactTypeName = TypeKey(targetType);
+            string exactTypeName = BH.Engine.UI.Query.TypeKey(targetType);
             if (typeToAssemblies.ContainsKey(exactTypeName))
                 assembliesToLoad.UnionWith(typeToAssemblies[exactTypeName]);
 
@@ -150,7 +150,7 @@ namespace BH.UI.Base.Global
             Type baseType = targetType.BaseType;
             while (baseType != null && baseType != typeof(object))
             {
-                string baseTypeName = TypeKey(baseType);
+                string baseTypeName = BH.Engine.UI.Query.TypeKey(baseType);
                 if (typeToAssemblies.ContainsKey(baseTypeName))
                     assembliesToLoad.UnionWith(typeToAssemblies[baseTypeName]);
                 baseType = baseType.BaseType;
@@ -159,7 +159,7 @@ namespace BH.UI.Base.Global
             // 3. Interfaces
             foreach (Type interfaceType in targetType.GetInterfaces())
             {
-                string interfaceName = TypeKey(interfaceType);
+                string interfaceName = BH.Engine.UI.Query.TypeKey(interfaceType);
                 if (typeToAssemblies.ContainsKey(interfaceName))
                     assembliesToLoad.UnionWith(typeToAssemblies[interfaceName]);
             }
@@ -168,7 +168,7 @@ namespace BH.UI.Base.Global
             if (targetType.IsGenericType)
             {
                 Type genericDef = targetType.GetGenericTypeDefinition();
-                string genericTypeName = TypeKey(genericDef);
+                string genericTypeName = BH.Engine.UI.Query.TypeKey(genericDef);
                 if (typeToAssemblies.ContainsKey(genericTypeName))
                     assembliesToLoad.UnionWith(typeToAssemblies[genericTypeName]);
             }
@@ -237,243 +237,6 @@ namespace BH.UI.Base.Global
             return anyLoaded;
         }
 
-
-        /*************************************/
-        /**** Private Methods             ****/
-        /*************************************/
-
-        private static string TypeKey(Type type)
-        {
-            string key = type.FullName ?? type.Name;
-            int cut = key.IndexOfAny(new char[] { ',', '[' });
-            if (cut > 0)
-                key = key.Substring(0, cut);
-            return key;
-        }
-
-        /*************************************/
-
-        private static Dictionary<string, List<string>> Merge(Dictionary<string, List<string>> existing, Dictionary<string, List<string>> added)
-        {
-            Dictionary<string, List<string>> result = existing.ToDictionary(x => x.Key, x => new List<string>(x.Value));
-            foreach (KeyValuePair<string, List<string>> pair in added)
-            {
-                if (!result.ContainsKey(pair.Key))
-                    result[pair.Key] = new List<string>();
-
-                foreach (string assembly in pair.Value)
-                {
-                    if (!result[pair.Key].Contains(assembly))
-                        result[pair.Key].Add(assembly);
-                }
-            }
-            return result;
-        }
-
-        /*************************************/
-
-        private static Dictionary<string, Dictionary<string, List<string>>> Merge(Dictionary<string, Dictionary<string, List<string>>> existing, Dictionary<string, Dictionary<string, List<string>>> added)
-        {
-            Dictionary<string, Dictionary<string, List<string>>> result = existing.ToDictionary(x => x.Key, x => Merge(x.Value, new Dictionary<string, List<string>>()));
-            foreach (KeyValuePair<string, Dictionary<string, List<string>>> pair in added)
-            {
-                Dictionary<string, List<string>> current = result.ContainsKey(pair.Key) ? result[pair.Key] : new Dictionary<string, List<string>>();
-                result[pair.Key] = Merge(current, pair.Value);
-            }
-            return result;
-        }
-
-        /*************************************/
-
-        private static Dictionary<string, Dictionary<string, List<string>>> BuildExtensionMethodDictionary(IEnumerable<CodeElementRecord> codeElements)
-        {
-            Dictionary<string, Dictionary<string, List<string>>> result
-                = new Dictionary<string, Dictionary<string, List<string>>>();
-
-            foreach (CodeElementRecord record in codeElements.Where(x =>
-                x.Type == CodeElementType.Method_Query ||
-                x.Type == CodeElementType.Method_Compute ||
-                x.Type == CodeElementType.Method_Convert ||
-                x.Type == CodeElementType.Method_Modify))
-            {
-                try
-                {
-                    // Extract first parameter type from JSON
-                    string firstParamTypeName = ExtractFirstParameterType(record.Json);
-
-                    if (!string.IsNullOrEmpty(firstParamTypeName))
-                    {
-                        // Extract method name from DisplayText
-                        string methodName = ExtractMethodName(record.DisplayText);
-
-                        // Build nested dictionary
-                        if (!result.ContainsKey(methodName))
-                            result[methodName] = new Dictionary<string, List<string>>();
-
-                        if (!result[methodName].ContainsKey(firstParamTypeName))
-                            result[methodName][firstParamTypeName] = new List<string>();
-
-                        if (!result[methodName][firstParamTypeName].Contains(record.AssemblyName))
-                            result[methodName][firstParamTypeName].Add(record.AssemblyName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    BH.Engine.Base.Compute.RecordWarning($"Failed to parse extension method from {record.DisplayText}: {ex.Message}");
-                }
-            }
-
-            return result;
-        }
-
-        /*************************************/
-
-        private static string ExtractFirstParameterType(string json)
-        {
-            if (string.IsNullOrEmpty(json))
-                return null;
-
-            try
-            {
-                // Find the Parameters array in the JSON
-                int parametersIndex = json.IndexOf("\"Parameters\"");
-                if (parametersIndex < 0)
-                    return null;
-
-                // Find the opening bracket of the Parameters array
-                int arrayStartIndex = json.IndexOf('[', parametersIndex);
-                if (arrayStartIndex < 0)
-                    return null;
-
-                // Find the end of the first parameter (first element in array)
-                // The first element starts after [ and is a JSON string itself
-                int firstParamStart = arrayStartIndex + 1;
-
-                // Skip whitespace
-                while (firstParamStart < json.Length && char.IsWhiteSpace(json[firstParamStart]))
-                    firstParamStart++;
-
-                // Check if array is empty
-                if (firstParamStart >= json.Length || json[firstParamStart] == ']')
-                    return null;
-
-                // Current format: the first parameter is a plain string holding the name of the type, e.g. "BH.oM.Geometry.Vector"
-                if (json[firstParamStart] == '"' && (firstParamStart + 1 >= json.Length || json[firstParamStart + 1] != '{'))
-                {
-                    int plainEnd = json.IndexOf('"', firstParamStart + 1);
-                    if (plainEnd < 0)
-                        return null;
-
-                    return ToTypeKey(json.Substring(firstParamStart + 1, plainEnd - firstParamStart - 1));
-                }
-
-                // Previous format: the first parameter is a JSON string, find "Name" property within it
-                // Look for "Name" : "..." pattern in the first parameter
-                int nameIndex = json.IndexOf("\\\"Name\\\"", firstParamStart);
-                if (nameIndex < 0)
-                    return null;
-
-                // Find the opening quote of the Name value
-                int nameValueStart = json.IndexOf("\\\"", nameIndex + 8); // Skip past \"Name\"
-                if (nameValueStart < 0)
-                    return null;
-
-                nameValueStart += 2; // Skip past \"
-
-                // Find the closing quote of the Name value
-                int nameValueEnd = json.IndexOf("\\\"", nameValueStart);
-                if (nameValueEnd < 0)
-                    return null;
-
-                // Extract the type name
-                string typeName = json.Substring(nameValueStart, nameValueEnd - nameValueStart);
-
-                // Remove assembly qualification: "Type, Assembly" -> "Type"
-                int commaIndex = typeName.IndexOf(',');
-                if (commaIndex > 0)
-                    typeName = typeName.Substring(0, commaIndex).Trim();
-
-                return typeName;
-            }
-            catch (Exception ex)
-            {
-                // Silent fail
-                BH.Engine.Base.Compute.RecordNote($"Could not extract parameter type: {ex.Message}");
-            }
-
-            return null;
-        }
-
-        /*************************************/
-
-        private static string ToTypeKey(string typeName)
-        {
-            // Converts the text of a type, as written in the parameters of a method, into the key built by TypeKey for a type at run time
-            // e.g. "System.Collections.Generic.List<BH.oM.Geometry.Point>" -> "System.Collections.Generic.List`1" and "System.Double[]" -> "System.Double"
-            if (string.IsNullOrWhiteSpace(typeName))
-                return null;
-
-            typeName = typeName.Trim();
-
-            // By-reference and pointer markers
-            typeName = typeName.TrimEnd('&', '*');
-
-            // Array ranks, e.g. [] or [,]
-            while (typeName.EndsWith("]"))
-            {
-                int rankStart = typeName.LastIndexOf('[');
-                if (rankStart <= 0 || typeName.Substring(rankStart + 1, typeName.Length - rankStart - 2).Any(x => x != ','))
-                    break;
-
-                typeName = typeName.Substring(0, rankStart);
-            }
-
-            // Generic arguments: only the number of top-level arguments is kept
-            int genericStart = typeName.IndexOf('<');
-            if (genericStart > 0 && typeName.EndsWith(">"))
-            {
-                int arguments = 1;
-                int depth = 0;
-                for (int i = genericStart + 1; i < typeName.Length - 1; i++)
-                {
-                    char c = typeName[i];
-                    if (c == '<')
-                        depth++;
-                    else if (c == '>')
-                        depth--;
-                    else if (c == ',' && depth == 0)
-                        arguments++;
-                }
-
-                typeName = typeName.Substring(0, genericStart) + "`" + arguments;
-            }
-
-            return typeName;
-        }
-
-        /*************************************/
-
-        private static string ExtractMethodName(string displayText)
-        {
-            // Format: "BH.Engine.Namespace.Query.MethodName(params)" or with generics
-            int openParen = displayText.IndexOf('(');
-            if (openParen < 0)
-                return displayText;
-
-            string beforeParams = displayText.Substring(0, openParen);
-
-            // Remove generic type parameters if present
-            int genericStart = beforeParams.IndexOf('<');
-            if (genericStart > 0)
-                beforeParams = beforeParams.Substring(0, genericStart);
-
-            // Get last segment after last dot
-            int lastDot = beforeParams.LastIndexOf('.');
-            if (lastDot >= 0)
-                return beforeParams.Substring(lastDot + 1);
-
-            return beforeParams;
-        }
 
         /*************************************/
         /**** Private Fields              ****/
