@@ -59,6 +59,17 @@ namespace BH.Engine.UI
         [Output("codeElements", "Code elements from the matching loaded assemblies that can be used in the UI to create components.")]
         public static List<CodeElementRecord> CodeElements(string assemblyNameFilter)
         {
+            return CodeElements(assemblyNameFilter, null);
+        }
+
+
+        /*************************************/
+        /**** Internal Methods            ****/
+        /*************************************/
+
+        // droppedAssemblies, if provided, receives the names of the assemblies for which an element could not be converted to a record
+        internal static List<CodeElementRecord> CodeElements(string assemblyNameFilter, HashSet<string> droppedAssemblies)
+        {
             Regex assemblyFilter = string.IsNullOrEmpty(assemblyNameFilter) ? null : new Regex(assemblyNameFilter);
             List<CodeElementRecord> items = new List<CodeElementRecord>();
 
@@ -67,19 +78,19 @@ namespace BH.Engine.UI
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText()))
+                        .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText(), droppedAssemblies))
                         .Where(x => x != null));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true)))
+                        .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true), droppedAssemblies))
                         .Where(x => x != null));
 
             // All Types
             items.AddRange(BH.Engine.UI.Query.TypeItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true)))
+                        .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true), droppedAssemblies))
                         .Where(x => x != null));
 
             /// Methods
@@ -87,19 +98,19 @@ namespace BH.Engine.UI
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true)))
+                        .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true), droppedAssemblies))
                         .Where(x => x != null));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => Matches(x, assemblyFilter) && x.IsExposed())
-                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false)))
+                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false), droppedAssemblies))
                         .Where(x => x != null));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true)))
+                        .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true), droppedAssemblies))
                         .Where(x => x != null));
 
             // Return the list
@@ -125,7 +136,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText)
+        private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText, HashSet<string> droppedAssemblies)
         {
             try
             {
@@ -149,9 +160,12 @@ namespace BH.Engine.UI
             catch (Exception e)
             {
                 if (type == null)   //Don't think this will ever happen, but adding as a extra safeguard
-                    BH.Engine.Base.Compute.RecordError(e, "Null type found when initialising the UI."); 
+                    BH.Engine.Base.Compute.RecordError(e, "Null type found when initialising the UI.");
                 else
+                {
                     BH.Engine.Base.Compute.RecordError(e, $"Failed to load type {type.FullName} from {type.Assembly.FullName} to the BHoM UI. The type will not be available.");
+                    droppedAssemblies?.Add(AssemblyName(type));
+                }
 
                 return null;
             }
@@ -159,7 +173,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText)
+        private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText, HashSet<string> droppedAssemblies)
         {
             try
             {
@@ -186,11 +200,16 @@ namespace BH.Engine.UI
                 if(method == null)  //Don't think this will ever happen, but adding as a extra safeguard
                     BH.Engine.Base.Compute.RecordError(e, "Null method found when initialising the UI.");
                 else
+                {
                     BH.Engine.Base.Compute.RecordError(e, $"Failed to load method {method.Name} from {method.DeclaringType.FullName} from assembly {method.DeclaringType.Assembly.FullName} to the BHoM UI. The method will not be available.");
+                    droppedAssemblies?.Add(AssemblyName(method));
+                }
                 
                 return null;
             }
         }
+
+        /*************************************/
 
         /*************************************/
 

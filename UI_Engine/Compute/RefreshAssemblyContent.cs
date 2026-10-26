@@ -38,11 +38,11 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description("Loads the assemblies matching the filter that are new or newer than the ones recorded in the code elements, and updates the code elements and the file they are saved in with the content of those assemblies.")]
-        [Input("codeElements", "Code elements currently known. Elements of the assemblies that get reloaded are replaced.")]
+        [Description("Loads the assemblies matching the filter that are new or newer than the ones recorded in the code elements, and updates the code elements and the file they are saved in with the content of those assemblies. Assemblies that could not be fully extracted in the current process are kept in the returned code elements, but are not saved to the file, so that another process can extract them completely.")]
+        [Input("codeElements", "Code elements currently known. Elements of the assemblies that get reloaded are replaced. They are expected to be the content read from the file at filePath: the file is rewritten from them, so the elements of incomplete assemblies in the returned list must not be passed back in.")]
         [Input("assemblyNameFilter", "Only assemblies with a name matching this regular expression are considered. If null or empty, the default filter for BHoM assemblies is used.")]
         [Input("filePath", "Path of the file the updated code elements are saved to, one tsv row per element. If null or empty, nothing is saved. The file is replaced atomically.")]
-        [Output("codeElements", "Code elements updated with the content of the new assemblies. This is the input list itself if no assembly was loaded.")]
+        [Output("codeElements", "Code elements updated with the content of the new assemblies, including the ones of incomplete assemblies. For use in the current process only: it is not suitable as the input of a later call that saves to a file. This is the input list itself if no assembly was loaded.")]
         public static List<CodeElementRecord> RefreshAssemblyContent(List<CodeElementRecord> codeElements, string assemblyNameFilter = null, string filePath = null)
         {
             codeElements = codeElements ?? new List<CodeElementRecord>();
@@ -64,17 +64,29 @@ namespace BH.Engine.UI
 
             stopwatch.Restart();
 
-            List<CodeElementRecord> loadedCodeElements = BH.Engine.UI.Query.CodeElements("(?i)" + string.Join("|", loadedAssemblies.Select(x => "^" + Regex.Escape(x) + "$")));
-            if (loadedCodeElements.Count == 0)
-                return codeElements;
+            HashSet<string> droppedAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            List<CodeElementRecord> loadedCodeElements = BH.Engine.UI.Query.CodeElements("(?i)" + string.Join("|", loadedAssemblies.Select(x => "^" + Regex.Escape(x) + "$")), droppedAssemblies);
 
             List<CodeElementRecord> result = codeElements
                 .Where(x => !loadedAssemblies.Contains(x.AssemblyName))
                 .Concat(loadedCodeElements)
                 .ToList();
 
+            // An assembly is incomplete if the engine had issues extracting it or if some of its elements could not be converted to code elements
+            HashSet<string> incompleteAssemblies = new HashSet<string>(droppedAssemblies.Concat(BH.Engine.Base.Query.AssembliesWithExtractionIssues()), StringComparer.OrdinalIgnoreCase);
+            foreach (string assemblyName in loadedAssemblies.Where(x => incompleteAssemblies.Contains(x)))
+                BH.Engine.Base.Compute.RecordNote($"Assembly {assemblyName} could not be fully extracted in this process. Its content is not saved to the assembly content file.");
+
             if (!string.IsNullOrEmpty(filePath))
-                SaveAssemblyContent(result, filePath);
+            {
+                // The file gets the input elements, without the stale ones of the reloaded assemblies, and the elements of the reloaded assemblies that are complete
+                List<CodeElementRecord> toSave = codeElements
+                    .Where(x => !loadedAssemblies.Contains(x.AssemblyName))
+                    .Concat(loadedCodeElements.Where(x => !incompleteAssemblies.Contains(x.AssemblyName)))
+                    .ToList();
+
+                SaveAssemblyContent(toSave, filePath);
+            }
 
             stopwatch.Stop();
             BH.Engine.Base.Compute.RecordNote($"Time to update the code elements with the content of the updated/new assemblies: {stopwatch.Elapsed.TotalMilliseconds / 1000} s.");
