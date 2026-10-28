@@ -62,7 +62,7 @@ namespace BH.UI.Base.Global
 
         public static List<SearchItem> SearchItems { get; set; } = new List<SearchItem>();
 
-        public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), "AssemblyContent.tsv");
+        public static string AssemblyContentFilePath { get; set; } = Path.Combine(BH.Engine.Base.Query.BHoMFolderResources(), $"AssemblyContent_{UIName()}.tsv");
 
         public static List<CustomRibbonEntry> CustomRibbonEntries { get; set; } = new List<CustomRibbonEntry>();
 
@@ -225,6 +225,33 @@ namespace BH.UI.Base.Global
             {
                 Engine.Base.Compute.RecordWarning("Method " + settings.InitialisationMethod + " failed to run properly during toolkit initialisation. Error: \n" + e.Message);
                 return false;
+            }
+        }
+
+        /*************************************/
+
+        // Name of the UI running in the current process (process name and major version, e.g. Rhino8 or EXCEL16), used to give each UI its own assembly content file
+        private static string UIName()
+        {
+            try
+            {
+                using (Process process = Process.GetCurrentProcess())
+                {
+                    string name = process.ProcessName;
+                    try
+                    {
+                        name += process.MainModule.FileVersionInfo.FileMajorPart;
+                    }
+                    catch { }   // The main module is not always accessible
+
+                    // Keep only characters that are valid in a file name, and no space
+                    name = new string(name.Where(x => !char.IsWhiteSpace(x) && Array.IndexOf(Path.GetInvalidFileNameChars(), x) < 0).ToArray());
+                    return string.IsNullOrEmpty(name) ? "Unknown" : name;
+                }
+            }
+            catch
+            {
+                return "Unknown";
             }
         }
 

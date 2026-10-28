@@ -45,30 +45,10 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
-        [Description("Collect all the code elements that can be used to create UI components from the loaded assemblies.")]
-        [Output("codeElements", "All code elements already loaded that can be used in the UI to create components.")]
-        public static List<CodeElementRecord> CodeElements()
-        {
-            return CodeElements((string)null);
-        }
-
-        /*************************************/
-
         [Description("Collect the code elements that can be used to create UI components from the loaded assemblies matching the filter.")]
         [Input("assemblyNameFilter", "Regular expression the name of the assembly defining the element must match for the element to be collected. If null or empty, all loaded assemblies are used.")]
         [Output("codeElements", "Code elements from the matching loaded assemblies that can be used in the UI to create components.")]
-        public static List<CodeElementRecord> CodeElements(string assemblyNameFilter)
-        {
-            return CodeElements(assemblyNameFilter, null);
-        }
-
-
-        /*************************************/
-        /**** Internal Methods            ****/
-        /*************************************/
-
-        // droppedAssemblies, if provided, receives the names of the assemblies for which an element could not be converted to a record
-        internal static List<CodeElementRecord> CodeElements(string assemblyNameFilter, HashSet<string> droppedAssemblies)
+        public static List<CodeElementRecord> CodeElements(string assemblyNameFilter = "")
         {
             Regex assemblyFilter = string.IsNullOrEmpty(assemblyNameFilter) ? null : new Regex(assemblyNameFilter);
             List<CodeElementRecord> items = new List<CodeElementRecord>();
@@ -78,19 +58,19 @@ namespace BH.Engine.UI
             // All constructable BHoM objects and requests
             items.AddRange(BH.Engine.UI.Query.ConstructableTypeItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText(), droppedAssemblies))
+                        .Select(x => CodeElement(x, GetConstructableType(x), x.ConstructorText()))
                         .Where(x => x != null));
 
             // All Enums
             items.AddRange(BH.Engine.UI.Query.EnumItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true), droppedAssemblies))
+                        .Select(x => CodeElement(x, CodeElementType.Enum, x.ToText(true)))
                         .Where(x => x != null));
 
             // All Types
             items.AddRange(BH.Engine.UI.Query.TypeItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true), droppedAssemblies))
+                        .Select(x => CodeElement(x, CodeElementType.Type, x.ToText(true)))
                         .Where(x => x != null));
 
             /// Methods
@@ -98,19 +78,19 @@ namespace BH.Engine.UI
             // All adapter constructors
             items.AddRange(BH.Engine.UI.Query.AdapterConstructorItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true), droppedAssemblies))
+                        .Select(x => CodeElement(x, CodeElementType.AdapterConstructor, x.ToText(true)))
                         .Where(x => x != null));
 
             // All methods for the BHoM Engine (including creators)
             items.AddRange(BH.Engine.Base.Query.BHoMMethodList()
                         .Where(x => Matches(x, assemblyFilter) && x.IsExposed())
-                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false), droppedAssemblies))
+                        .Select(x => CodeElement(x, GetMethodType(x), x.ToText(includePath: true, removeIForInterface: false)))
                         .Where(x => x != null));
 
             // All methods from external class
             items.AddRange(BH.Engine.UI.Query.ExternalItems()
                         .Where(x => Matches(x, assemblyFilter))
-                        .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true), droppedAssemblies))
+                        .Select(x => CodeElement(x, CodeElementType.Method_External, x.ToText(true)))
                         .Where(x => x != null));
 
             // Return the list
@@ -136,7 +116,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText, HashSet<string> droppedAssemblies)
+        private static CodeElementRecord CodeElement(Type type, CodeElementType elementType, string displayText)
         {
             try
             {
@@ -164,7 +144,6 @@ namespace BH.Engine.UI
                 else
                 {
                     BH.Engine.Base.Compute.RecordError(e, $"Failed to load type {type.FullName} from {type.Assembly.FullName} to the BHoM UI. The type will not be available.");
-                    droppedAssemblies?.Add(AssemblyName(type));
                 }
 
                 return null;
@@ -173,7 +152,7 @@ namespace BH.Engine.UI
 
         /*************************************/
 
-        private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText, HashSet<string> droppedAssemblies)
+        private static CodeElementRecord CodeElement(MethodBase method, CodeElementType elementType, string displayText)
         {
             try
             {
@@ -202,7 +181,6 @@ namespace BH.Engine.UI
                 else
                 {
                     BH.Engine.Base.Compute.RecordError(e, $"Failed to load method {method.Name} from {method.DeclaringType.FullName} from assembly {method.DeclaringType.Assembly.FullName} to the BHoM UI. The method will not be available.");
-                    droppedAssemblies?.Add(AssemblyName(method));
                 }
                 
                 return null;
