@@ -78,9 +78,9 @@ namespace BH.UI.Base.Global
             bool success = true;
 
             success &= LoadCodeElements();
+            success &= LoadNewAssemblies();
             success &= CreateAssemblyResolver();
             success &= LoadToolkitSettings();
-            success &= LoadNewAssemblies();
             success &= CreateSearchItems(CodeElements);
 
             CompletionTime = DateTime.UtcNow;
