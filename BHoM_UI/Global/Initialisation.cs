@@ -314,6 +314,10 @@ namespace BH.UI.Base.Global
             // All methods defined from the BHoM_UI
             SearchItems = GetComponentItems();
 
+            // The resolver does not know about the types defined by the UI itself since they are not in the assembly content files
+            // Without this, reading a saved component declared in the BHoM_UI (e.g. GetInfo) would warn that no assembly was found for its type
+            AssemblyResolver.AddLoadedTypes(SearchItems.Select(x => x.CallerType));
+
             // All code elements
             SearchItems.AddRange(codeElements
                 .Select(x => new SearchItem { CallerType = GetCallerType(x.Type), Icon = GetIcon(x.Type), Text = x.DisplayText, Json = x.Json, InputKeys = x.InputKeys, OutputKeys = x.OutputKeys }));

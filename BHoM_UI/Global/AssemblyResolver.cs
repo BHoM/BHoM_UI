@@ -104,6 +104,27 @@ namespace BH.UI.Base.Global
 
         /*************************************/
 
+        [Description("Tell the resolver about types that are already loaded, mapping each one to the assembly that defines it. " +
+                     "Useful for types that are not listed in the assembly content files, such as the ones defined by a UI itself. Can be called while the resolver is in use.")]
+        [Input("types", "Loaded types to register. Each one is mapped, by its full name, to the name of its assembly.")]
+        public void AddLoadedTypes(IEnumerable<Type> types)
+        {
+            if (types == null)
+                return;
+
+            Dictionary<string, List<string>> assemblyNamePerType = types
+                .Where(x => x != null && !string.IsNullOrEmpty(x.FullName))
+                .GroupBy(x => x.FullName)
+                .ToDictionary(group => group.Key, group => group.Select(x => x.Assembly.GetName().Name).Distinct().ToList());
+
+            lock (m_Lock)
+            {
+                m_AssemblyNamePerType = BH.Engine.UI.Compute.Merge(m_AssemblyNamePerType, assemblyNamePerType);
+            }
+        }
+
+        /*************************************/
+
         [Description("Make sure assemblies that contain a type matching the input name are loaded. Return true if any assembly was loaded.")]
         public virtual bool MakeSureAssemblyIsLoadedForType(string type)
         {
