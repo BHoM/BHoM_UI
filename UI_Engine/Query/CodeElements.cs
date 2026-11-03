@@ -45,6 +45,7 @@ namespace BH.Engine.UI
         /**** Public Methods              ****/
         /*************************************/
 
+        [PreviousVersion("10.0", "BH.Engine.UI.Query.CodeElements()")]
         [Description("Collect the code elements that can be used to create UI components from the loaded assemblies matching the filter.")]
         [Input("assemblyNameFilter", "Regular expression the name of the assembly defining the element must match for the element to be collected. If null or empty, all loaded assemblies are used.")]
         [Output("codeElements", "Code elements from the matching loaded assemblies that can be used in the UI to create components.")]
