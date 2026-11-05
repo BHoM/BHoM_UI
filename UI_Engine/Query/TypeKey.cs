@@ -42,7 +42,7 @@ namespace BH.Engine.UI
         [Description("Build the key identifying a type at runtime, stripping away assembly qualification and generic arguments.")]
         [Input("type", "Type to build the key for.")]
         [Output("key", "Key identifying the type, e.g. 'BH.oM.Geometry.Point' or 'BH.oM.Base.BHoMGroup`1' for a generic type definition.")]
-        public static string TypeKey(Type type)
+        public static string TypeKey(this Type type)
         {
             string key = type.FullName ?? type.Name;
             int cut = key.IndexOfAny(new char[] { ',', '[' });
