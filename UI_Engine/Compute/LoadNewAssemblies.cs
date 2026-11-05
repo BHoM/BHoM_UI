@@ -47,6 +47,19 @@ namespace BH.Engine.UI
         [Output("loadedAssemblies", "Assemblies loaded as considered new.")]
         public static List<string> LoadNewAssemblies(Dictionary<string, DateTime> lastAssemblyUpdateTimes)
         {
+            return LoadNewAssemblies(lastAssemblyUpdateTimes, null);
+        }
+
+        /*************************************/
+
+        [Description("Loads the assemblies from the BHoM folders whose name matches the filter and that are new or more recent than their recorded update time.")]
+        [Input("lastAssemblyUpdateTimes", "records of the last time each assembly was updated.")]
+        [Input("assemblyNameFilter", "Only assemblies with a name matching this regular expression are considered. If null or empty, the default filter for BHoM assemblies is used.")]
+        [Output("loadedAssemblies", "Assemblies loaded as considered new.")]
+        public static List<string> LoadNewAssemblies(Dictionary<string, DateTime> lastAssemblyUpdateTimes, string assemblyNameFilter)
+        {
+            Regex filter = string.IsNullOrEmpty(assemblyNameFilter) ? m_AssemblyNameFilter : new Regex(assemblyNameFilter);
+
             if (lastAssemblyUpdateTimes == null)
             {
                 BH.Engine.Base.Compute.RecordError("lastAssemblyUpdateTimes was not provided. No assembly was loaded.");
@@ -63,11 +76,11 @@ namespace BH.Engine.UI
             foreach (string subFolder in BH.Engine.UI.Query.SubFoldersForRuntime())
             {
                 string runtimeFolder = Path.Combine(bhomFolder, subFolder);
-                LoadNewAssembliesForFolder(runtimeFolder, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
+                LoadNewAssembliesForFolder(runtimeFolder, filter, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
             }
 
             // Pass 2: flat folder, skipping any assembly already handled by the runtime subdir pass
-            LoadNewAssembliesForFolder(bhomFolder, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
+            LoadNewAssembliesForFolder(bhomFolder, filter, lastUpdateTimes, loadedAssemblies, visitedAssemblies);
 
             return loadedAssemblies.ToList();
         }
@@ -77,7 +90,7 @@ namespace BH.Engine.UI
         /**** Private Methods             ****/
         /*************************************/
 
-        private static void LoadNewAssembliesForFolder(string folderPath, Dictionary<string, DateTime> lastUpdateTimes, HashSet<string> loadedAssemblies, HashSet<string> visitedAssemblies)
+        private static void LoadNewAssembliesForFolder(string folderPath, Regex assemblyNameFilter, Dictionary<string, DateTime> lastUpdateTimes, HashSet<string> loadedAssemblies, HashSet<string> visitedAssemblies)
         {
             if (!Directory.Exists(folderPath))
                 return;
@@ -86,7 +99,7 @@ namespace BH.Engine.UI
             {
                 string name = Path.GetFileNameWithoutExtension(file);
 
-                if (m_AssemblyNameFilter.IsMatch(name) && !visitedAssemblies.Contains(name))
+                if (assemblyNameFilter.IsMatch(name) && !visitedAssemblies.Contains(name))
                 {
                     visitedAssemblies.Add(name);
                     string key = name.ToLower();
